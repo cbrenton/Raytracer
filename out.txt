@@ -1,0 +1,51 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  Ts/call  Ts/call  name    
+  9.53      0.04     0.04                             distance3D(double, double, double, double, double, double)
+  9.53      0.08     0.04                             Vector3D::normalize()
+  9.53      0.12     0.04                             Vector3D::Vector3D(double, double, double)
+  7.14      0.15     0.03                             Matrix4::copy(Matrix4 const&)
+  7.14      0.18     0.03                             Vector3D::dot(Vector3D&)
+  7.14      0.21     0.03                             Vector3D::subtract(Vector3D&)
+  7.14      0.24     0.03                             Vector3D::addUpdate(Vector3D)
+  7.14      0.27     0.03                             Vector3D::getLength()
+  5.95      0.30     0.03                             Pixel::setColor(double, double, double, double)
+  4.76      0.32     0.02                             Image::write()
+  4.76      0.34     0.02                             Scene::getIntersect(Ray)
+  4.76      0.36     0.02                             Geometry::Geometry()
+  2.38      0.37     0.01                             Image::setPixel(int, int, Pixel*)
+  2.38      0.38     0.01                             Plane::getIntersect(Ray, double*, Pixel*)
+  2.38      0.39     0.01                             Scene::seekLight(Vector3D, Geometry*)
+  2.38      0.40     0.01                             Matrix4::operator=(Matrix4 const&)
+  2.38      0.41     0.01                             std::vector<Geometry*, std::allocator<Geometry*> >::operator[](unsigned long)
+  2.38      0.42     0.01                             main
+  1.19      0.42     0.01                             Pixel::~Pixel()
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+ 
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this 
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.

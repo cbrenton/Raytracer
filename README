@@ -1,0 +1,10 @@
+Capitalization of command line arguments is ignored. You can specify command line arguments with +[arg][option], -[arg][option], -[arg] [option], or -[arg]=[option]. Notice that there must not be a space between the argument and option if you use '+'. I recommend that you use '-'.
+
+To build:
+$ make
+
+To run with preset configuration:
+$ make run
+
+sample usage:
+$ raytrace -w512 -H=512 +Iimagein
