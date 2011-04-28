@@ -28,8 +28,11 @@ class Scene {
       Pixel* seekLight(vec3_t origin, Geometry* hitObject);
       Camera* camera;
    private:
-      std::vector<Light*> lights;
-      std::vector<Geometry*> geometry;
+      int lights_size, geometry_size, planes_size, spheres_size;
+      Light **lights;
+      Geometry **geometry;
+      Plane **planes;
+      Sphere **spheres;
 };
 
 #endif

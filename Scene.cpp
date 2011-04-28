@@ -13,7 +13,13 @@ using namespace std;
 
 Scene* Scene::read(std::istream& input)
 {
+   std::vector<Light*> lights_vec;
+   std::vector<Geometry*> geometry_vec;
+   std::vector<Plane*> planes_vec;
+   std::vector<Sphere*> spheres_vec;
+
    Scene* curScene = new Scene();
+   curScene->lights_size = curScene->geometry_size = curScene->planes_size = curScene->spheres_size = 0;
    // Read file.
 
    // This will hold the name of our item.
@@ -45,31 +51,38 @@ Scene* Scene::read(std::istream& input)
             }
             else if (curItemName.compare("light_source") == 0)
             {
-               curScene->lights.push_back(new Light(input));
+               lights_vec.push_back(new Light(input));
+               curScene->lights_size++;
             }
             else if (curItemName.compare("box") == 0)
             {
-               curScene->geometry.push_back(new Box(input));
+               geometry_vec.push_back(new Box(input));
+               curScene->geometry_size++;
             }
             else if (curItemName.compare("cone") == 0)
             {
-               curScene->geometry.push_back(new Cone(input));
+               geometry_vec.push_back(new Cone(input));
+               curScene->geometry_size++;
             }
             else if (curItemName.compare("plane") == 0)
             {
-               curScene->geometry.push_back(new Plane(input));
+               planes_vec.push_back(new Plane(input));
+               curScene->planes_size++;
             }
             else if (curItemName.compare("sphere") == 0)
             {
-               curScene->geometry.push_back(new Sphere(input));
+               spheres_vec.push_back(new Sphere(input));
+               curScene->spheres_size++;
             }
             else if (curItemName.compare("semi") == 0)
             {
-               curScene->geometry.push_back(new Semi(input));
+               geometry_vec.push_back(new Semi(input));
+               curScene->geometry_size++;
             }
             else if (curItemName.compare("triangle") == 0)
             {
-               curScene->geometry.push_back(new Triangle(input));
+               geometry_vec.push_back(new Triangle(input));
+               curScene->geometry_size++;
             }
             // Next do the other ones.
 
@@ -88,13 +101,21 @@ Scene* Scene::read(std::istream& input)
       }
    }
 
+   curScene->lights = new Light *[curScene->lights_size];
+   copy(lights_vec.begin(), lights_vec.end(), curScene->lights);
+   curScene->geometry = new Geometry *[curScene->geometry_size];
+   copy(geometry_vec.begin(), geometry_vec.end(), curScene->geometry);
+   curScene->planes = new Plane *[curScene->planes_size];
+   copy(planes_vec.begin(), planes_vec.end(), curScene->planes);
+   curScene->spheres = new Sphere *[curScene->spheres_size];
+   copy(spheres_vec.begin(), spheres_vec.end(), curScene->spheres);
    return curScene;
 }
 
 Pixel *Scene::seekLight(vec3_t origin, Geometry *hitObject)
 {
    Pixel *result = new Pixel(0.0, 0.0, 0.0, 0.0);
-   for (unsigned i = 0; i < lights.size(); i++)
+   for (int i = 0; i < lights_size; i++)
    {
       vec3_t dir = lights[i]->location - origin;
       float dirLen = dir.length();
@@ -104,9 +125,21 @@ Pixel *Scene::seekLight(vec3_t origin, Geometry *hitObject)
       Ray *feeler = new Ray(dir * 0.0001f + origin, dir);
       float t = -1.0;
       bool hit = false;
-      for (unsigned int j = 0; j < geometry.size(); j++)
+      for (int j = 0; j < geometry_size; j++)
       {
          Geometry *curObject = geometry[j];
+         bool intersect = curObject->hit(*feeler, &t);
+         hit |= (intersect && t > 0 && t <= dirLen);
+      }
+      for (int j = 0; j < planes_size; j++)
+      {
+         Plane *curObject = planes[j];
+         bool intersect = curObject->hit(*feeler, &t);
+         hit |= (intersect && t > 0 && t <= dirLen);
+      }
+      for (int j = 0; j < spheres_size; j++)
+      {
+         Sphere *curObject = spheres[j];
          bool intersect = curObject->hit(*feeler, &t);
          hit |= (intersect && t > 0 && t <= dirLen);
       }
@@ -139,9 +172,39 @@ Pixel* Scene::getIntersect(Ray ray)
    float t;
    bool hitFound = false;
    float curDepth = 0.0;
-   for (unsigned int i = 0; i < geometry.size(); i++)
+   for (int i = 0; i < geometry_size; i++)
    {
       Geometry *curObject = geometry[i];
+      t = -1.0;
+      bool intersected = curObject->hit(ray, &t);
+      if (intersected)
+      {
+         if (t >= 0 && (!hitFound || (hitFound && t < curDepth)))
+         {
+            curDepth = t;
+            hitObject = curObject;
+         }
+      }
+      hitFound |= (intersected && curDepth > 0.0);
+   }
+   for (int i = 0; i < planes_size; i++)
+   {
+      Plane *curObject = planes[i];
+      t = -1.0;
+      bool intersected = curObject->hit(ray, &t);
+      if (intersected)
+      {
+         if (t >= 0 && (!hitFound || (hitFound && t < curDepth)))
+         {
+            curDepth = t;
+            hitObject = curObject;
+         }
+      }
+      hitFound |= (intersected && curDepth > 0.0);
+   }
+   for (int i = 0; i < spheres_size; i++)
+   {
+      Sphere *curObject = spheres[i];
       t = -1.0;
       bool intersected = curObject->hit(ray, &t);
       if (intersected)

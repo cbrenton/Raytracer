@@ -155,7 +155,6 @@ int main(int argc, char **argv)
          vec3_t rayDir = uVector + vVector + wVector;
          rayDir.normalize();
          vec3_t curPoint = vec3_t(scene->camera->location);
-         //Ray curRay = Ray(scene->camera->location, rayDir);
          Ray *curRay = new Ray(curPoint, rayDir);
          Pixel *result = scene->getIntersect(*curRay);
          image.setPixel(i, j, result);
