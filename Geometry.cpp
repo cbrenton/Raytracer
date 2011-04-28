@@ -21,9 +21,9 @@ bool Geometry::hit(Ray ray, float *t, float minT, float maxT)
    return -1.0;
 }
 
-Vector3D Geometry::getNormal(Vector3D point)
+vec3_t Geometry::getNormal(vec3_t point)
 {
-   return Vector3D(0.0, 0.0, 0.0);
+   return vec3_t(0.0, 0.0, 0.0);
 }
 
 void Geometry::readOptions(std::istream& input)

@@ -91,21 +91,23 @@ Scene* Scene::read(std::istream& input)
    return curScene;
 }
 
-Pixel *Scene::seekLight(Vector3D origin, Geometry *hitObject)
+Pixel *Scene::seekLight(vec3_t origin, Geometry *hitObject)
 {
    Pixel *result = new Pixel(0.0, 0.0, 0.0, 0.0);
    for (unsigned i = 0; i < lights.size(); i++)
    {
-      Vector3D dir = lights[i]->location.subtract(origin);
-      float dirLen = dir.getLength();
+      vec3_t dir = lights[i]->location - origin;
+      float dirLen = dir.length();
       dir.normalize();
-      Ray feeler = Ray(origin.add(dir.scalarMultiply(0.0001f)), dir);
+      //vec3_t point = dir * 0.0001f + origin;
+      //point += origin;
+      Ray *feeler = new Ray(dir * 0.0001f + origin, dir);
       float t = -1.0;
       bool hit = false;
       for (unsigned int j = 0; j < geometry.size(); j++)
       {
          Geometry *curObject = geometry[j];
-         bool intersect = curObject->hit(feeler, &t);
+         bool intersect = curObject->hit(*feeler, &t);
          hit |= (intersect && t > 0 && t <= dirLen);
       }
       result->r = (hitObject->getAmbient()*hitObject->getR()) * lights[i]->r;
@@ -114,9 +116,9 @@ Pixel *Scene::seekLight(Vector3D origin, Geometry *hitObject)
       result->a = 1.0;
       if (!hit)
       {
-         Vector3D n = hitObject->getNormal(origin);
+         vec3_t n = hitObject->getNormal(origin);
          n.normalize();
-         Vector3D l = lights[i]->location.subtract(origin);
+         vec3_t l = lights[i]->location - origin;
          l.normalize();
          float nDotL = n.dot(l);
          result->r += hitObject->getDiffuse()*hitObject->getR() * nDotL * lights[i]->r;
@@ -154,7 +156,8 @@ Pixel* Scene::getIntersect(Ray ray)
    }
    if (hitFound)
    {
-      Vector3D hitPoint = ray.point.add(ray.dir.scalarMultiply(curDepth));
+      vec3_t rayDisp = ray.dir * curDepth;
+      vec3_t hitPoint = ray.point + rayDisp;
       result = seekLight(hitPoint, hitObject);
    }
    return result;

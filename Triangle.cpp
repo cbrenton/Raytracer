@@ -16,13 +16,13 @@ Triangle::Triangle(std::istream& input)
    // Get the good stuff.
    getline(input, line);
    sscanf(line.c_str(), " <%f, %f, %f>,",
-         &location.x, &location.y, &location.z);
+         &location.v[0], &location.v[1], &location.v[2]);
    getline(input, line);
    sscanf(line.c_str(), " <%f, %f, %f>,",
-         &corner2.x, &corner2.y, &corner2.z);
+         &corner2.v[0], &corner2.v[1], &corner2.v[2]);
    getline(input, line);
    sscanf(line.c_str(), " <%f, %f, %f>",
-         &corner3.x, &corner3.y, &corner3.z);
+         &corner3.v[0], &corner3.v[1], &corner3.v[2]);
    readOptions(input);
 }
 
@@ -35,9 +35,9 @@ void Triangle::debug()
 {
    printf("Triangle: {\n");
    printf("  <%f, %f, %f>,\n",
-         location.x, location.y, location.z);
+         location.v[0], location.v[1], location.v[2]);
    printf("  <%f, %f, %f>,\n",
-         corner2.x, corner2.y, corner2.z);
+         corner2.v[0], corner2.v[1], corner2.v[2]);
    printf("  <%f, %f, %f>\n",
-         corner3.x, corner3.y, corner3.z);
+         corner3.v[0], corner3.v[1], corner3.v[2]);
 }

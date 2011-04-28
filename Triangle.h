@@ -17,8 +17,8 @@ class Triangle : public Geometry {
       void debug();
    private:
       // Corner1 is Geometry::location
-      Vector3D corner2;
-      Vector3D corner3;
+      vec3_t corner2;
+      vec3_t corner3;
 };
 
 #endif

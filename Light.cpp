@@ -13,7 +13,7 @@ Light::Light(std::istream& input) {
    std::string line;
    getline(input, line);
    sscanf(line.c_str(), "{<%f, %f, %f> color rgb <%f, %f, %f>}",
-         &location.x, &location.y, &location.z,
+         &location.v[0], &location.v[0], &location.v[2],
          &r, &g, &b);
    //location.print();
    // Debug

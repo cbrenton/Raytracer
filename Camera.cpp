@@ -4,6 +4,7 @@
  * 4/11/11
  */
 
+#include <stdio.h>
 #include "Camera.h"
 
 Camera::Camera(std::istream& input) {
@@ -12,16 +13,16 @@ Camera::Camera(std::istream& input) {
    getline(input, line);
    getline(input, line);
    sscanf(line.c_str(), " location <%f, %f, %f>",
-         &location.x, &location.y, &location.z);
+         &location.v[0], &location.v[1], &location.v[2]);
    getline(input, line);
    sscanf(line.c_str(), " up <%f, %f, %f>",
-         &up.x, &up.y, &up.z);
+         &up.v[0], &up.v[1], &up.v[2]);
    getline(input, line);
    sscanf(line.c_str(), " right <%f, %f, %f>",
-         &right.x, &right.y, &right.z);
+         &right.v[0], &right.v[1], &right.v[2]);
    getline(input, line);
    sscanf(line.c_str(), " look_at <%f, %f, %f>",
-         &look_at.x, &look_at.y, &look_at.z);
+         &look_at.v[0], &look_at.v[1], &look_at.v[2]);
    // Debug.
    //printf("Camera: <%f, %f, %f>\n", location.x, location.y, location.z);
 }

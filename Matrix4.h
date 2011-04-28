@@ -5,7 +5,7 @@
  * <pre>
  * A basic Matrix class to provide operations for 4x4 matrices. Included are
  * functions to invert, transpose, multiply, add, subtract, scale, and
- * find determinants. I'm also cutting support for the Vector3D class. Vector3D
+ * find determinants. I'm also cutting support for the vec3_t class. vec3_t
  * is the correct class to use, despite the incorrect name.
  * </pre>
  *
@@ -16,7 +16,9 @@
 #ifndef MATRIX4_H
 #define MATRIX4_H
 
-struct Vector3D;
+#include <stdio.h>
+
+struct vec3_t;
 
 struct Matrix4 {
    union {
@@ -40,18 +42,18 @@ struct Matrix4 {
 
    ~Matrix4();
 
-   static Matrix4 fromVector3D(const Vector3D& point);
+   static Matrix4 fromvec3_t(const vec3_t& point);
    
    void print();
 
-   Vector3D getRow(int row) const;
-   Vector3D getCol(int col) const;
+   vec3_t getRow(int row) const;
+   vec3_t getCol(int col) const;
    
    Matrix4 &operator=(const Matrix4& rhs);
    Matrix4 &operator+=(const Matrix4& rhs);
    Matrix4 &operator-=(const Matrix4& rhs);
    Matrix4 &operator*=(float scale);
-   const Vector3D operator*(const Vector3D& rhs) const;
+   const vec3_t operator*(const vec3_t& rhs) const;
    const Matrix4 operator*(const Matrix4& rhs) const;
    const Matrix4 operator-(const Matrix4& rhs) const;
    const Matrix4 operator*(float scale) const;

@@ -8,7 +8,7 @@
 #include <string>
 #include "Plane.h"
 
-Plane::Plane(Vector3D normal, float d)
+Plane::Plane(vec3_t normal, float d)
 {
    location = normal;
    planeOffset = d;
@@ -19,7 +19,7 @@ Plane::Plane(std::istream& input)
    std::string line;
    getline(input, line);
    sscanf(line.c_str(), "{ <%f, %f, %f>, %f",
-         &location.x, &location.y, &location.z, &planeOffset);
+         &location.v[0], &location.v[1], &location.v[2], &planeOffset);
    readOptions(input);
 }
 
@@ -30,8 +30,8 @@ bool Plane::hit(Ray ray, float *t, float minT, float maxT)
    {
       return false;
    }
-   Vector3D p = location.scalarMultiply(planeOffset);
-   Vector3D pMinusL = p.subtract(ray.point);
+   vec3_t p = location * planeOffset;
+   vec3_t pMinusL = p - ray.point;
    float numerator = pMinusL.dot(location);
    *t = numerator / denominator;
    if (*t >= minT && *t <= maxT)
@@ -41,13 +41,13 @@ bool Plane::hit(Ray ray, float *t, float minT, float maxT)
    return false;
 }
 
-Vector3D Plane::getNormal(Vector3D point)
+vec3_t Plane::getNormal(vec3_t point)
 {
    return location;
 }
 
 void Plane::debug()
 {
-   printf("Plane: { <%f, %f, %f>, %f\n",
-         location.x, location.y, location.z, planeOffset);
+   //printf("Plane: { <%f, %f, %f>, %f\n",
+         //location.x, location.y, location.z, planeOffset);
 }

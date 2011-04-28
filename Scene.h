@@ -25,7 +25,7 @@ class Scene {
       // Nothing yet.
       static Scene* read(std::istream& input);
       Pixel* getIntersect(Ray ray);
-      Pixel* seekLight(Vector3D origin, Geometry* hitObject);
+      Pixel* seekLight(vec3_t origin, Geometry* hitObject);
       Camera* camera;
    private:
       std::vector<Light*> lights;

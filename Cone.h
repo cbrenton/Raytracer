@@ -17,7 +17,7 @@ class Cone : public Geometry {
       void debug();
    private:
       // Center1 is Geometry::location
-      Vector3D center2;
+      vec3_t center2;
       float radius1;
       float radius2;
 };

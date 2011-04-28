@@ -14,9 +14,9 @@ class Sphere : public Geometry {
    public:
       Sphere() : Geometry() {};
       Sphere(std::istream& input);
-      Sphere(Vector3D _loc, float _rad);
+      Sphere(vec3_t _loc, float _rad);
       bool hit(Ray ray, float *t, float minT = 0.0, float maxT = DIST_MAX);
-      Vector3D getNormal(Vector3D point);
+      vec3_t getNormal(vec3_t point);
       void debug();
       float radius;
    private:

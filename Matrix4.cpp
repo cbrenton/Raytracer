@@ -6,7 +6,7 @@
  */
 
 #include "Matrix4.h"
-#include "Vector3D.h"
+#include "vector.h"
 #include <math.h>
 
 const Matrix4 Matrix4::Identity = Matrix4(1, 0, 0, 0,
@@ -69,34 +69,34 @@ void Matrix4::copy(const Matrix4 &rhs) {
    }
 }
 
-Matrix4 Matrix4::fromVector3D(const Vector3D& point) {
-   Matrix4 temp((float) point.x, 0, 0, 0,
-                (float) point.y, 0, 0, 0,
-                (float) point.z, 0, 0, 0,
+Matrix4 Matrix4::fromvec3_t(const vec3_t& point) {
+   Matrix4 temp((float) point.v[0], 0, 0, 0,
+                (float) point.v[1], 0, 0, 0,
+                (float) point.v[2], 0, 0, 0,
                 0 , 0, 0, 0);
    return temp;
 }
 
-Vector3D Matrix4::getRow(int row) const {
-   Vector3D t;
+vec3_t Matrix4::getRow(int row) const {
+   vec3_t t;
    if (row < 0 || row >= 4)
       return t;
 
-   t.x = m[0][row];
-   t.y = m[1][row];
-   t.z = m[2][row];
+   t.x(m[0][row]);
+   t.y(m[1][row]);
+   t.z(m[2][row]);
 
    return t;
 }
 
-Vector3D Matrix4::getCol(int col) const {
-   Vector3D t;
+vec3_t Matrix4::getCol(int col) const {
+   vec3_t t;
    if (col < 0 || col >=4)
     return t;
 
-   t.x = m[col][0];
-   t.y = m[col][1];
-   t.z = m[col][2];
+   t.x(m[col][0]);
+   t.y(m[col][1]);
+   t.z(m[col][2]);
 
    return t;
 }
@@ -151,18 +151,18 @@ const Matrix4 Matrix4::operator*(const Matrix4& rhs) const {
 
    for (int i = 0; i < 4; i++)
       for (int j = 0; j < 4; j++) {
-         Vector3D col = rhs.getCol(j);
+         vec3_t col = rhs.getCol(j);
          t.m[i][j] = (float) (getRow(i).dot(col) + m[3][i] * rhs.m[j][3]);
       }
 
    return t;
 }
 
-const Vector3D Matrix4::operator*(const Vector3D& rhs) const {
-   Vector3D newPoint;
-   newPoint.x = _11 * rhs.x + _21 * rhs.y + _31 * rhs.z + _41;
-   newPoint.y = _12 * rhs.x + _22 * rhs.y + _32 * rhs.z + _42;
-   newPoint.z = _13 * rhs.x + _23 * rhs.y + _33 * rhs.z + _43;
+const vec3_t Matrix4::operator*(const vec3_t& rhs) const {
+   vec3_t newPoint;
+   newPoint.x(_11 * rhs.v[0] + _21 * rhs.v[1] + _31 * rhs.v[2] + _41);
+   newPoint.y(_12 * rhs.v[0] + _22 * rhs.v[1] + _32 * rhs.v[2] + _42);
+   newPoint.z(_13 * rhs.v[0] + _23 * rhs.v[1] + _33 * rhs.v[2] + _43);
 
    return newPoint;
 }

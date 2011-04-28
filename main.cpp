@@ -124,10 +124,10 @@ int main(int argc, char **argv)
 
    //Ray aRayArray [width][height];
 
-   float l = -scene->camera->right.getLength() / 2;
-   float r = scene->camera->right.getLength() / 2;
-   float b = -scene->camera->up.getLength() / 2;
-   float t = scene->camera->up.getLength() / 2;
+   float l = -scene->camera->right.length() / 2;
+   float r = scene->camera->right.length() / 2;
+   float b = -scene->camera->up.length() / 2;
+   float t = scene->camera->up.length() / 2;
 
    for (int i = 0; i < image.width; i++)
    {
@@ -136,28 +136,28 @@ int main(int argc, char **argv)
          float uScale = (float)(l + (r - l) * ((i + 0.5) / image.width));
          float vScale = (float)(b + (t - b) * ((j + 0.5) / image.height));
          float wScale = -1;
-         Vector3D sVector = scene->camera->location;
-         Vector3D uVector = scene->camera->right;
-         Vector3D vVector = scene->camera->up;
-         Vector3D wVector = scene->camera->look_at.subtract(
-               scene->camera->location);
+         vec3_t sVector = scene->camera->location;
+         vec3_t uVector = scene->camera->right;
+         vec3_t vVector = scene->camera->up;
+         vec3_t wVector = scene->camera->look_at -
+            scene->camera->location;
          uVector.normalize();
          vVector.normalize();
          wVector.normalize();
          // Left-handed.
-         wVector.scalarMultiplyUpdate(-1);
-         uVector.scalarMultiplyUpdate(uScale);
-         vVector.scalarMultiplyUpdate(vScale);
-         wVector.scalarMultiplyUpdate(wScale);
-         sVector.addUpdate(uVector);
-         sVector.addUpdate(vVector);
-         sVector.addUpdate(wVector);
-         Vector3D rayDir = uVector.add(vVector).add(wVector);
-         rayDir.subtract(scene->camera->location);
+         wVector *= -1;
+         uVector *= uScale;
+         vVector *= vScale;
+         wVector *= wScale;
+         sVector += uVector;
+         sVector += vVector;
+         sVector += wVector;
+         vec3_t rayDir = uVector + vVector + wVector;
          rayDir.normalize();
-         Ray curRay = Ray(scene->camera->location, rayDir);
-         //aRayArray[i][j] = curRay;
-         Pixel *result = scene->getIntersect(curRay);
+         vec3_t curPoint = vec3_t(scene->camera->location);
+         //Ray curRay = Ray(scene->camera->location, rayDir);
+         Ray *curRay = new Ray(curPoint, rayDir);
+         Pixel *result = scene->getIntersect(*curRay);
          image.setPixel(i, j, result);
       }
    }

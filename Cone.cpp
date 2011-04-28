@@ -13,8 +13,8 @@ Cone::Cone(std::istream& input)
    std::string line;
    getline(input, line);
    sscanf(line.c_str(), "{ <%f, %f, %f>, %f, <%f, %f, %f>, %f",
-         &location.x, &location.y, &location.z, &radius1,
-         &center2.x, &center2.y, &center2.z, &radius2);
+         &location.v[0], &location.v[1], &location.v[2], &radius1,
+         &center2.v[0], &center2.v[1], &center2.v[2], &radius2);
    readOptions(input);
 }
 
@@ -25,7 +25,7 @@ bool Cone::hit(Ray ray, float *t, float minT, float maxT)
 
 void Cone::debug()
 {
-   printf("Cone: { <%f, %f, %f>, %f, <%f, %f, %f>, %f\n",
-         location.x, location.y, location.z, radius1,
-         center2.x, center2.y, center2.z, radius2);
+   //printf("Cone: { <%f, %f, %f>, %f, <%f, %f, %f>, %f\n",
+         //location.x, location.y, location.z, radius1,
+         //center2.x, center2.y, center2.z, radius2);
 }

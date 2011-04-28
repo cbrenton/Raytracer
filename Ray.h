@@ -1,11 +1,11 @@
-#include "Vector3D.h"
+#include "vector.h"
 
 class Ray {
    public:
       Ray() {};
-      Ray(Vector3D _pt, Vector3D _dir);
+      Ray(vec3_t _pt, vec3_t _dir);
       ~Ray() {};
-      Vector3D point, dir;
+      vec3_t point, dir;
       //float cast(Scene *scene);
       void debug();
 };

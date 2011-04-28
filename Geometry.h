@@ -10,7 +10,8 @@
 #include <iostream>
 #include <vector>
 #include <math.h>
-#include "Vector3D.h"
+#include <stdio.h>
+#include "vector.h"
 #include "Ray.h"
 #include "Matrix4.h"
 #include "Pixel.h"
@@ -23,7 +24,7 @@ class Geometry {
       Geometry();
       virtual ~Geometry();
       virtual bool hit(Ray ray, float *t, float minT = 0.0, float maxT = DIST_MAX);
-      virtual Vector3D getNormal(Vector3D point);
+      virtual vec3_t getNormal(vec3_t point);
       virtual void debug() {};
       Material mat;
       inline float getR()
@@ -59,7 +60,7 @@ class Geometry {
       float specular;
       float emissive; // Maybe?
       */
-      Vector3D location;
+      vec3_t location;
    protected:
       void readOptions(std::istream& input);
       void getOption(std::string option, std::string line);

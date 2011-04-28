@@ -13,18 +13,18 @@ Sphere::Sphere(std::istream& input)
    std::string line;
    getline(input, line);
    sscanf(line.c_str(), "{ <%f, %f, %f>, %f",
-         &location.x, &location.y, &location.z, &radius);
+         &location.v[0], &location.v[1], &location.v[2], &radius);
    readOptions(input);
 }
 
-Sphere::Sphere(Vector3D _loc, float _rad) :
+Sphere::Sphere(vec3_t _loc, float _rad) :
    radius(_rad) {
       location = _loc;
    }
 
 bool Sphere::hit(Ray ray, float *t, float minT, float maxT)
 {
-   Vector3D oMinusC = ray.point.subtract(location);
+   vec3_t oMinusC = ray.point - location;
    float _b = ray.dir.dot(oMinusC);
    float _c = oMinusC.dot(oMinusC) - (radius * radius);
    float det = _b * _b - _c;
@@ -60,13 +60,13 @@ bool Sphere::hit(Ray ray, float *t, float minT, float maxT)
    return false;
 }
 
-Vector3D Sphere::getNormal(Vector3D point)
+vec3_t Sphere::getNormal(vec3_t point)
 {
-   return (point.subtract(location)).scalarMultiply(radius);
+   return (point - location) * radius;
 }
 
 void Sphere::debug()
 {
-   printf("Sphere: {<%f, %f, %f>, %f\n",
-         location.x, location.y, location.z, radius);
+   //printf("Sphere: {<%f, %f, %f>, %f\n",
+         //location.x, location.y, location.z, radius);
 }

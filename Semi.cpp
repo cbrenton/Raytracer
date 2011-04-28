@@ -14,23 +14,23 @@ Semi::Semi(std::istream& input)
    getline(input, line);
    int isFacingUp;
    sscanf(line.c_str(), "{ <%f, %f, %f>, %f, %d",
-         &location.x, &location.y, &location.z, &radius, &isFacingUp);
+         &location.v[0], &location.v[1], &location.v[2], &radius, &isFacingUp);
    isTop = (isFacingUp == 0);
    readOptions(input);
-   Vector3D *bisectNormal;
+   vec3_t *bisectNormal;
    if (isTop)
    {
-      bisectNormal = new Vector3D(0, 1, 0);
+      bisectNormal = new vec3_t(0, 1, 0);
    }
    else
    {
-      bisectNormal = new Vector3D(0, -1, 0);
+      bisectNormal = new vec3_t(0, -1, 0);
    }
-   bisect = new Plane(*bisectNormal, location.y);
+   bisect = new Plane(*bisectNormal, location.y());
    delete bisectNormal;
 }
 
-Semi::Semi(Vector3D _loc, float _rad) :
+Semi::Semi(vec3_t _loc, float _rad) :
    radius(_rad) {
       location = _loc;
    }
@@ -42,7 +42,7 @@ Semi::~Semi()
 
 bool Semi::hit(Ray ray, float *t, float minT, float maxT)
 {
-   Vector3D oMinusC = ray.point.subtract(location);
+   vec3_t oMinusC = ray.point - location;
    float _b = ray.dir.dot(oMinusC);
    float _c = oMinusC.dot(oMinusC) - (radius * radius);
    float det = _b * _b - _c;
@@ -52,20 +52,22 @@ bool Semi::hit(Ray ray, float *t, float minT, float maxT)
    }
    float t0 = -_b - (float)sqrt(det);
    float t1 = -_b + (float)sqrt(det);
-   Vector3D intersect0 = ray.point.add(ray.dir.scalarMultiply(t0));
-   Vector3D intersect1 = ray.point.add(ray.dir.scalarMultiply(t1));
+   vec3_t t0Disp = ray.dir * t0;
+   vec3_t intersect0 = ray.point + t0Disp;
+   vec3_t t1Disp = ray.dir * t1;
+   vec3_t intersect1 = ray.point + t1Disp;
    float tP = -1.0;
    //bool planeIntersect = bisect.hit(ray, &tP);
    bool canBeT0, canBeT1;
    if (isTop)
    {
-      canBeT0 = intersect0.y < location.y;
-      canBeT1 = intersect1.y < location.y;
+      canBeT0 = intersect0.y() < location.y();
+      canBeT1 = intersect1.y() < location.y();
    }
    else
    {
-      canBeT0 = intersect0.y > location.y;
-      canBeT1 = intersect1.y > location.y;
+      canBeT0 = intersect0.y() > location.y();
+      canBeT1 = intersect1.y() > location.y();
    }
 
 
@@ -126,17 +128,17 @@ bool Semi::hit(Ray ray, float *t, float minT, float maxT)
    return false;
 }
 
-Vector3D Semi::getNormal(Vector3D point)
+vec3_t Semi::getNormal(vec3_t point)
 {
-   if ((point.y - location.y) < 0.00001 && (point.y - location.y) > -0.00001)
+   if ((point.y() - location.y()) < 0.00001 && (point.y() - location.y()) > -0.00001)
    {
       return bisect->getNormal(point);
    }
-   return (point.subtract(location)).scalarMultiply(radius);
+   return (point - location) * radius;
 }
 
 void Semi::debug()
 {
-   printf("Semi: {<%f, %f, %f>, %f\n",
-         location.x, location.y, location.z, radius);
+   //printf("Semi: {<%f, %f, %f>, %f\n",
+         //location.x, location.y, location.z, radius);
 }

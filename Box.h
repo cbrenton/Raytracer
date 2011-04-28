@@ -14,12 +14,13 @@
 class Box : public Geometry {
    public:
       Box(std::istream& input);
+      ~Box();
       bool hit(Ray ray, float *t, float minT = 0.0, float maxT = DIST_MAX);
       void debug();
    private:
       // Corner1 is Geometry::location
-      Vector3D corner2;
-      Plane pLeft, pRight, pBottom, pTop, pFront, pBack;
+      vec3_t corner2;
+      Plane *pLeft, *pRight, *pBottom, *pTop, *pFront, *pBack;
 };
 
 #endif

@@ -8,13 +8,13 @@
 #define __LIGHT_H__
 
 #include <iostream>
-
-#include "Vector3D.h"
+#include <stdio.h>
+#include "vector.h"
 
 class Light {
    public:
       Light(std::istream& input);
-      Vector3D location;
+      vec3_t location;
       float r;
       float g;
       float b;

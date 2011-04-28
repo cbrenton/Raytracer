@@ -9,15 +9,15 @@
 
 #include <iostream>
 
-#include "Vector3D.h"
+#include "vector.h"
 
 class Camera {
    public:
       Camera(std::istream& input);
-      Vector3D location;
-      Vector3D up;
-      Vector3D right;
-      Vector3D look_at;
+      vec3_t location;
+      vec3_t up;
+      vec3_t right;
+      vec3_t look_at;
    private:
 };
 

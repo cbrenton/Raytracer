@@ -15,10 +15,10 @@ class Semi : public Geometry {
    public:
       Semi() : Geometry() {};
       Semi(std::istream& input);
-      Semi(Vector3D _loc, float _rad);
+      Semi(vec3_t _loc, float _rad);
       ~Semi();
       bool hit(Ray ray, float *t, float minT = 0.0, float maxT = DIST_MAX);
-      Vector3D getNormal(Vector3D point);
+      vec3_t getNormal(vec3_t point);
       void debug();
       float radius;
    protected:
