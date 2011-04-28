@@ -122,7 +122,7 @@ int main(int argc, char **argv)
    image.filename = filename;
    image.init();
 
-   //Ray aRayArray [width][height];
+   Ray aRayArray [width][height];
 
    float l = -scene->camera->right.length() / 2;
    float r = scene->camera->right.length() / 2;
@@ -156,21 +156,21 @@ int main(int argc, char **argv)
          rayDir.normalize();
          vec3_t curPoint = vec3_t(scene->camera->location);
          Ray *curRay = new Ray(curPoint, rayDir);
-         Pixel *result = scene->getIntersect(*curRay);
-         image.setPixel(i, j, result);
+         //Pixel *result = scene->getIntersect(*curRay);
+         aRayArray[i][j] = *curRay;
+         delete curRay;
+         //image.setPixel(i, j, result);
       }
    }
 
-   /*
    for (int i = 0; i < image.width; i++)
    {
       for (int j = 0; j < image.height; j++)
       {
-         Pixel *result = scene->hit(aRayArray[i][j]);
+         Pixel *result = scene->getIntersect(aRayArray[i][j]);
          image.setPixel(i, j, result);
       }
    }
-   */
 
    image.write();
 

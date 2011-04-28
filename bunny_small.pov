@@ -5,7 +5,7 @@ camera {
     look_at <0.421718, 0.592129, -2.875471>
 }
 
-light_source {<300, 100, 300> color rgb <0.3, 0.4, 0.8> }
+light_source {<300, 100, 300> color rgb <1.0, 1.0, 1.0> }
 
 plane { <0, 1, 0>, -3
     pigment { color rgb <0.5, 0.3, 0.3> }
