@@ -116,6 +116,8 @@ Scene* Scene::read(std::istream& input)
 Pixel *Scene::seekLight(HitData *data)
 {
    Pixel *result = new Pixel(0.0, 0.0, 0.0, 0.0);
+   printf("origin: ");
+   data->point.print();
    for (int i = 0; i < lights_size; i++)
    {
       vec3_t dir = lights[i]->location - data->point;
@@ -142,7 +144,6 @@ Pixel *Scene::seekLight(HitData *data)
          bool intersect = curObject->hit(*feeler, &t);
          hit |= (intersect && t > 0 && t <= dirLen);
       }
-      //data->object->mat.debug();
       result->r = (data->object->getAmbient()*data->object->getR()) * lights[i]->r;
       result->g = (data->object->getAmbient()*data->object->getG()) * lights[i]->g;
       result->b = (data->object->getAmbient()*data->object->getB()) * lights[i]->b;
@@ -160,6 +161,10 @@ Pixel *Scene::seekLight(HitData *data)
          result->r = std::min(result->r, 1.0f);
          result->g = std::min(result->g, 1.0f);
          result->b = std::min(result->b, 1.0f);
+      }
+      else
+      {
+         printf("hit\n");
       }
    }
    return result;

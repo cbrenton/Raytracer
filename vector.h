@@ -23,6 +23,7 @@
 #define __VEC3T__
 
 #include <iostream>
+#include <stdio.h>
 using namespace std;
 #include <math.h>
 
@@ -95,6 +96,8 @@ struct vec3_t
    void rotateX(float amnt);
    void rotateY(float amnt);
    void rotateZ(float amnt);
+
+   void print();
 
    friend ostream &operator<<(ostream &os, vec3_t &vec)
    {os << vec.v[0] << " " << vec.v[1] << " " << vec.v[2]; return os;}
@@ -232,5 +235,10 @@ inline void vec3_t::rotateZ(float amnt)
 
    v[0] = (x * c) - (y * s);
    v[1] = (y * c) + (x * s);
+}
+
+inline void vec3_t::print()
+{
+   printf("<%f, %f, %f>\n", v[0], v[1], v[2]);
 }
 #endif
