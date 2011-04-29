@@ -4,6 +4,9 @@
  * @author Chris Brenton
  * @date 04/23/11
  */
+
+#include <stdio.h>
+
 class Material
 {
    public:
@@ -14,4 +17,9 @@ class Material
       void setFinish(float _a, float _d, float _s);
       float r, g, b, ambient, diffuse, specular;
       float emissive;
+      inline void debug()
+      {
+         printf("%f, %f, %f, %f, %f, %f\n",
+               r, g, b, ambient, diffuse, specular);
+      }
 };

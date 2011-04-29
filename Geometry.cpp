@@ -10,6 +10,7 @@
 Geometry::Geometry()
 {
    transform = Matrix4();
+   mat = Material(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 }
 
 Geometry::~Geometry()

@@ -142,6 +142,7 @@ Pixel *Scene::seekLight(HitData *data)
          bool intersect = curObject->hit(*feeler, &t);
          hit |= (intersect && t > 0 && t <= dirLen);
       }
+      //data->object->mat.debug();
       result->r = (data->object->getAmbient()*data->object->getR()) * lights[i]->r;
       result->g = (data->object->getAmbient()*data->object->getG()) * lights[i]->g;
       result->b = (data->object->getAmbient()*data->object->getB()) * lights[i]->b;
@@ -220,18 +221,10 @@ HitData* Scene::getIntersect(Ray ray)
    }
    if (hitFound)
    {
+      data->hit = true;
       data->point = ray.dir * curDepth;
       data->t = curDepth;
       data->object = hitObject;
-      /*
-      data.point = ray.dir * curDepth;
-      data.t = curDepth;
-      data.object = hitObject;
-      */
-      //vec3_t rayDisp = ray.dir * curDepth;
-      //vec3_t hitPoint = ray.point + rayDisp;
-      //result = seekLight(hitPoint, hitObject);
    }
-   //return result;
    return data;
 }

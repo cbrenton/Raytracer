@@ -22,9 +22,14 @@
 
 struct HitData
 {
+   bool hit;
    vec3_t point;
    float t;
    Geometry *object;
+   HitData() :
+      hit(false), t(-1.0)
+   {
+   }
 };
 
 class Scene {

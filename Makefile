@@ -10,7 +10,7 @@ else
 endif
 
 LDFLAGS=$(PLATFORMSPECIFICLDFLAGS) -g -pg
-CFLAGS=$(PLATFORMSPECIFICCFLAGS) -Wall -c -g -Wconversion -Werror  -pg
+CFLAGS=$(PLATFORMSPECIFICCFLAGS) -Wall -c -g -Wconversion -Werror -O3 -pg
 
 CC=g++
 
