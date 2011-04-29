@@ -20,12 +20,21 @@
 #include "Triangle.h"
 #include "Pixel.h"
 
+struct HitData
+{
+   vec3_t point;
+   float t;
+   Geometry *object;
+};
+
 class Scene {
    public:
       // Nothing yet.
       static Scene* read(std::istream& input);
-      Pixel* getIntersect(Ray ray);
-      Pixel* seekLight(vec3_t origin, Geometry* hitObject);
+      //Pixel* getIntersect(Ray ray);
+      HitData* getIntersect(Ray ray);
+      //Pixel* seekLight(vec3_t origin, Geometry* hitObject);
+      Pixel* seekLight(HitData *data);
       Camera* camera;
    private:
       int lights_size, geometry_size, planes_size, spheres_size;

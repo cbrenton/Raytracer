@@ -167,7 +167,9 @@ int main(int argc, char **argv)
    {
       for (int j = 0; j < image.height; j++)
       {
-         Pixel *result = scene->getIntersect(aRayArray[i][j]);
+         //Pixel *result = scene->getIntersect(aRayArray[i][j]);
+         HitData *data = scene->getIntersect(aRayArray[i][j]);
+         Pixel *result = scene->seekLight(data);
          image.setPixel(i, j, result);
       }
    }

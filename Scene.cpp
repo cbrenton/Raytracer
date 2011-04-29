@@ -112,17 +112,16 @@ Scene* Scene::read(std::istream& input)
    return curScene;
 }
 
-Pixel *Scene::seekLight(vec3_t origin, Geometry *hitObject)
+//Pixel *Scene::seekLight(vec3_t origin, Geometry *hitObject)
+Pixel *Scene::seekLight(HitData *data)
 {
    Pixel *result = new Pixel(0.0, 0.0, 0.0, 0.0);
    for (int i = 0; i < lights_size; i++)
    {
-      vec3_t dir = lights[i]->location - origin;
+      vec3_t dir = lights[i]->location - data->point;
       float dirLen = dir.length();
       dir.normalize();
-      //vec3_t point = dir * 0.0001f + origin;
-      //point += origin;
-      Ray *feeler = new Ray(dir * 0.0001f + origin, dir);
+      Ray *feeler = new Ray(dir * 0.0001f + data->point, dir);
       float t = -1.0;
       bool hit = false;
       for (int j = 0; j < geometry_size; j++)
@@ -143,20 +142,20 @@ Pixel *Scene::seekLight(vec3_t origin, Geometry *hitObject)
          bool intersect = curObject->hit(*feeler, &t);
          hit |= (intersect && t > 0 && t <= dirLen);
       }
-      result->r = (hitObject->getAmbient()*hitObject->getR()) * lights[i]->r;
-      result->g = (hitObject->getAmbient()*hitObject->getG()) * lights[i]->g;
-      result->b = (hitObject->getAmbient()*hitObject->getB()) * lights[i]->b;
+      result->r = (data->object->getAmbient()*data->object->getR()) * lights[i]->r;
+      result->g = (data->object->getAmbient()*data->object->getG()) * lights[i]->g;
+      result->b = (data->object->getAmbient()*data->object->getB()) * lights[i]->b;
       result->a = 1.0;
       if (!hit)
       {
-         vec3_t n = hitObject->getNormal(origin);
+         vec3_t n = data->object->getNormal(data->point);
          n.normalize();
-         vec3_t l = lights[i]->location - origin;
+         vec3_t l = lights[i]->location - data->point;
          l.normalize();
          float nDotL = n.dot(l);
-         result->r += hitObject->getDiffuse()*hitObject->getR() * nDotL * lights[i]->r;
-         result->g += hitObject->getDiffuse()*hitObject->getG() * nDotL * lights[i]->g;
-         result->b += hitObject->getDiffuse()*hitObject->getB() * nDotL * lights[i]->b;
+         result->r += data->object->getDiffuse()*data->object->getR() * nDotL * lights[i]->r;
+         result->g += data->object->getDiffuse()*data->object->getG() * nDotL * lights[i]->g;
+         result->b += data->object->getDiffuse()*data->object->getB() * nDotL * lights[i]->b;
          result->r = std::min(result->r, 1.0f);
          result->g = std::min(result->g, 1.0f);
          result->b = std::min(result->b, 1.0f);
@@ -165,9 +164,11 @@ Pixel *Scene::seekLight(vec3_t origin, Geometry *hitObject)
    return result;
 }
 
-Pixel* Scene::getIntersect(Ray ray)
+//Pixel* Scene::getIntersect(Ray ray)
+HitData* Scene::getIntersect(Ray ray)
 {
-   Pixel *result = new Pixel();
+   HitData *data = new HitData();
+   //Pixel *result = new Pixel();
    Geometry *hitObject = new Geometry();
    float t;
    bool hitFound = false;
@@ -219,9 +220,18 @@ Pixel* Scene::getIntersect(Ray ray)
    }
    if (hitFound)
    {
-      vec3_t rayDisp = ray.dir * curDepth;
-      vec3_t hitPoint = ray.point + rayDisp;
-      result = seekLight(hitPoint, hitObject);
+      data->point = ray.dir * curDepth;
+      data->t = curDepth;
+      data->object = hitObject;
+      /*
+      data.point = ray.dir * curDepth;
+      data.t = curDepth;
+      data.object = hitObject;
+      */
+      //vec3_t rayDisp = ray.dir * curDepth;
+      //vec3_t hitPoint = ray.point + rayDisp;
+      //result = seekLight(hitPoint, hitObject);
    }
-   return result;
+   //return result;
+   return data;
 }
