@@ -1,71 +1,38 @@
 /**
- * Chris Brenton
- * Geometry base class
- * All objects in scenes will extend this.
- * 4/7/11
+ * Material struct.
+ * Contains pigment and finish properties.
+ * @author Chris Brenton
+ * @date 04/23/11
  */
 
-#include "Geometry.h"
+#include <stdio.h>
+#include "matrix.h"
 
-Geometry::Geometry()
+typedef struct mat
 {
-   transform = Matrix4();
-   mat = Material(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-}
+   float r;
+   float g;
+   float b;
+   float ambient;
+   float diffuse;
+   float specular;
+   float roughness;
+} mat_t;
 
-Geometry::~Geometry()
-{
-}
-
-bool Geometry::hit(Ray ray, float *t, float minT, float maxT)
-{
-   return -1.0;
-}
-
-vec3_t Geometry::getNormal(vec3_t point)
-{
-   return vec3_t(0.0, 0.0, 0.0);
-}
-
-void Geometry::readOptions(std::istream& input)
-{
-   std::string line;
-   getline(input, line);
-   while (line != "}")
-   {
-      unsigned int count = 0;
-      int curChar = 0;
-      std::string option;
-      while (count < line.length() && isspace(line[count]))
-      {
-         curChar = (int)line[count];
-         count++;
-      }
-      while (count < line.length() && !isspace(line[count]))
-      {
-         curChar = line[count++];
-         option += (char)curChar;
-      }
-      getOption(option, line.substr(count));
-      getline(input, line);
-   }
-}
-
-void Geometry::getOption(std::string option, std::string line)
+inline void getOption(mat_t cur, matrix4_t transform, std::string option, std::string line)
 {
    //printf("%s line: %s\n", option.c_str(), line.c_str());
    if (option.compare("pigment") == 0)
    {
       //printf("pigment: %s\n", line.c_str());
       sscanf(line.c_str(), " { color rgb <%f, %f, %f>}",
-            &mat.r, &mat.g, &mat.b);
+            &cur.r, &cur.g, &cur.b);
       //printf("\tPIGMENT %f. %f, %f\n", r, g, b);
    }
    else if (option.compare("finish") == 0)
    {
       sscanf(line.c_str(), " { ambient %f diffuse %f specular %f roughness %f}",
-            //&ambient, &diffuse, &specular, &emissive);
-            &mat.ambient, &mat.diffuse, &mat.specular, &mat.roughness);
+            &cur.ambient, &cur.diffuse, &cur.specular, &cur.roughness);
       //printf("\tFINISH ambient %f diffuse %f\n", ambient, diffuse);
    }
    else if (option.compare("scale") == 0)
@@ -74,12 +41,13 @@ void Geometry::getOption(std::string option, std::string line)
       sscanf(line.c_str(), " <%f, %f, %f>",
             &x, &y, &z);
       //printf("\tSCALE <%f, %f, %f>\n", x, y, z);
-      Matrix4 newTrans = Matrix4(
+      matrix4_t newTrans = matrix4_t(
             (float)x, 0, 0, 0,
             0, (float)y, 0, 0,
             0, 0, (float)z, 0,
             0, 0, 0, 1.0);
-      transform = transform * newTrans;
+      //transform = transform * newTrans;
+      matrixMult(transform, newTrans);
       //transform.print();
    }
    else if (option.compare("translate") == 0)
@@ -88,12 +56,13 @@ void Geometry::getOption(std::string option, std::string line)
       sscanf(line.c_str(), " <%f, %f, %f>",
             &x, &y, &z);
       //printf("\tTRANSLATE <%f, %f, %f>\n", x, y, z);
-      Matrix4 newTrans = Matrix4(
+      matrix4_t newTrans = matrix4_t(
             (float)x, 0, 0, 0,
             0, (float)y, 0, 0,
             0, 0, (float)z, 0,
             0, 0, 0, 1.0);
-      transform = transform * newTrans;
+      //transform = transform * newTrans;
+      matrixMult(transform, newTrans);
       //transform.print();
    }
    else if (option.compare("rotate") == 0)
@@ -106,12 +75,13 @@ void Geometry::getOption(std::string option, std::string line)
       {
          if (rot[i] != 0)
          {
-            Matrix4 newTrans = Matrix4(
+            matrix4_t newTrans = matrix4_t(
                   1, 0, 0, 0,
                   0, (float)cos(rot[i]), (float)-sin(rot[i]), 0,
                   0, (float)sin(rot[i]), (float)cos(rot[i]), 0,
                   0, 0, 0, 1);
-            transform = transform * newTrans;
+            //transform = transform * newTrans;
+            matrixMult(transform, newTrans);
          }
       }
       //transform.print();
@@ -119,5 +89,29 @@ void Geometry::getOption(std::string option, std::string line)
    else
    {
       printf("\tinvalid option: %s\n", option.c_str());
+   }
+}
+
+inline void readOptions(mat_t cur, std::istream&cur.input)
+{
+   std::string line;
+   getline(input, line);
+   while (line != "}")
+   {
+      unsigned int count = 0;
+      int curChar = 0;
+      std::string option;
+      while (count < line.length() &cur.isspace(line[count]))
+      {
+         curChar = (int)line[count];
+         count++;
+      }
+      while (count < line.length() &cur.!isspace(line[count]))
+      {
+         curChar = line[count++];
+         option += (char)curChar;
+      }
+      getOption(option, line.substr(count));
+      getline(input, line);
    }
 }
