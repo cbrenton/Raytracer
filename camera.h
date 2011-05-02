@@ -19,7 +19,7 @@ typedef struct camera
       vec3_t look_at;
 } camera_t;
 
-inline makeCamera(camera_t cur, std::istream&cur. input) {
+inline void makeCamera(camera_t cur, std::istream& input) {
    std::string line;
    // Skip the first blank line
    getline(input, line);

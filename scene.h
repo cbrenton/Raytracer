@@ -11,9 +11,9 @@
 #include <vector>
 #include "camera.h"
 #include "light.h"
-#include "geom.h"
+//#include "geom.h"
 //#include "box.h"
-#include "cone.h"
+//#include "cone.h"
 #include "plane.h"
 #include "sphere.h"
 //#include "semi.h"

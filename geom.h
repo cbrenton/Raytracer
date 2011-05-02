@@ -41,7 +41,8 @@ inline void getOption(mat_t cur, matrix4_t transform, std::string option, std::s
       sscanf(line.c_str(), " <%f, %f, %f>",
             &x, &y, &z);
       //printf("\tSCALE <%f, %f, %f>\n", x, y, z);
-      matrix4_t newTrans = matrix4_t(
+      matrix4_t newTrans;
+      makeMatrix(newTrans,
             (float)x, 0, 0, 0,
             0, (float)y, 0, 0,
             0, 0, (float)z, 0,
@@ -56,7 +57,8 @@ inline void getOption(mat_t cur, matrix4_t transform, std::string option, std::s
       sscanf(line.c_str(), " <%f, %f, %f>",
             &x, &y, &z);
       //printf("\tTRANSLATE <%f, %f, %f>\n", x, y, z);
-      matrix4_t newTrans = matrix4_t(
+      matrix4_t newTrans;
+      makeMatrix(newTrans,
             (float)x, 0, 0, 0,
             0, (float)y, 0, 0,
             0, 0, (float)z, 0,
@@ -75,7 +77,8 @@ inline void getOption(mat_t cur, matrix4_t transform, std::string option, std::s
       {
          if (rot[i] != 0)
          {
-            matrix4_t newTrans = matrix4_t(
+            matrix4_t newTrans;
+            makeMatrix(newTrans,
                   1, 0, 0, 0,
                   0, (float)cos(rot[i]), (float)-sin(rot[i]), 0,
                   0, (float)sin(rot[i]), (float)cos(rot[i]), 0,
@@ -92,7 +95,7 @@ inline void getOption(mat_t cur, matrix4_t transform, std::string option, std::s
    }
 }
 
-inline void readOptions(mat_t cur, std::istream&cur.input)
+inline void readOptions(mat_t cur, matrix4_t transform, std::istream& input)
 {
    std::string line;
    getline(input, line);
@@ -101,17 +104,17 @@ inline void readOptions(mat_t cur, std::istream&cur.input)
       unsigned int count = 0;
       int curChar = 0;
       std::string option;
-      while (count < line.length() &cur.isspace(line[count]))
+      while (count < line.length() && isspace(line[count]))
       {
          curChar = (int)line[count];
          count++;
       }
-      while (count < line.length() &cur.!isspace(line[count]))
+      while (count < line.length() && !isspace(line[count]))
       {
          curChar = line[count++];
          option += (char)curChar;
       }
-      getOption(option, line.substr(count));
+      getOption(cur, transform, option, line.substr(count));
       getline(input, line);
    }
 }

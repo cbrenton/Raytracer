@@ -20,7 +20,7 @@ typedef struct light
       float b;
 } light_t;
 
-inline void makeLight(light_t cur, std::istream&cur. input)
+inline void makeLight(light_t cur, std::istream& input)
 {
    // Get the rest of the line.
    // sscanf to get specific values.

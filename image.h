@@ -11,10 +11,10 @@
 
 typedef struct image
 {
-      int width;
-      int height;
-      pixel_t **data;
-      std::string filename;
+   int width;
+   int height;
+   pixel_t **data;
+   std::string filename;
 } image_t;
 
 inline void init(image_t cur)
@@ -24,21 +24,24 @@ inline void init(image_t cur)
       fprintf(stderr, "Invalid image dimensions.\n");
       exit(EXIT_FAILURE);
    }
-   cur.data = new pixel_t*[width];
+   cur.data = new pixel_t*[cur.width];
    for (int i = 0; i < cur.width; ++i) {
       cur.data[i] = new pixel_t[cur.height];
       for (int j = 0; j < cur.height; ++j) {
-         cur.data[i][j] = pixel_t(0, 0, 0, 0);
+         cur.data[i][j].r = 0;
+         cur.data[i][j].g = 0;
+         cur.data[i][j].b = 0;
+         cur.data[i][j].a = 0;
       }
    }
 }
 
 inline void setPixel(image_t cur, int x, int y, pixel_t *pIn)
 {
-   cur.data[x][y]->r = pIn->r;
-   cur.data[x][y]->g = pIn->g;
-   cur.data[x][y]->b = pIn->b;
-   cur.data[x][y]->a = pIn->a;
+   cur.data[x][y].r = pIn->r;
+   cur.data[x][y].g = pIn->g;
+   cur.data[x][y].b = pIn->b;
+   cur.data[x][y].a = pIn->a;
 }
 
 inline void testPattern(image_t cur)
@@ -56,14 +59,18 @@ inline void testPattern(image_t cur)
          float g = (float)(1.0 - ceil(yStep * 10.0) / 10.0);
          float b = (float)(1.0 - ceil(xStep * 10.0) / 10.0);
          float a = 1.0;
-         pixel_t testPixel = pixel_t(r, g, b, a);
+         pixel_t testPixel;
+         testPixel.r = r;
+         testPixel.g = g;
+         testPixel.b = b;
+         testPixel.a = a;
          //Pixel testPixel = Pixel(0.0, 0.0, color, a);
          setPixel(cur, i, j, &testPixel);
       }
    }
 }
 
-inline void writeHeader(image_t cur, ofstream& out)
+inline void writeHeader(image_t cur, std::ofstream& out)
 {
    out << '\0'
       << '\0'
@@ -84,16 +91,16 @@ inline void writeHeader(image_t cur, ofstream& out)
 inline void writeImage(image_t cur)
 {
    char *name = (char*)cur.filename.c_str();
-   ofstream myfile;
+   std::ofstream myfile;
    myfile.open(name);
    if (!myfile)
    {
-      cerr << "Error: unable to open " << name << endl;
+      std::cerr << "Error: unable to open " << name << std::endl;
       exit(EXIT_FAILURE);
    }
    else
    {
-      cout << "Writing to file " << name << endl;
+      std::cout << "Writing to file " << name << std::endl;
    }
 
    writeHeader(cur, myfile);
@@ -105,7 +112,7 @@ inline void writeImage(image_t cur)
          printPixel(cur.data[j][i], myfile);
       }
    }
-   
+
    myfile.close();
 }
 
