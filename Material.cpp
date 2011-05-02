@@ -8,8 +8,9 @@
 #include "Material.h"
 
 Material::Material(float _r, float _g, float _b,
-      float _a, float _d, float _s) :
-   r(_r), g(_g), b(_b), ambient(_a), diffuse(_d), specular(_s)
+      float _a, float _d, float _s, float _rough) :
+   r(_r), g(_g), b(_b),
+   ambient(_a), diffuse(_d), specular(_s), roughness(_rough)
 {
 }
 

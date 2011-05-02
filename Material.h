@@ -11,15 +11,16 @@ class Material
 {
    public:
       Material() {};
-      Material(float _r, float _g, float _b, float _a, float _d, float _s);
+      Material(float _r, float _g, float _b,
+            float _a, float _d, float _s, float __rough);
       ~Material();
       void setPigment(float _r, float _g, float _b);
       void setFinish(float _a, float _d, float _s);
-      float r, g, b, ambient, diffuse, specular;
+      float r, g, b, ambient, diffuse, specular, roughness;
       float emissive;
       inline void debug()
       {
-         printf("%f, %f, %f, %f, %f, %f\n",
-               r, g, b, ambient, diffuse, specular);
+         printf("%f, %f, %f, %f, %f, %f, %f\n",
+               r, g, b, ambient, diffuse, specular, roughness);
       }
 };

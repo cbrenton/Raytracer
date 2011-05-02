@@ -51,6 +51,10 @@ class Geometry {
       {
          return mat.specular;
       }
+      inline float getRoughness()
+      {
+         return mat.roughness;
+      }
       /*
       float r;
       float g;

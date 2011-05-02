@@ -112,7 +112,7 @@ Scene* Scene::read(std::istream& input)
    return curScene;
 }
 
-Pixel *Scene::seekLight(HitData *data)
+Pixel *Scene::seekLight(HitData *data, vec3_t view)
 {
    Pixel *result = new Pixel(0.0, 0.0, 0.0, 0.0);
    for (int i = 0; i < lights_size; i++)
@@ -141,13 +141,17 @@ Pixel *Scene::seekLight(HitData *data)
          bool intersect = curObject->hit(*feeler, &t);
          hit |= (intersect && t > 0 && t <= dirLen);
       }
+      //HitData *data1 = getIntersect(*feeler);
       result->r = (data->object->getAmbient()*data->object->getR()) * lights[i]->r;
       result->g = (data->object->getAmbient()*data->object->getG()) * lights[i]->g;
       result->b = (data->object->getAmbient()*data->object->getB()) * lights[i]->b;
       result->a = 1.0;
       if (!hit)
+      //if (!data1->hit)
       {
          vec3_t n = data->object->getNormal(data->point);
+         //printf("normal: ");
+         //n.print();
          n.normalize();
          vec3_t l = lights[i]->location - data->point;
          l.normalize();
@@ -155,6 +159,21 @@ Pixel *Scene::seekLight(HitData *data)
          result->r += data->object->getDiffuse()*data->object->getR() * nDotL * lights[i]->r;
          result->g += data->object->getDiffuse()*data->object->getG() * nDotL * lights[i]->g;
          result->b += data->object->getDiffuse()*data->object->getB() * nDotL * lights[i]->b;
+         //specular
+         /*
+         vec3_t d = data->point - view;
+         float dDotN = d.dot(n);
+         vec3_t r = n * (2.0f * dDotN);
+         r += d;
+         float vDotR = view.dot(r);
+         pow(vDotR, data->object->getRoughness());
+         if (dDotN > 0)
+         {
+            result->r += data->object->getSpecular()*data->object->getR() * vDotR * lights[i]->r;
+            result->g += data->object->getSpecular()*data->object->getG() * vDotR * lights[i]->g;
+            result->b += data->object->getSpecular()*data->object->getB() * vDotR * lights[i]->b;
+         }
+         */
          result->r = std::min(result->r, 1.0f);
          result->g = std::min(result->g, 1.0f);
          result->b = std::min(result->b, 1.0f);
@@ -172,6 +191,7 @@ HitData* Scene::getIntersect(Ray ray)
    float t;
    bool hitFound = false;
    float curDepth = 0.0;
+   ////////
    for (int i = 0; i < geometry_size; i++)
    {
       Geometry *curObject = geometry[i];

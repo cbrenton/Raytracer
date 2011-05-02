@@ -33,6 +33,9 @@ $(PROGNAME): $(OBJECTS)
 run:
 	./${PROGNAME} +W640 -H 480 -I simple.pov
 
+run2:
+	./${PROGNAME} +W640 -H 480 -I simple_spec.pov
+
 bunny:
 	./${PROGNAME} -w640 -h480 -i bunny_small.pov
 
@@ -41,12 +44,6 @@ bigbun0:
 
 bigbun1:
 	./${PROGNAME} -w320 -h240 -i bunny_large.pov
-
-run1:
-	./${PROGNAME} +W640 -H 480 -I simple1.pov
-
-run2:
-	./${PROGNAME} +W640 -H 480 -I simple2.pov
 
 pokeball:
 	./${PROGNAME} +W640 -H 480 -I pokeball.pov
