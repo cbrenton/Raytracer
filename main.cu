@@ -172,7 +172,7 @@ int main(int argc, char **argv)
          Pixel *result = new Pixel();
          if (data->hit)
          {
-            result = scene->seekLight(data);
+            result = scene->seekLight(data, aRayArray[i][j].dir);
          }
          image.setPixel(i, j, result);
          delete data;
