@@ -1,9 +1,12 @@
 /**
- * Material struct.
- * Contains pigment and finish properties.
+ * Material and matrix structs.
+ * Contains pigment, finish, and transform properties.
  * @author Chris Brenton
  * @date 04/23/11
  */
+
+#ifndef __MAT_H__
+#define __MAT_H__
 
 #include <stdio.h>
 #include "matrix.h"
@@ -13,27 +16,32 @@ typedef struct mat
    float r;
    float g;
    float b;
-   float ambient;
-   float diffuse;
-   float specular;
-   float roughness;
+   float amb;
+   float diff;
+   float spec;
+   float rough;
+   mat()
+   {
+      r = g = b = 0;
+      amb = diff = spec = rough = 0.5f;
+   }
 } mat_t;
 
-inline void getOption(mat_t cur, matrix4_t transform, std::string option, std::string line)
+inline void getOption(mat_t *cur, matrix4_t *transform, std::string option, std::string line)
 {
    //printf("%s line: %s\n", option.c_str(), line.c_str());
    if (option.compare("pigment") == 0)
    {
-      //printf("pigment: %s\n", line.c_str());
+      printf("pigment: %s\n", line.c_str());
       sscanf(line.c_str(), " { color rgb <%f, %f, %f>}",
-            &cur.r, &cur.g, &cur.b);
-      //printf("\tPIGMENT %f. %f, %f\n", r, g, b);
+            &cur->r, &cur->g, &cur->b);
+      printf("\tPIGMENT %f. %f, %f\n", cur->r, cur->g, cur->b);
    }
    else if (option.compare("finish") == 0)
    {
-      sscanf(line.c_str(), " { ambient %f diffuse %f specular %f roughness %f}",
-            &cur.ambient, &cur.diffuse, &cur.specular, &cur.roughness);
-      //printf("\tFINISH ambient %f diffuse %f\n", ambient, diffuse);
+      sscanf(line.c_str(), " { amb %f diff %f spec %f rough %f}",
+            &cur->amb, &cur->diff, &cur->spec, &cur->rough);
+      //printf("\tFINISH amb %f diff %f\n", amb, diff);
    }
    else if (option.compare("scale") == 0)
    {
@@ -95,7 +103,7 @@ inline void getOption(mat_t cur, matrix4_t transform, std::string option, std::s
    }
 }
 
-inline void readOptions(mat_t cur, matrix4_t transform, std::istream& input)
+inline void readOptions(mat_t *cur, matrix4_t *transform, std::istream& input)
 {
    std::string line;
    getline(input, line);
@@ -118,3 +126,5 @@ inline void readOptions(mat_t cur, matrix4_t transform, std::istream& input)
       getline(input, line);
    }
 }
+
+#endif

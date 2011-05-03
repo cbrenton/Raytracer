@@ -10,11 +10,11 @@ else
 endif
 
 LDFLAGS=$(PLATFORMSPECIFICLDFLAGS) -g -pg
-CFLAGS=$(PLATFORMSPECIFICCFLAGS) -Wall -c -g -Wconversion -Werror -O3 -pg
+CFLAGS=$(PLATFORMSPECIFICCFLAGS) -Wall -c -g -Wconversion -Werror -pg
 
 CC=g++
 
-FILES=main.cpp scene.cpp camera.cpp light.cpp ray.cpp
+FILES=main.cpp Scene.cpp
 
 PROGNAME=raytrace
 

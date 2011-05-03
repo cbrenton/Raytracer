@@ -10,7 +10,7 @@
 
 //#include "plane.h"
 #include <stdio.h>
-#include "geom.h"
+#include "mat.h"
 
 typedef struct box
 {

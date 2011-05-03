@@ -17,21 +17,18 @@ typedef struct image
    std::string filename;
 } image_t;
 
-inline void init(image_t cur)
+inline void initImage(image_t *cur)
 {
-   if (cur.width <= 0 || cur.height <= 0)
+   if (cur->width <= 0 || cur->height <= 0)
    {
       fprintf(stderr, "Invalid image dimensions.\n");
       exit(EXIT_FAILURE);
    }
-   cur.data = new pixel_t*[cur.width];
-   for (int i = 0; i < cur.width; ++i) {
-      cur.data[i] = new pixel_t[cur.height];
-      for (int j = 0; j < cur.height; ++j) {
-         cur.data[i][j].r = 0;
-         cur.data[i][j].g = 0;
-         cur.data[i][j].b = 0;
-         cur.data[i][j].a = 0;
+   cur->data = new pixel_t*[cur->width];
+   for (int i = 0; i < cur->width; ++i) {
+      cur->data[i] = new pixel_t[cur->height];
+      for (int j = 0; j < cur->height; ++j) {
+         cur->data[i][j] = pixel_t();
       }
    }
 }

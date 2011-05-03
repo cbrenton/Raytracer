@@ -24,6 +24,7 @@ Sphere::Sphere(vec3_t _loc, float _rad) :
 
 bool Sphere::hit(Ray ray, float *t, float minT, float maxT)
 {
+   spheres;
    vec3_t oMinusC = ray.point - location;
    float _b = ray.dir.dot(oMinusC);
    float _c = oMinusC.dot(oMinusC) - (radius * radius);

@@ -9,9 +9,11 @@
 #define __SCENE_H__
 
 #include <vector>
-#include "camera.h"
-#include "light.h"
-//#include "geom.h"
+#include "Camera.h"
+#include "Light.h"
+#include "Ray.h"
+#include "Geometry.h"
+//#include "mat.h"
 //#include "box.h"
 //#include "cone.h"
 #include "plane.h"
@@ -24,26 +26,23 @@ struct HitData
 {
    bool hit;
    vec3_t point;
-   float t;
-   //Geometry *object;
-   HitData() :
-      hit(false), t(-1.0)
-   {
-   }
+   geom_t *object;
+   HitData() : hit(false) {}
 };
 
 class Scene {
    public:
       // Nothing yet.
       static Scene* read(std::istream& input);
-      HitData* getIntersect(Ray ray);
+      //void read(std::istream& input);
+      HitData* getIntersect(ray_t ray);
       pixel_t* seekLight(HitData *data, vec3_t view);
-      Camera* camera;
+      camera_t camera;
    private:
       int lights_size, geometry_size, planes_size, spheres_size;
-      Light **lights;
-      plane_t **planes;
-      sphere_t **spheres;
+      light_t *lights;
+      plane_t *planes;
+      sphere_t *spheres;
 };
 
 #endif

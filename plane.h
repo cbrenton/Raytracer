@@ -11,25 +11,39 @@
 #include <stdio.h>
 #include <string>
 #include "vector.h"
-#include "geom.h"
+#include "mat.h"
 
 typedef struct plane
 {
-   vec3_t location;
    vec3_t normal;
    float planeOffset; // This is D in the plane equasion.
    mat_t mat;
    matrix4_t transform;
+   plane()
+   {
+      normal = vec3_t(0, 1, 0);
+      planeOffset = 0;
+   }
+   plane(const plane& other)
+   {
+      normal.v[0] = other.normal.v[0];
+      normal.v[1] = other.normal.v[1];
+      normal.v[2] = other.normal.v[2];
+      planeOffset = other.planeOffset;
+      mat = other.mat;
+      transform = other.transform;
+   }
+   inline plane(std::istream& input);
 } plane_t;
 
 
-inline void makePlane(plane_t cur, std::istream& input)
+inline plane::plane(std::istream& input)
 {
    std::string line;
    getline(input, line);
    sscanf(line.c_str(), "{ <%f, %f, %f>, %f",
-         &cur.location.v[0], &cur.location.v[1], &cur.location.v[2], &cur.planeOffset);
-   readOptions(cur.mat, cur.transform, input);
+         &normal.v[0], &normal.v[1], &normal.v[2], &planeOffset);
+   readOptions(&mat, &transform, input);
 }
 
 #endif

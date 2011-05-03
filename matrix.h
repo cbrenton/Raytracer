@@ -1,3 +1,6 @@
+#ifndef __MATRIX_H__
+#define __MATRIX_H__
+
 typedef struct matrix4
 {
    union {
@@ -35,6 +38,8 @@ inline void makeMatrix(matrix4_t cur,
    cur._44 = m44;
 }
 
-inline void matrixMult(matrix4_t first, matrix4_t second)
+inline void matrixMult(matrix4_t *first, matrix4_t second)
 {
 }
+
+#endif

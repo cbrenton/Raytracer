@@ -4,13 +4,14 @@
 
 #include "pixel.h"
 #include "image.h"
-#include "scene.h"
+#include "Scene.h"
+#include "Ray.h"
 
 #define POV_EXT ".pov"
 #define DEFAULT_W 256
 #define DEFAULT_H 256
 
-Image image;
+image_t image;
 string inputFileName;
 string filename;
 int width = DEFAULT_W;
@@ -116,16 +117,17 @@ int main(int argc, char **argv)
 
    Scene* scene = Scene::read(inputFileStream);
 
-   image = Image(width, height);
+   image.width = width;
+   image.height = height;
    image.filename = filename;
-   image.init();
+   initImage(&image);
 
-   Ray aRayArray [width][height];
+   ray_t aRayArray [width][height];
 
-   float l = -scene->camera->right.length() / 2;
-   float r = scene->camera->right.length() / 2;
-   float b = -scene->camera->up.length() / 2;
-   float t = scene->camera->up.length() / 2;
+   float l = -scene->camera.right.length() / 2;
+   float r = scene->camera.right.length() / 2;
+   float b = -scene->camera.up.length() / 2;
+   float t = scene->camera.up.length() / 2;
 
    for (int i = 0; i < image.width; i++)
    {
@@ -134,11 +136,11 @@ int main(int argc, char **argv)
          float uScale = (float)(l + (r - l) * ((i + 0.5) / image.width));
          float vScale = (float)(b + (t - b) * ((j + 0.5) / image.height));
          float wScale = -1;
-         vec3_t sVector = scene->camera->location;
-         vec3_t uVector = scene->camera->right;
-         vec3_t vVector = scene->camera->up;
-         vec3_t wVector = scene->camera->look_at -
-            scene->camera->location;
+         vec3_t sVector = scene->camera.location;
+         vec3_t uVector = scene->camera.right;
+         vec3_t vVector = scene->camera.up;
+         vec3_t wVector = scene->camera.look_at -
+            scene->camera.location;
          uVector.normalize();
          vVector.normalize();
          wVector.normalize();
@@ -152,11 +154,12 @@ int main(int argc, char **argv)
          sVector += wVector;
          vec3_t rayDir = uVector + vVector + wVector;
          rayDir.normalize();
-         vec3_t curPoint = vec3_t(scene->camera->location);
-         Ray *curRay = new Ray(curPoint, rayDir);
+         vec3_t curPoint = vec3_t(scene->camera.location);
+         ray_t curRay;
+         curRay.point = curPoint;
+         curRay.dir = rayDir;
          //Pixel *result = scene->getIntersect(*curRay);
-         aRayArray[i][j] = *curRay;
-         delete curRay;
+         aRayArray[i][j] = curRay;
          //image.setPixel(i, j, result);
       }
    }
@@ -167,18 +170,18 @@ int main(int argc, char **argv)
       {
          //Pixel *result = scene->getIntersect(aRayArray[i][j]);
          HitData *data = scene->getIntersect(aRayArray[i][j]);
-         Pixel *result = new Pixel();
+         pixel_t *result = new pixel_t();
+         result->init();
          if (data->hit)
          {
             result = scene->seekLight(data, aRayArray[i][j].dir);
          }
-         image.setPixel(i, j, result);
+         setPixel(image, i, j, result);
          delete data;
-         delete result;
       }
    }
 
-   image.write();
+   writeImage(image);
 
    return 0;
 }

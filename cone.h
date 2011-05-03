@@ -9,7 +9,7 @@
 #define __CONE_H__
 
 #include <stdio.h>
-#include "geom.h"
+#include "mat.h"
 
 typedef struct cone
 {

@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include "vector.h"
-#include "geom.h"
+#include "mat.h"
 #include "plane.h"
 
 typedef struct semi
