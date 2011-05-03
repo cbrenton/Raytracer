@@ -65,6 +65,14 @@ vec3_t Sphere::getNormal(vec3_t point)
    return (point - location) * radius;
 }
 
+sphere_t Sphere::getStruct()
+{
+   sphere_t sp;
+   sp.location = location;
+   sp.radius = radius;
+   return sp;
+}
+
 void Sphere::debug()
 {
    //printf("Sphere: {<%f, %f, %f>, %f\n",
