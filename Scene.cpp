@@ -114,6 +114,10 @@ Scene* Scene::read(std::istream& input)
 
 Pixel *Scene::seekLight(HitData *data, vec3_t view)
 {
+   if (dynamic_cast<Plane *>(data->object) != NULL)
+   {
+      //printf("plane!\n");
+   }
    Pixel *result = new Pixel(0.0, 0.0, 0.0, 0.0);
    for (int i = 0; i < lights_size; i++)
    {
@@ -123,19 +127,19 @@ Pixel *Scene::seekLight(HitData *data, vec3_t view)
       Ray *feeler = new Ray(dir * 0.001f + data->point, dir);
       float t = -1.0;
       bool hit = false;
-      for (int j = 0; j < geometry_size; j++)
+      for (int j = 0; j < geometry_size && !hit; j++)
       {
          Geometry *curObject = geometry[j];
          bool intersect = curObject->hit(*feeler, &t);
          hit |= (intersect && t > 0 && t <= dirLen);
       }
-      for (int j = 0; j < planes_size; j++)
+      for (int j = 0; j < planes_size && !hit; j++)
       {
          Plane *curObject = planes[j];
          bool intersect = curObject->hit(*feeler, &t);
          hit |= (intersect && t > 0 && t <= dirLen);
       }
-      for (int j = 0; j < spheres_size; j++)
+      for (int j = 0; j < spheres_size && !hit; j++)
       {
          Sphere *curObject = spheres[j];
          bool intersect = curObject->hit(*feeler, &t);
@@ -158,15 +162,6 @@ Pixel *Scene::seekLight(HitData *data, vec3_t view)
          result->g += data->object->getDiffuse()*data->object->getG() * nDotL * lights[i]->g;
          result->b += data->object->getDiffuse()*data->object->getB() * nDotL * lights[i]->b;
          // Specular.
-         /*
-         vec3_t d = data->point - view;
-         float dDotN = d.dot(n);
-         vec3_t r = n * (2.0f * dDotN);
-         r += d;
-         float vDotR = view.dot(r);
-         pow(vDotR, data->object->getRoughness());
-         if (dDotN > 0)
-         */
          vec3_t v = view;
          v.normalize();
          vec3_t h = l + v;

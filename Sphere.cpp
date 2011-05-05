@@ -75,6 +75,6 @@ sphere_t Sphere::getStruct()
 
 void Sphere::debug()
 {
-   //printf("Sphere: {<%f, %f, %f>, %f\n",
-         //location.x, location.y, location.z, radius);
+   printf("Sphere: {<%f, %f, %f>, %f\n",
+         location.x(), location.y(), location.z(), radius);
 }

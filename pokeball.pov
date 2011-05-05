@@ -7,7 +7,7 @@ camera {
    look_at   <0, 0, 0>
 }
 
-light_source {<100, 100, 100> color rgb <1.5, 1.5, 1.5>}
+light_source {<0, 100, 100> color rgb <1.5, 1.5, 1.5>}
 //light_source {<0, 4, 14> color rgb <1.5, 1.5, 1.5>}
 
 semi { <0, 0.10, 3>, 1.55, 1

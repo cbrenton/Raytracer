@@ -48,6 +48,6 @@ vec3_t Plane::getNormal(vec3_t point)
 
 void Plane::debug()
 {
-   //printf("Plane: { <%f, %f, %f>, %f\n",
-         //location.x, location.y, location.z, planeOffset);
+   printf("Plane: { <%f, %f, %f>, %f\n",
+         location.x(), location.y(), location.z(), planeOffset);
 }
