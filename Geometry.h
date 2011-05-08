@@ -12,6 +12,7 @@
 #include <math.h>
 #include <stdio.h>
 #include "vector.h"
+//#include "Structs.h"
 #include "Ray.h"
 #include "Matrix4.h"
 #include "Pixel.h"

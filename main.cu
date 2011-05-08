@@ -14,7 +14,7 @@
 #define POV_EXT ".pov"
 #define DEFAULT_W 256
 #define DEFAULT_H 256
-#define AA_RAYS 8
+#define AA_RAYS 4
 
 // Set to 0 to turn off progress tracking.
 #define SHOW_PROGRESS 1
@@ -30,6 +30,7 @@ string inputFileName;
 string filename;
 int width = DEFAULT_W;
 int height = DEFAULT_H;
+int numAA = 1;
 
 void setWidth(char* strIn)
 {
@@ -65,6 +66,27 @@ void setHeight(char* strIn)
    }
 }
 
+void setAA(char* strIn)
+{
+   if (strlen(strIn) == 0)
+   {
+      numAA = AA_RAYS;
+   }
+   else if (strIn[0] == '=')
+   {
+      numAA = atoi(strIn + 1);
+   }
+   else
+   {
+      numAA = atoi(strIn);
+   }
+   if (numAA < 1)
+   {
+      cerr << "Invalid antialiasing sample rate: " << numAA << endl;
+      exit(EXIT_FAILURE);
+   }
+}
+
 void setFilename(char* strIn)
 {
    string name = "";
@@ -94,14 +116,12 @@ void goodTest()
    bool hit = tri->hit(*ray, &t);
    if (hit)
    {
-      std::cout << "hit at " << t << std::endl;
+      cout << "hit at " << t << endl;
    }
    else
    {
-      std::cout << "no hit: " << t << std::endl;
+      cout << "no hit: " << t << endl;
    }
-
-   // Should not hit.
 }
 
 // Testing triangle intersection. Should not hit.
@@ -116,11 +136,11 @@ void badTest()
    bool hit = tri->hit(*ray, &t);
    if (hit)
    {
-      std::cout << "hit at " << t << std::endl;
+      cout << "hit at " << t << endl;
    }
    else
    {
-      std::cout << "no hit: " << t << std::endl;
+      cout << "no hit: " << t << endl;
    }
 }
 
@@ -128,9 +148,7 @@ float randFloat()
 {
    float maxJitter = 0.5f;
    float minJitter = -0.5f;
-   //float maxJitter = scene->camera->right.length() / (float)image.width;
-   //float minJitter = scene->camera->up.length() / (float)image.height;
-   return (float)rand() / (float)FLT_MAX * (maxJitter - minJitter) - minJitter;
+   return (float)rand()/(float)FLT_MAX*(maxJitter - minJitter) - minJitter;
 }
 
 void printProgress(struct timeval startTime, int d, int total, int freq)
@@ -194,7 +212,7 @@ void printProgress(struct timeval startTime, int d, int total, int freq)
       if (fullProgressEnabled)
       {
          // Print everything.
-         std::string progress;
+         string progress;
          // Fill progress bar.
          progress += "[";
          for (int j = 0; j < BAR_LEN; j++)
@@ -259,18 +277,30 @@ int main(int argc, char **argv)
    srand(time(NULL));
 
    int c;
-   while ((c = getopt(argc, argv, "w:W:h:H:i:I:")) != -1)
+   while ((c = getopt(argc, argv, "a::A::i:I:h:H:w:W:")) != -1)
    {
       switch (c)
       {
-      case 'w': case 'W':
-         setWidth(optarg);
+      case 'a': case 'A':
+         if (optarg != NULL)
+         {
+            //cout << "non-null optarg" << endl;
+            setAA(optarg);
+         }
+         else
+         {
+            //cout << "null optarg" << endl;
+            setAA((char *)"");
+         }
          break;
       case 'h': case 'H':
          setHeight(optarg);
          break;
       case 'i': case 'I':
          setFilename(optarg);
+         break;
+      case 'w': case 'W':
+         setWidth(optarg);
          break;
       default:
          cerr << "Invalid command-line argument -" << c << endl;
@@ -284,14 +314,18 @@ int main(int argc, char **argv)
       {
          switch(argv[i][1])
          {
-         case 'w': case 'W':
-            setWidth(argv[i] + 2);
+         case 'a': case 'A':
+            setAA(argv[i] + 2);
+            cout << "o1" << endl;
             break;
          case 'h': case 'H':
             setHeight(argv[i] + 2);
             break;
          case 'i': case 'I':
             setFilename(argv[i] + 2);
+            break;
+         case 'w': case 'W':
+            setWidth(argv[i] + 2);
             break;
          default:
             cerr << "Invalid command-line argument -" << c << endl;
@@ -309,107 +343,110 @@ int main(int argc, char **argv)
    image.filename = filename;
    image.init();
 
-   // Make AA_RAYS subpixels per pixel.
-   Ray aRayArray [width][height];
+   // Make numAA subpixels per pixel.
+   Ray ***aRayArray = new Ray **[width];
+   for (int i = 0; i < width; i++)
+   {
+      aRayArray[i] = new Ray *[height];
+      for (int j = 0; j < height; j++)
+      {
+         aRayArray[i][j] = new Ray[numAA];
+      }
+   }
 
    float l = -scene->camera->right.length() / 2;
    float r = scene->camera->right.length() / 2;
    float b = -scene->camera->up.length() / 2;
    float t = scene->camera->up.length() / 2;
 
+   cout << "Generating rays...";
    for (int i = 0; i < image.width; i++)
    {
       for (int j = 0; j < image.height; j++)
       {
-         //Ray *curRay = new Ray();
-         //for (int k = 0; k < AA_RAYS; k++)
-         //{
-         //float xJitter = randFloat();
-         //float yJitter = randFloat();
-         float xJitter = 0.0f;
-         float yJitter = 0.0f;
-         float uScale = (float)(l + (r - l) * (((float)i + xJitter + 0.5f)
-                  / (float)image.width));
-         //float uScale = (float)(l + (r - l) * (((float)i + 0.5f)
-         float vScale = (float)(b + (t - b) * (((float)j + yJitter + 0.5f)
-                  / (float)image.height));
-         //float vScale = (float)(b + (t - b) * (((float)j + 0.5f)
-         float wScale = -1;
-         vec3_t sVector = scene->camera->location;
-         vec3_t uVector = scene->camera->right;
-         vec3_t vVector = scene->camera->up;
-         vec3_t wVector = scene->camera->look_at - scene->camera->location;
-         uVector.normalize();
-         vVector.normalize();
-         wVector.normalize();
-         // Left-handed.
-         wVector *= -1;
-         uVector *= uScale;
-         vVector *= vScale;
-         wVector *= wScale;
-         sVector += uVector;
-         sVector += vVector;
-         sVector += wVector;
-         vec3_t rayDir = uVector + vVector + wVector;
-         rayDir.normalize();
-         vec3_t curPoint = vec3_t(scene->camera->location);
-         //Ray *curRay = new Ray(curRay->point, curRay->dir);
-         //curRay = new Ray(curRay->point, curRay->dir);
-         Ray *curRay = new Ray(curPoint, rayDir);
-         aRayArray[i][j] = *curRay;
-         /*
-            if (k == 0)
+         for (int k = 0; k < numAA; k++)
+         {
+            float newI = (float)i;
+            float newJ = (float)j;
+            if (numAA > 1)
             {
-            aRayArray[i][j] = *curRay;
+               newI += randFloat();
+               newJ += randFloat();
             }
-            else
-            {
-         //aRayArray[i][j].dirs[k] = curRay->dir;
-         //aRayArray[i][j].point = curRay->point;
+
+            float uScale = (float)(l + (r - l) * ((newI + 0.5f)
+                     / (float)image.width));
+            float vScale = (float)(b + (t - b) * ((newJ + 0.5f)
+                     / (float)image.height));
+            float wScale = -1;
+            vec3_t sVector = scene->camera->location;
+            vec3_t uVector = scene->camera->right;
+            vec3_t vVector = scene->camera->up;
+            vec3_t wVector = scene->camera->look_at
+               - scene->camera->location;
+            uVector.normalize();
+            vVector.normalize();
+            wVector.normalize();
+            // Left-handed.
+            wVector *= -1;
+            uVector *= uScale;
+            vVector *= vScale;
+            wVector *= wScale;
+            sVector += uVector;
+            sVector += vVector;
+            sVector += wVector;
+            vec3_t rayDir = uVector + vVector + wVector;
+            rayDir.normalize();
+            vec3_t curPoint = vec3_t(scene->camera->location);
+            Ray *curRay = new Ray(curPoint, rayDir);
+            aRayArray[i][j][k] = *curRay;
+            delete curRay;
          }
-         */
-         delete curRay;
       }
-      //}
    }
+   cout << "done" << endl;
 
    // Initialize variables for timekeeping.
    struct timeval startTime;
    gettimeofday(&startTime, NULL);
 
-   std::cout << "starting intersection tests." << std::endl;
+   if (numAA > 1)
+   {
+      //cout << "Antialiasing is set to x" << numAA << "." << endl;
+      cout << "Using " << numAA << "x AA." << endl;
+   }
+   else
+   {
+      cout << "Antialiasing is turned off." << endl;
+   }
+
+   cout << "Testing intersections." << endl;
+
    for (int i = 0; i < image.width; i++)
    {
       for (int j = 0; j < image.height; j++)
       {
          Pixel *result = new Pixel();
-         for (int k = 0; k < AA_RAYS; k++)
-            //for (int k = 0; k < 1; k++)
+         for (int k = 0; k < numAA; k++)
          {
             // Find intersections and get pixel data.
-            //Ray *tmpRay = new Ray(aRayArray[i][j].point, aRayArray[i][j].dirs[k]);
-            /*
-               Ray tmpRay = aRayArray[i][j];
-               HitData *data = scene->getIntersect(tmpRay);
-               if (data->hit)
-               {
-            //result->add(scene->seekLight(data, aRayArray[i][j].dirs[k]));
-            //result->add(scene->seekLight(data, tmpRay.dir));
-            result->add(scene->seekLight(data, aRayArray[i][j].dir));
-            }
-            */
-            HitData *data = scene->getIntersect(aRayArray[i][j]);
+            HitData *data = scene->getIntersect(aRayArray[i][j][k]);
             if (data->hit)
             {
-               result->add(scene->seekLight(data, aRayArray[i][j].dir));
+               Pixel *tmp = scene->seekLight(data, aRayArray[i][j][k].dir);
+               //printf("first: %f %f %f\n", tmp->r, tmp->g, tmp->b);
+               tmp->multiply(1.0f / (float)numAA);
+               //printf("weighted: %f %f %f\n", tmp->r, tmp->g, tmp->b);
+               result->add(tmp);
+               delete tmp;
             }
             delete data;
          }
-         result->multiply(1.0f / (float)AA_RAYS);
+         //result->multiply(1.0f / (float)numAA);
          if (SHOW_PROGRESS)
          {
             // Set the frequency of ticks to update every .01%, if possible.
-            int tick = std::max(image.width*image.height/AA_RAYS / 10000, 1);
+            int tick = max(image.width*image.height/numAA / 10000, 10);
             printProgress(startTime, i * image.height + j,
                   image.width * image.height, tick);
          }
@@ -420,7 +457,7 @@ int main(int argc, char **argv)
 
    if (SHOW_PROGRESS)
    {
-      std::cout << std::endl;
+      cout << endl;
    }
 
    // Write image to file.

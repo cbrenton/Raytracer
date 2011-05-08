@@ -180,9 +180,12 @@ Pixel *Scene::seekLight(HitData *data, vec3_t view)
          nDotH = std::max(nDotH, 0.0f);
          nDotH = std::min(nDotH, 1.0f);
          {
-            result->r += data->object->getSpecular()*data->object->getR() * nDotH * lights[i]->r;
-            result->g += data->object->getSpecular()*data->object->getG() * nDotH * lights[i]->g;
-            result->b += data->object->getSpecular()*data->object->getB() * nDotH * lights[i]->b;
+            result->r += data->object->getSpecular()*data->object->getR()
+               * nDotH * lights[i]->r;
+            result->g += data->object->getSpecular()*data->object->getG()
+               * nDotH * lights[i]->g;
+            result->b += data->object->getSpecular()*data->object->getB()
+               * nDotH * lights[i]->b;
          }
 
          result->r = std::min(result->r, 1.0f);
@@ -193,11 +196,9 @@ Pixel *Scene::seekLight(HitData *data, vec3_t view)
    return result;
 }
 
-//Pixel* Scene::getIntersect(Ray ray)
 HitData* Scene::getIntersect(Ray ray)
 {
    HitData *data = new HitData();
-   //Pixel *result = new Pixel();
    Geometry *hitObject = new Geometry();
    float t;
    bool hitFound = false;

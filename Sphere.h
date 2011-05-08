@@ -9,24 +9,19 @@
 #define __SPHERE_H__
 
 #include "Geometry.h"
+#include "Intersection_K.h"
 
-struct sphere_t
+class Sphere : public Geometry
 {
-   vec3_t location;
-   float radius;
-};
-
-class Sphere : public Geometry {
    public:
       Sphere() : Geometry() {};
       Sphere(std::istream& input);
       Sphere(vec3_t _loc, float _rad);
       bool hit(Ray ray, float *t, float minT = 0.0, float maxT = DIST_MAX);
       vec3_t getNormal(vec3_t point);
-      sphere_t getStruct();
+      sphere_dev_t getStruct();
       void debug();
       float radius;
-   private:
 };
 
 #endif

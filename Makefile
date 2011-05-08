@@ -35,12 +35,21 @@ $(PROGNAME): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 run:
-	./${PROGNAME} +W640 -H 480 -I ${INPUTNAME}.pov
+	./${PROGNAME} +W640 -H 480 -a -I ${INPUTNAME}.pov
 
 small:
-	./${PROGNAME} +W320 -H 240 -I ${INPUTNAME}.pov
+	./${PROGNAME} +W320 -H 240 -a -I ${INPUTNAME}.pov
 
 tiny:
+	./${PROGNAME} +W160 -H 120 -a -I ${INPUTNAME}.pov
+
+noaa:
+	./${PROGNAME} +W640 -H 480 -I ${INPUTNAME}.pov
+
+smallnoaa:
+	./${PROGNAME} +W320 -H 240 -I ${INPUTNAME}.pov
+
+tinynoaa:
 	./${PROGNAME} +W160 -H 120 -I ${INPUTNAME}.pov
 
 bunny:
@@ -53,6 +62,9 @@ bigbun1:
 	./${PROGNAME} -w320 -h240 -i bunny_large.pov
 
 pokeball:
+	./${PROGNAME} +W640 -H 480 -a -I pokeball.pov
+
+pokeballnoaa:
 	./${PROGNAME} +W640 -H 480 -I pokeball.pov
 
 clean:

@@ -10,13 +10,6 @@ Image::Image(int w, int h):
 
 Image::~Image()
 {
-   /*
-   for (int i = 0; i < width; i++)
-   {
-      delete data[i];
-   }
-   delete data;
-   */
 }
 
 void Image::init()
@@ -45,23 +38,18 @@ void Image::setPixel(int x, int y, Pixel *pIn)
 
 void Image::testPattern()
 {
-   //printf("width: %d, height: %d\n", width, height);
-   //printf("true width: %d / %d\n", sizeof(data[0]), sizeof(Pixel*));
    for (int i = 0; i < width; i++)
    {
       for (int j = 0; j < height; j++)
       {
          // Write image data.
-         //float color = (float)(j % 2);
          float xStep = (float)i / (float)width;
          float yStep = (float)j / (float)height;
-         //printf("yStep: %f at %d\n", yStep, j);
          float r = (float)(ceil(xStep * 10.0) / 10.0);
          float g = (float)(1.0 - ceil(yStep * 10.0) / 10.0);
          float b = (float)(1.0 - ceil(xStep * 10.0) / 10.0);
          float a = 1.0;
          Pixel testPixel = Pixel(r, g, b, a);
-         //Pixel testPixel = Pixel(0.0, 0.0, color, a);
          setPixel(i, j, &testPixel);
       }
    }
@@ -97,7 +85,7 @@ void Image::write()
    }
    else
    {
-      cout << "Writing to file " << name << endl;
+      cout << "Writing to file " << name << "...";
    }
 
    writeHeader(myfile);
@@ -111,6 +99,8 @@ void Image::write()
          data[j][i]->print(myfile);
       }
    }
+
+   cout << "done" << endl;
 
    myfile.close();
 }
