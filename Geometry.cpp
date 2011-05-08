@@ -57,16 +57,17 @@ void Geometry::getOption(std::string option, std::string line)
    if (option.compare("pigment") == 0)
    {
       //printf("pigment: %s\n", line.c_str());
-      sscanf(line.c_str(), " { color rgb <%f, %f, %f>}",
+      sscanf(line.c_str(), " { color rgb <%f, %f, %f> }",
             &mat.r, &mat.g, &mat.b);
       //printf("\tPIGMENT %f. %f, %f\n", r, g, b);
    }
    else if (option.compare("finish") == 0)
    {
-      sscanf(line.c_str(), " { ambient %f diffuse %f specular %f roughness %f}",
+      sscanf(line.c_str(), " { ambient %f diffuse %f specular %f roughness %f",
+         &mat.ambient, &mat.diffuse, &mat.specular, &mat.roughness);
             //&ambient, &diffuse, &specular, &emissive);
-            &mat.ambient, &mat.diffuse, &mat.specular, &mat.roughness);
-      //printf("\tFINISH ambient %f diffuse %f\n", ambient, diffuse);
+      //printf("\tFINISH ambient %f diffuse %f specular %f roughness %f\n",
+      //mat.ambient, mat.diffuse, mat.specular, mat.roughness);
    }
    else if (option.compare("scale") == 0)
    {
@@ -119,5 +120,6 @@ void Geometry::getOption(std::string option, std::string line)
    else
    {
       printf("\tinvalid option: %s\n", option.c_str());
+      printf("\t\t%s\n", line.c_str());
    }
 }

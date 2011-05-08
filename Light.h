@@ -18,6 +18,10 @@ class Light {
       float r;
       float g;
       float b;
+      inline void debug()
+      {
+         printf("Light: (r,g,b) (%f, %f, %f)\n", r, g, b);
+      }
 };
 
 #endif

@@ -13,7 +13,9 @@
 class Triangle : public Geometry {
    public:
       Triangle(std::istream& input);
+      Triangle(vec3_t c1, vec3_t c2, vec3_t c3);
       bool hit(Ray ray, float *t, float minT = 0.0, float maxT = DIST_MAX);
+      vec3_t getNormal(vec3_t point = vec3_t(0, 0, 0));
       void debug();
    private:
       // Corner1 is Geometry::location
@@ -22,5 +24,3 @@ class Triangle : public Geometry {
 };
 
 #endif
-
-

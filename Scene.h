@@ -42,11 +42,13 @@ class Scene {
       Pixel* seekLight(HitData *data, vec3_t view);
       Camera* camera;
    private:
-      int lights_size, geometry_size, planes_size, spheres_size;
+      int lights_size, geometry_size, planes_size, spheres_size,
+          triangles_size;
       Light **lights;
       Geometry **geometry;
       Plane **planes;
       Sphere **spheres;
+      Triangle **triangles;
 };
 
 #endif

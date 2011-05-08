@@ -183,6 +183,12 @@ float Matrix4::det() const {
    return det;
 }
 
+float Matrix4::det3() const {
+   float det = _11 * _22 * _33 + _12 * _23 * _31 + _13 * _21 * _32 -
+               _13 * _22 * _31 - _11 * _23 * _32 - _12 * _21 * _33;
+   return det;
+}
+
 Matrix4& Matrix4::toIdent() {
    *this = Identity;
    return *this;

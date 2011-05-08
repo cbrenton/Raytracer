@@ -14,7 +14,12 @@ class Cone : public Geometry {
    public:
       Cone(std::istream& input);
       bool hit(Ray ray, float *t, float minT = 0.0, float maxT = DIST_MAX);
-      void debug();
+      inline void debug()
+      {
+         printf("Cone: { <%f, %f, %f>, %f, <%f, %f, %f>, %f\n",
+               location.x(), location.y(), location.z(), radius1,
+               center2.x(), center2.y(), center2.z(), radius2);
+      }
    private:
       // Center1 is Geometry::location
       vec3_t center2;

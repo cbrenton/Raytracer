@@ -11,12 +11,16 @@ endif
 
 LDFLAGS=$(PLATFORMSPECIFICLDFLAGS) -g -pg
 CFLAGS=$(PLATFORMSPECIFICCFLAGS) -Wall -c -g -Wconversion -Werror -O3 -pg
+#CFLAGS=$(PLATFORMSPECIFICCFLAGS) -Wall -c -g -Wconversion -Werror -O1 -pg
 
 CC=g++
 
 FILES=main.cpp Pixel.cpp Image.cpp Scene.cpp Geometry.cpp Camera.cpp Light.cpp Plane.cpp Triangle.cpp Box.cpp Cone.cpp Sphere.cpp Matrix4.cpp Semi.cpp Material.cpp
 
 PROGNAME=raytrace
+
+#INPUTNAME=bunny_large_tris
+INPUTNAME=bunny_small_tris
 
 HANDINDIR=csc473proj1
 
@@ -31,10 +35,13 @@ $(PROGNAME): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 run:
-	./${PROGNAME} +W640 -H 480 -I simple.pov
+	./${PROGNAME} +W640 -H 480 -I ${INPUTNAME}.pov
 
-run2:
-	./${PROGNAME} +W640 -H 480 -I simple_spec.pov
+small:
+	./${PROGNAME} +W320 -H 240 -I ${INPUTNAME}.pov
+
+tiny:
+	./${PROGNAME} +W160 -H 120 -I ${INPUTNAME}.pov
 
 bunny:
 	./${PROGNAME} -w640 -h480 -i bunny_small.pov
@@ -50,6 +57,12 @@ pokeball:
 
 clean:
 	rm -f *.o */*.o ${PROGNAME}
+
+gdb:
+	gdb ${PROGNAME}
+
+eog:
+	eog ${INPUTNAME}.tga
 
 handin:
 	handin zwood $(HANDINDIR) $(FILES)

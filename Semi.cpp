@@ -5,16 +5,36 @@
  * 4/7/11
  */
 
+#include <cstdlib>
 #include <string>
 #include "Semi.h"
+
+#define EXP_ARGS 5
 
 Semi::Semi(std::istream& input)
 {
    std::string line;
    getline(input, line);
    int isFacingUp;
-   sscanf(line.c_str(), "{ <%f, %f, %f>, %f, %d",
-         &location.v[0], &location.v[1], &location.v[2], &radius, &isFacingUp);
+   int scan = 0;
+   // If the line is only an opening curly brace, skip it.
+   if (line == "{")
+   {
+      // Get the good stuff.
+      scan = sscanf(line.c_str(), " < %f , %f , %f > , %f , %d",
+            &location.v[0], &location.v[1], &location.v[2], &radius, &isFacingUp);
+   }
+   else
+   {
+      scan = sscanf(line.c_str(), " { < %f , %f , %f > , %f , %d",
+            &location.v[0], &location.v[1], &location.v[2], &radius, &isFacingUp);
+   }
+   if (scan < EXP_ARGS)
+   {
+      printf("Invalid hemisphere format: expected %d, found %d.\n", scan, EXP_ARGS);
+      std::cout << "\tline: " << line << std::endl;
+      exit(EXIT_FAILURE);
+   }
    isTop = (isFacingUp == 0);
    readOptions(input);
    vec3_t *bisectNormal;
@@ -140,5 +160,5 @@ vec3_t Semi::getNormal(vec3_t point)
 void Semi::debug()
 {
    //printf("Semi: {<%f, %f, %f>, %f\n",
-         //location.x, location.y, location.z, radius);
+   //location.x, location.y, location.z, radius);
 }

@@ -17,6 +17,22 @@ void Pixel::setColor(float _r, float _g, float _b, float _a)
    a = _a;
 }
 
+void Pixel::add(Pixel *other)
+{
+   r += other->r;
+   g += other->g;
+   b += other->b;
+   a += other->a;
+}
+
+void Pixel::multiply(float scale)
+{
+   r *= scale;
+   g *= scale;
+   b *= scale;
+   a *= scale;
+}
+
 void Pixel::print(std::ofstream& out)
 {
    out << (char)(b * 255)

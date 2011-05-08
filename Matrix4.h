@@ -60,6 +60,7 @@ struct Matrix4 {
    const Matrix4 operator+(const Matrix4& rhs) const;
 
    float det() const;
+   float det3() const;
    Matrix4& toIdent();
    Matrix4 inverse() const;
    Matrix4& toInverse();

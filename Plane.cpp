@@ -5,8 +5,11 @@
  * 4/7/11
  */
 
+#include <cstdlib>
 #include <string>
 #include "Plane.h"
+
+#define EXP_ARGS 4
 
 Plane::Plane(vec3_t normal, float d)
 {
@@ -18,8 +21,25 @@ Plane::Plane(std::istream& input)
 {
    std::string line;
    getline(input, line);
-   sscanf(line.c_str(), "{ <%f, %f, %f>, %f",
-         &location.v[0], &location.v[1], &location.v[2], &planeOffset);
+   int scan = 0;
+   // If the line is only an opening curly brace, skip it.
+   if (line == "{")
+   {
+      // Get the good stuff.
+      scan = sscanf(line.c_str(), " < %f , %f , %f > , %f",
+            &location.v[0], &location.v[1], &location.v[2], &planeOffset);
+   }
+   else
+   {
+      scan = sscanf(line.c_str(), " { < %f , %f , %f > , %f",
+            &location.v[0], &location.v[1], &location.v[2], &planeOffset);
+   }
+   if (scan < EXP_ARGS)
+   {
+      printf("Invalid plane format: expected %d, found %d.\n", EXP_ARGS, scan);
+      std::cout << "\tline: " << line << std::endl;
+      exit(EXIT_FAILURE);
+   }
    readOptions(input);
 }
 

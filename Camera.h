@@ -18,7 +18,10 @@ class Camera {
       vec3_t up;
       vec3_t right;
       vec3_t look_at;
-   private:
+      inline void debug()
+      {
+         printf("Camera: <%f, %f, %f>\n", location.x(), location.y(), location.z());
+      }
 };
 
 #endif

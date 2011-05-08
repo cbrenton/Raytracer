@@ -17,6 +17,7 @@ Scene* Scene::read(std::istream& input)
    std::vector<Geometry*> geometry_vec;
    std::vector<Plane*> planes_vec;
    std::vector<Sphere*> spheres_vec;
+   std::vector<Triangle*> triangles_vec;
 
    Scene* curScene = new Scene();
    curScene->lights_size = curScene->geometry_size = curScene->planes_size = curScene->spheres_size = 0;
@@ -81,15 +82,15 @@ Scene* Scene::read(std::istream& input)
             }
             else if (curItemName.compare("triangle") == 0)
             {
-               geometry_vec.push_back(new Triangle(input));
-               curScene->geometry_size++;
+               triangles_vec.push_back(new Triangle(input));
+               curScene->triangles_size++;
             }
             // Next do the other ones.
 
             curItemName = "";
          }
       }
-      else if (curItemName.compare("//") == 0)
+      else if (curItemName.compare("/") == 0 && (char) curChar == '/')
       {
          // Ignore the rest of the line.
          input.ignore(999, '\n');
@@ -109,6 +110,8 @@ Scene* Scene::read(std::istream& input)
    copy(planes_vec.begin(), planes_vec.end(), curScene->planes);
    curScene->spheres = new Sphere *[curScene->spheres_size];
    copy(spheres_vec.begin(), spheres_vec.end(), curScene->spheres);
+   curScene->triangles = new Triangle *[curScene->triangles_size];
+   copy(triangles_vec.begin(), triangles_vec.end(), curScene->triangles);
    return curScene;
 }
 
@@ -142,6 +145,12 @@ Pixel *Scene::seekLight(HitData *data, vec3_t view)
       for (int j = 0; j < spheres_size && !hit; j++)
       {
          Sphere *curObject = spheres[j];
+         bool intersect = curObject->hit(*feeler, &t);
+         hit |= (intersect && t > 0 && t <= dirLen);
+      }
+      for (int j = 0; j < triangles_size && !hit; j++)
+      {
+         Triangle *curObject = triangles[j];
          bool intersect = curObject->hit(*feeler, &t);
          hit |= (intersect && t > 0 && t <= dirLen);
       }
@@ -227,6 +236,21 @@ HitData* Scene::getIntersect(Ray ray)
    for (int i = 0; i < spheres_size; i++)
    {
       Sphere *curObject = spheres[i];
+      t = -1.0;
+      bool intersected = curObject->hit(ray, &t);
+      if (intersected)
+      {
+         if (t >= 0 && (!hitFound || (hitFound && t < curDepth)))
+         {
+            curDepth = t;
+            hitObject = curObject;
+         }
+      }
+      hitFound |= (intersected && curDepth > 0.0);
+   }
+   for (int i = 0; i < triangles_size; i++)
+   {
+      Triangle *curObject = triangles[i];
       t = -1.0;
       bool intersected = curObject->hit(ray, &t);
       if (intersected)
