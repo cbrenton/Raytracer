@@ -6,14 +6,11 @@
 //#include "Triangle.h"
 //#include "Scene.h"
 
-<<<<<<< HEAD
 typedef struct matrix3_dev
 {
    float **mat;
 } matrix3_dev_t;
 
-=======
->>>>>>> 4fabfe5fce695248b5da2724ded1529aa2c51cdb
 typedef struct sphere_dev
 {
    float point[3];
