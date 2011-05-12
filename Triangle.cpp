@@ -63,6 +63,8 @@ bool Triangle::hit(Ray ray, float *t, float minT, float maxT)
          location.z()-corner2.z(), location.z()-corner3.z(),
          ray.dir.z(), 0,
          0, 0, 0, 1);
+   float detA = A.det3();
+
    Matrix4 baryT = Matrix4(
          location.x()-corner2.x(), location.x()-corner3.x(),
          location.x()-ray.point.x(), 0,
@@ -72,7 +74,7 @@ bool Triangle::hit(Ray ray, float *t, float minT, float maxT)
          location.z()-ray.point.z(), 0,
          0, 0, 0, 1);
 
-   bT = baryT.det3() / A.det3();
+   bT = baryT.det3() / detA;
    //if (bT < 0 || bT > F_MAX)
    if (bT < 0)
    {
@@ -89,7 +91,7 @@ bool Triangle::hit(Ray ray, float *t, float minT, float maxT)
             ray.dir.z(), 0,
             0, 0, 0, 1);
 
-      bGamma = baryGamma.det3() / A.det3();
+      bGamma = baryGamma.det3() / detA;
       if (bGamma < 0 || bGamma > 1)
       {
          result = 0;
@@ -105,7 +107,7 @@ bool Triangle::hit(Ray ray, float *t, float minT, float maxT)
                ray.dir.z(), 0,
                0, 0, 0, 1);
 
-         bBeta = baryBeta.det3() / A.det3();
+         bBeta = baryBeta.det3() / detA;
          if (bBeta < 0 || bBeta > 1 - bGamma)
          {
             result = 0;
@@ -118,11 +120,7 @@ bool Triangle::hit(Ray ray, float *t, float minT, float maxT)
       result = bT;
    }
    *t = result;
-   if (result > 0)
-   {
-      //printf("hit: %f!\n", result);
-   }
-   return (result > 0);
+   return (result > 0.01);
 }
 
 vec3_t Triangle::getNormal(vec3_t point)

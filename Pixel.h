@@ -6,7 +6,8 @@
 
 class Pixel {
    public:
-      Pixel(float _r = 0.0, float _g = 0.0, float _b = 0.0, float _a = 0.0);
+      //Pixel(float _r = 0.33f, float _g = 0.38f, float _b = 0.44f, float _a = 1.0);
+      Pixel(float _r = 0, float _g = 0, float _b = 0, float _a = 0);
       ~Pixel();
       void setColor(float _r, float _g, float _b, float _a = 1.0);
       void add(Pixel *other);

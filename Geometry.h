@@ -56,6 +56,10 @@ class Geometry {
       {
          return mat.roughness;
       }
+      inline float getReflect()
+      {
+         return mat.reflect;
+      }
       /*
       float r;
       float g;

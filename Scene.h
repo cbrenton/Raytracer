@@ -36,8 +36,8 @@ class Scene {
    public:
       // Nothing yet.
       static Scene* read(std::istream& input);
-      //Pixel* getIntersect(Ray ray);
-      HitData* getIntersect(Ray ray);
+      Pixel* getIntersect(Ray ray, int depth = 1);
+      //HitData* getIntersect(Ray ray);
       //Pixel* seekLight(vec3_t origin, Geometry* hitObject);
       Pixel* seekLight(HitData *data, vec3_t view);
       Camera* camera;

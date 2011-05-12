@@ -22,7 +22,8 @@ void Pixel::add(Pixel *other)
    r += other->r;
    g += other->g;
    b += other->b;
-   a += other->a;
+   //a += other->a;
+   a = 1;
 }
 
 void Pixel::multiply(float scale)

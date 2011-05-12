@@ -9,9 +9,10 @@ else
    PLATFORMSPECIFICLDFLAGS=
 endif
 
-LDFLAGS=$(PLATFORMSPECIFICLDFLAGS) -g -pg
-CFLAGS=$(PLATFORMSPECIFICCFLAGS) -Wall -c -g -Wconversion -Werror -O3 -pg
-#CFLAGS=$(PLATFORMSPECIFICCFLAGS) -Wall -c -g -Wconversion -Werror -O1 -pg
+#LDFLAGS=$(PLATFORMSPECIFICLDFLAGS) -g -pg
+LDFLAGS=$(PLATFORMSPECIFICLDFLAGS) -g -O3
+#CFLAGS=$(PLATFORMSPECIFICCFLAGS) -Wall -c -g -Wconversion -Werror -O3 -pg
+CFLAGS=$(PLATFORMSPECIFICCFLAGS) -Wall -c -g -Wconversion -Werror -O3
 
 CC=g++
 
@@ -20,7 +21,10 @@ FILES=main.cpp Pixel.cpp Image.cpp Scene.cpp Geometry.cpp Camera.cpp Light.cpp P
 PROGNAME=raytrace
 
 #INPUTNAME=bunny_large_tris
+#INPUTNAME=simple
+#INPUTNAME=simple_reflect2
 INPUTNAME=bunny_small_tris
+#INPUTNAME=bunny_tasty
 
 HANDINDIR=csc473proj1
 
@@ -63,6 +67,15 @@ bigbun1:
 
 pokeball:
 	./${PROGNAME} +W640 -H 480 -a -I pokeball.pov
+
+bigpokeball:
+	./${PROGNAME} +W1280 -H 960 -a -I pokeball.pov
+
+nicepokeball:
+	./${PROGNAME} +W640 -H 480 -a=16 -I pokeball.pov
+
+nicebigpokeball:
+	./${PROGNAME} +W1280 -H 960 -a=8 -I pokeball.pov
 
 pokeballnoaa:
 	./${PROGNAME} +W640 -H 480 -I pokeball.pov

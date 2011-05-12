@@ -10,7 +10,7 @@
 Geometry::Geometry()
 {
    transform = Matrix4();
-   mat = Material(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+   mat = Material(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 Geometry::~Geometry()
@@ -63,11 +63,15 @@ void Geometry::getOption(std::string option, std::string line)
    }
    else if (option.compare("finish") == 0)
    {
-      sscanf(line.c_str(), " { ambient %f diffuse %f specular %f roughness %f",
-         &mat.ambient, &mat.diffuse, &mat.specular, &mat.roughness);
-            //&ambient, &diffuse, &specular, &emissive);
-      //printf("\tFINISH ambient %f diffuse %f specular %f roughness %f\n",
-      //mat.ambient, mat.diffuse, mat.specular, mat.roughness);
+      int scan = sscanf(line.c_str(), " { ambient %f diffuse %f specular %f roughness %f reflection %f",
+         &mat.ambient, &mat.diffuse, &mat.specular,
+         &mat.roughness, &mat.reflect);
+      if (scan == 2)
+      {
+         scan = sscanf(line.c_str(), " { ambient %f diffuse %f reflection %f",
+         &mat.ambient, &mat.diffuse, &mat.reflect);
+      }
+      cout << "finish: " << scan << endl;
    }
    else if (option.compare("scale") == 0)
    {
