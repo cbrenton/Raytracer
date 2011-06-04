@@ -24,7 +24,7 @@
 class Scene {
    public:
       Scene() {hasBVH = false;}
-      virtual ~Scene();
+      virtual ~Scene() {};
       static Scene* read(std::istream& input);
       void constructBVH();
       bool hit(Ray ray, HitData *data);
@@ -34,7 +34,7 @@ class Scene {
       vec3_t refract(vec3_t d, vec3_t n, float n1, float n2, bool *success);
       Camera* camera;
       vector<Geometry*> geometry_vec;
-   private:
+   protected:
       bool hasBVH;
       int lights_size, geometry_size, planes_size, spheres_size,
           triangles_size;

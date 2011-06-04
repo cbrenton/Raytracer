@@ -15,20 +15,6 @@
 
 using namespace std;
 
-Scene::~Scene()
-{
-   /*
-   delete camera;
-   delete sceneBVH;
-   // Lights, geometry, planes, spheres, triangles.
-   for (unsigned i = 0; i < geometry_vec.size(); i++)
-   {
-      delete geometry_vec[i];
-   }
-   geometry_vec.clear();
-   */
-}
-
 Scene* Scene::read(istream& input)
 {
    vector<Light*> lights_vec;
