@@ -39,7 +39,12 @@ Cone::Cone(std::istream& input)
    readOptions(input);
 }
 
-bool Cone::hit(Ray ray, float *t, float minT, float maxT)
+Box* Cone::bBox()
+{
+   return new Box();
+}
+
+bool Cone::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
 {
    return false;
 }

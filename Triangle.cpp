@@ -50,7 +50,21 @@ Triangle::Triangle(vec3_t c1, vec3_t c2, vec3_t c3)
    corner3 = c3;
 }
 
-bool Triangle::hit(Ray ray, float *t, float minT, float maxT)
+Box* Triangle::bBox()
+{
+   float minX, minY, minZ, maxX, maxY, maxZ;
+   minX = min(min(location.x(), corner2.x()), corner3.x());
+   maxX = max(max(location.x(), corner2.x()), corner3.x());
+   minY = min(min(location.y(), corner2.y()), corner3.y());
+   maxY = max(max(location.y(), corner2.y()), corner3.y());
+   minZ = min(min(location.z(), corner2.z()), corner3.z());
+   maxZ = max(max(location.z(), corner2.z()), corner3.z());
+   vec3_t c1 = vec3_t(minX, minY, minZ);
+   vec3_t c2 = vec3_t(maxX, maxY, maxZ);
+   return new Box(c1, c2);
+}
+
+bool Triangle::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
 {
    float result = -1;
    float bBeta, bGamma, bT;

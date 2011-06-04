@@ -60,7 +60,12 @@ Semi::~Semi()
    delete bisect;
 }
 
-bool Semi::hit(Ray ray, float *t, float minT, float maxT)
+Box* Semi::bBox()
+{
+   return new Box();
+}
+
+bool Semi::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
 {
    vec3_t oMinusC = ray.point - location;
    float _b = ray.dir.dot(oMinusC);

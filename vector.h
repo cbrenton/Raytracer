@@ -32,6 +32,25 @@ using namespace std;
 typedef float vec_t;
 #endif
 
+struct vec4_t
+{
+   vec4_t() {v[0] = v[1] = v[2] = v[3] = 0;}
+   vec4_t(vec_t px, vec_t py, vec_t pz, vec_t pw) {v[0] = px; v[1] = py; v[2] = pz; v[3] = pw;}
+   //vec4_t(vec3_t &v3, vec_t pw) {v[0] = v3.x(); v[1] = v3.y(); v[2] = v3.z(); v[3] = pw;}
+   //vec4_t(vec3_t &v3, vec_t pw) {v[0] = v3.v[0]; v[1] = v3.v[1]; v[2] = v3.v[2]; v[3] = pw;}
+   
+   vec_t x(void) {return v[0];}
+   vec_t y(void) {return v[1];}
+   vec_t z(void) {return v[2];}
+   vec_t w(void) {return v[3];}
+   void x(vec_t nx) {v[0] = nx;}
+   void y(vec_t ny) {v[1] = ny;}
+   void z(vec_t nz) {v[2] = nz;}
+   void w(vec_t nw) {v[2] = nw;}
+
+   vec_t v[4];
+};
+
 struct vec3_t
 {
    vec3_t() {v[0] = v[1] = v[2] = 0;}

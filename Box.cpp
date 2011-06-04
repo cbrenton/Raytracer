@@ -7,9 +7,26 @@
 
 #include <cstdlib>
 #include <string>
+#include <algorithm>
 #include "Box.h"
+#include "Plane.h"
 
 #define EXP_ARGS 6
+
+Box::Box(vec3_t c1, vec3_t c2)
+{
+   location = c1;
+   corner2 = c2;
+   pLeft = new Plane(vec3_t(1, 0, 0), location.x());
+   //pRight = new Plane(vec3_t(-1, 0, 0), corner2.x());
+   pRight = new Plane(vec3_t(1, 0, 0), corner2.x());
+   pBottom = new Plane(vec3_t(0, 1, 0), location.y());
+   //pTop = new Plane(vec3_t(0, -1, 0), corner2.y());
+   pTop = new Plane(vec3_t(0, 1, 0), corner2.y());
+   pFront = new Plane(vec3_t(0, 0, 1), location.z());
+   //pBack = new Plane(vec3_t(0, 0, -1), corner2.z());
+   pBack = new Plane(vec3_t(0, 0, 1), corner2.z());
+}
 
 Box::Box(std::istream& input)
 {
@@ -38,11 +55,14 @@ Box::Box(std::istream& input)
    }
    readOptions(input);
    pLeft = new Plane(vec3_t(1, 0, 0), location.x());
-   pRight = new Plane(vec3_t(-1, 0, 0), corner2.x());
+   //pRight = new Plane(vec3_t(-1, 0, 0), corner2.x());
+   pRight = new Plane(vec3_t(1, 0, 0), corner2.x());
    pBottom = new Plane(vec3_t(0, 1, 0), location.y());
-   pTop = new Plane(vec3_t(0, -1, 0), corner2.y());
+   //pTop = new Plane(vec3_t(0, -1, 0), corner2.y());
+   pTop = new Plane(vec3_t(0, 1, 0), corner2.y());
    pFront = new Plane(vec3_t(0, 0, 1), location.z());
-   pBack = new Plane(vec3_t(0, 0, -1), corner2.z());
+   //pBack = new Plane(vec3_t(0, 0, -1), corner2.z());
+   pBack = new Plane(vec3_t(0, 0, 1), corner2.z());
 }
 
 Box::~Box()
@@ -55,8 +75,90 @@ Box::~Box()
    delete pBack;
 }
 
-bool Box::hit(Ray ray, float *t, float minT, float maxT)
+Box* Box::bBox()
 {
+   return new Box(location, corner2);
+}
 
-   return false;
+Box* Box::combine(Box *b1, Box *b2)
+{
+   float corners[3][2];
+   for (int i = 0; i < 3; i++)
+   {
+      corners[i][0] = min(min(b1->location.v[i], b1->corner2.v[i]),
+            min(b2->location.v[i], b2->corner2.v[i]));
+      corners[i][1] = max(max(b1->location.v[i], b1->corner2.v[i]),
+            max(b2->location.v[i], b2->corner2.v[i]));
+   }
+   vec3_t c1 = vec3_t(corners[0][0], corners[1][0], corners[2][0]);
+   vec3_t c2 = vec3_t(corners[0][1], corners[1][1], corners[2][1]);
+   return new Box(c1, c2);
+}
+
+vec3_t Box::getNormal(vec3_t point)
+{
+   return vec3_t(1.0, 0, 0);
+}
+
+bool Box::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
+{
+   float tNear = minT - 1;
+   float tFar = maxT + 1;
+
+   // For the pair of planes in each dimension.
+   for (int i = 0; i < 3; i++)
+   {
+      // Component of the ray's direction in the current dimension.
+      float xD = ray.dir.v[i];
+      // Component of the ray's origin in the current dimension.
+      float xO = ray.point.v[i];
+      // Component of the mininum plane location in the current dimension.
+      float xL = min(location.v[i], corner2.v[i]);
+      // Component of the maxinum plane location in the current dimension.
+      float xH = max(location.v[i], corner2.v[i]);
+      // If direction in current dimension is 0, ray is parallel to planes.
+      if (xD == 0)
+      {
+         // If ray origin is not between the planes.
+         if (xO < xL || xO > xH)
+         {
+            return false;
+         }
+      }
+      // Else the ray is not parallel to the planes.
+      else
+      {
+         // Calculate tMin and tMax.
+         float t1 = (xL - xO) / xD;
+         float t2 = (xH - xO) / xD;
+         if (t1 > t2)
+         {
+            swap(t1, t2);
+         }
+         if (t1 > tNear)
+         {
+            tNear = t1;
+         }
+         if (t2 < tFar)
+         {
+            tFar = t2;
+         }
+         if (tNear > tFar)
+         {
+            return false;
+         }
+         if (tFar < 0)
+         {
+            return false;
+         }
+      }
+   }
+   *t = tNear;
+
+   data->hit = true;
+   data->point = ray.dir * tNear;
+   data->point += ray.point;
+   data->t = tNear;
+   data->object = this;
+   return true;
 }

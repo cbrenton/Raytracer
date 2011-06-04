@@ -9,13 +9,19 @@
 #define __BOX_H__
 
 #include "Geometry.h"
-#include "Plane.h"
+
+class Plane;
 
 class Box : public Geometry {
    public:
+      Box() {};
+      Box(vec3_t c1, vec3_t c2);
       Box(std::istream& input);
       ~Box();
-      bool hit(Ray ray, float *t, float minT = 0.0, float maxT = DIST_MAX);
+      Box *bBox();
+      Box *combine(Box *b1, Box *b2);
+      vec3_t getNormal(vec3_t point);
+      bool hit(Ray ray, float *t, HitData *data = NULL, float minT = 0.0, float maxT = DIST_MAX);
       inline void debug()
       {
          printf("Box: { <%f, %f, %f>, <%f, %f, %f>\n",

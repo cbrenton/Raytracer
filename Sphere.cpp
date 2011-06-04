@@ -42,8 +42,22 @@ Sphere::Sphere(vec3_t _loc, float _rad) :
       location = _loc;
    }
 
-bool Sphere::hit(Ray ray, float *t, float minT, float maxT)
+Box* Sphere::bBox()
 {
+   vec3_t c1 = vec3_t(location.x() - radius,
+         location.y() - radius,
+         location.z() - radius);
+   vec3_t c2 = vec3_t(location.x() + radius,
+         location.y() + radius,
+         location.z() + radius);
+   return new Box(c1, c2);
+}
+
+bool Sphere::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
+{
+   //Ray ray = Ray();
+   //Ray *ray;
+   //ray = rayIn.transform(getInvM());
    vec3_t oMinusC = ray.point - location;
    float _b = ray.dir.dot(oMinusC);
    float _c = oMinusC.dot(oMinusC) - (radius * radius);
@@ -59,22 +73,46 @@ bool Sphere::hit(Ray ray, float *t, float minT, float maxT)
       if (t0 < t1)
       {
          *t = t0;
+
+         data->hit = true;
+         data->point = ray.dir * t0;
+         data->point += ray.point;
+         data->t = t0;
+         data->object = this;
          return true;
       }
       else if (t1 < t0)
       {
          *t = t1;
+
+         data->hit = true;
+         data->point = ray.dir * t1;
+         data->point += ray.point;
+         data->t = t1;
+         data->object = this;
          return true;
       }
    }
    else if (t0 >= 0)
    {
       *t = t0;
+
+      data->hit = true;
+      data->point = ray.dir * t0;
+      data->point += ray.point;
+      data->t = t0;
+      data->object = this;
       return true;
    }
    else if (t1 >= 0)
    {
       *t = t1;
+
+      data->hit = true;
+      data->point = ray.dir * t1;
+      data->point += ray.point;
+      data->t = t1;
+      data->object = this;
       return true;
    }
    return false;

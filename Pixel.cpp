@@ -17,12 +17,12 @@ void Pixel::setColor(float _r, float _g, float _b, float _a)
    a = _a;
 }
 
-void Pixel::add(Pixel *other)
+void Pixel::add(Pixel other)
 {
-   r += other->r;
-   g += other->g;
-   b += other->b;
-   //a += other->a;
+   r += other.r;
+   g += other.g;
+   b += other.b;
+   //a += other.a;
    a = 1;
 }
 
@@ -34,8 +34,27 @@ void Pixel::multiply(float scale)
    a *= scale;
 }
 
+void Pixel::clamp()
+{
+   r = std::max(r, 0.0f);
+   g = std::max(g, 0.0f);
+   b = std::max(b, 0.0f);
+   r = std::min(r, 1.0f);
+   g = std::min(g, 1.0f);
+   b = std::min(b, 1.0f);
+}
+
+void Pixel::setClear()
+{
+   r = 0;
+   g = 0;
+   b = 0;
+   a = 1;
+}
+
 void Pixel::print(std::ofstream& out)
 {
+   clamp();
    out << (char)(b * 255)
       << (char)(g * 255)
       << (char)(r * 255)

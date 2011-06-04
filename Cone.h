@@ -9,11 +9,13 @@
 #define __CONE_H__
 
 #include "Geometry.h"
+#include "Box.h"
 
 class Cone : public Geometry {
    public:
       Cone(std::istream& input);
-      bool hit(Ray ray, float *t, float minT = 0.0, float maxT = DIST_MAX);
+      Box *bBox();
+      bool hit(Ray ray, float *t, HitData *data = NULL, float minT = 0.0, float maxT = DIST_MAX);
       inline void debug()
       {
          printf("Cone: { <%f, %f, %f>, %f, <%f, %f, %f>, %f\n",

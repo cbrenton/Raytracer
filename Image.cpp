@@ -5,11 +5,16 @@ using namespace std;
 Image::Image(int w, int h):
    width(w), height(h)
 {
-   filename = "out.tga";
+   init();
+   filename = "../output/out.tga";
 }
 
 Image::~Image()
 {
+   for (int i = 0; i < width; ++i) {
+      delete[] data[i];
+   }
+   delete[] data;
 }
 
 void Image::init()
@@ -19,21 +24,21 @@ void Image::init()
       fprintf(stderr, "Invalid image dimensions.\n");
       exit(EXIT_FAILURE);
    }
-   data = new Pixel**[width];
+   data = new Pixel*[width];
    for (int i = 0; i < width; ++i) {
-      data[i] = new Pixel*[height];
+      data[i] = new Pixel[height];
       for (int j = 0; j < height; ++j) {
-         data[i][j] = new Pixel(0, 0, 0, 0);
+         data[i][j] = Pixel(0, 0, 0, 0);
       }
    }
 }
 
 void Image::setPixel(int x, int y, Pixel *pIn)
 {
-   data[x][y]->r = pIn->r;
-   data[x][y]->g = pIn->g;
-   data[x][y]->b = pIn->b;
-   data[x][y]->a = pIn->a;
+   data[x][y].r = pIn->r;
+   data[x][y].g = pIn->g;
+   data[x][y].b = pIn->b;
+   data[x][y].a = pIn->a;
 }
 
 void Image::testPattern()
@@ -90,13 +95,11 @@ void Image::write()
 
    writeHeader(myfile);
 
-   //for (int i = 0; i < width; i++)
    for (int i = 0; i < height; i++)
    {
-      //for (int j = 0; j < height; j++)
       for (int j = 0; j < width; j++)
       {
-         data[j][i]->print(myfile);
+         data[j][i].print(myfile);
       }
    }
 

@@ -10,17 +10,22 @@
 class Material
 {
    public:
-      Material() {};
-      Material(float _r, float _g, float _b,
-            float _a, float _d, float _s, float _rough, float _reflect);
+      Material() { Material(0.0, 0.0, 0.0, 0.5,
+            1.0, 0.0, 0.0, 1.0,
+            0.0, false, 0.0); };
+      Material(float _r, float _g, float _b, float _f = 0.5,
+            float _a = 1.0, float _d = 0.0, float _s = 0.0, float _rough = 1.0,
+            float _reflect = 0.0, bool _refract = false, float _ior = 0.0);
       ~Material();
-      void setPigment(float _r, float _g, float _b);
-      void setFinish(float _a, float _d, float _s);
-      float r, g, b, ambient, diffuse, specular, roughness, reflect;
+      float r, g, b, f, ambient, diffuse, specular, roughness, reflect;
+      bool refract;
+      float ior;
       float emissive;
       inline void debug()
       {
-         printf("%f, %f, %f, %f, %f, %f, %f, %f\n",
-               r, g, b, ambient, diffuse, specular, roughness, reflect);
+         printf("%f, %f, %f, %f,\n%f, %f, %f, %f,\n%f, %d, %f\n",
+               r, g, b, f,
+               ambient, diffuse, specular, roughness,
+               reflect, refract, ior);
       }
 };

@@ -160,9 +160,24 @@ const Matrix4 Matrix4::operator*(const Matrix4& rhs) const {
 
 const vec3_t Matrix4::operator*(const vec3_t& rhs) const {
    vec3_t newPoint;
+   /*
    newPoint.x(_11 * rhs.v[0] + _21 * rhs.v[1] + _31 * rhs.v[2] + _41);
    newPoint.y(_12 * rhs.v[0] + _22 * rhs.v[1] + _32 * rhs.v[2] + _42);
    newPoint.z(_13 * rhs.v[0] + _23 * rhs.v[1] + _33 * rhs.v[2] + _43);
+   */
+   newPoint.x(_11 * rhs.v[0] + _21 * rhs.v[1] + _31 * rhs.v[2]);
+   newPoint.y(_12 * rhs.v[0] + _22 * rhs.v[1] + _32 * rhs.v[2]);
+   newPoint.z(_13 * rhs.v[0] + _23 * rhs.v[1] + _33 * rhs.v[2]);
+
+   return newPoint;
+}
+
+const vec4_t Matrix4::operator*(const vec4_t& rhs) const {
+   vec4_t newPoint;
+   newPoint.x(_11 * rhs.v[0] + _21 * rhs.v[1] + _31 * rhs.v[2] + _41 * rhs.v[3]);
+   newPoint.y(_12 * rhs.v[0] + _22 * rhs.v[1] + _32 * rhs.v[2] + _42 * rhs.v[3]);
+   newPoint.z(_13 * rhs.v[0] + _23 * rhs.v[1] + _33 * rhs.v[2] + _43 * rhs.v[3]);
+   newPoint.w(_14 * rhs.v[0] + _24 * rhs.v[1] + _34 * rhs.v[2] + _44 * rhs.v[3]);
 
    return newPoint;
 }

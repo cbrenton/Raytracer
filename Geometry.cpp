@@ -6,20 +6,45 @@
  */
 
 #include "Geometry.h"
+#include "Box.h"
+#include <cstring>
+#include <stdlib.h>
 
 Geometry::Geometry()
 {
    transform = Matrix4();
-   mat = Material(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+   //mat = Material(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+   mat = Material(0.0f, 0.0f, 0.0f);
 }
 
 Geometry::~Geometry()
 {
 }
 
-bool Geometry::hit(Ray ray, float *t, float minT, float maxT)
+bool Geometry::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
 {
    return -1.0;
+}
+
+bool Geometry::hitBVH(Ray ray, float *t, HitData *data, float minT, float maxT)
+{
+   float boxT;
+   HitData boxData;
+   Box *thisBBox = bBox();
+   bool boxHit = thisBBox->hit(ray, &boxT, &boxData, minT, maxT);
+   delete thisBBox;
+   if (boxHit)
+   {
+      return hit(ray, t, data, minT, maxT);
+   }
+   return false;
+}
+
+bool Geometry::hitTransformed(Ray rayIn, float *t, HitData *data, float minT, float maxT)
+{
+   Ray *ray;
+   ray = rayIn.transform(getInvM());
+   return hit(*ray, t, data, minT, maxT);
 }
 
 vec3_t Geometry::getNormal(vec3_t point)
@@ -27,11 +52,18 @@ vec3_t Geometry::getNormal(vec3_t point)
    return vec3_t(0.0, 0.0, 0.0);
 }
 
+Box* Geometry::bBox()
+{
+   Box *result = new Box(vec3_t(0, 0, 0), vec3_t(0, 0, 0));
+   return result;
+}
+
 void Geometry::readOptions(std::istream& input)
 {
    std::string line;
+   bool isDone = false;
    getline(input, line);
-   while (line != "}")
+   while (line != "}" && !isDone)
    {
       unsigned int count = 0;
       int curChar = 0;
@@ -46,32 +78,94 @@ void Geometry::readOptions(std::istream& input)
          curChar = line[count++];
          option += (char)curChar;
       }
-      getOption(option, line.substr(count));
+      isDone = getOption(option, line.substr(count));
       getline(input, line);
    }
+   transformInv = transform.inverse();
 }
 
-void Geometry::getOption(std::string option, std::string line)
+bool Geometry::getOption(std::string option, std::string line)
 {
+   bool result = false;
+   int braceCount = 0;
+   for (unsigned i = 0; i < line.size(); i++)
+   {
+      if (line[i] == '{')
+      {
+         braceCount++;
+      }
+      if (line[i] == '}')
+      {
+         braceCount--;
+      }
+   }
+   if (braceCount < 0)
+   {
+      result = true;
+   }
    //printf("%s line: %s\n", option.c_str(), line.c_str());
    if (option.compare("pigment") == 0)
    {
       //printf("pigment: %s\n", line.c_str());
-      sscanf(line.c_str(), " { color rgb <%f, %f, %f> }",
+      int scan = sscanf(line.c_str(), " { color rgb <%f, %f, %f> }",
             &mat.r, &mat.g, &mat.b);
+      if (scan == 0)
+      {
+         scan = sscanf(line.c_str(), " { color rgbf <%f, %f, %f, %f> }",
+               &mat.r, &mat.g, &mat.b, &mat.f);
+      }
       //printf("\tPIGMENT %f. %f, %f\n", r, g, b);
    }
    else if (option.compare("finish") == 0)
    {
-      int scan = sscanf(line.c_str(), " { ambient %f diffuse %f specular %f roughness %f reflection %f",
-         &mat.ambient, &mat.diffuse, &mat.specular,
-         &mat.roughness, &mat.reflect);
-      if (scan == 2)
+      int scan = -1;
+      //char *tok;
+      char *tok;
+      char *lineptr = strdup(line.c_str());
+      tok = strtok(lineptr, " {");
+      while (tok != NULL)
       {
-         scan = sscanf(line.c_str(), " { ambient %f diffuse %f reflection %f",
-         &mat.ambient, &mat.diffuse, &mat.reflect);
+         if (strcmp(tok, "ambient") == 0)
+         {
+            tok = strtok(NULL, " {");
+            scan = sscanf(tok, "%f", &mat.ambient);
+         }
+         else if (strcmp(tok, "specular") == 0)
+         {
+            tok = strtok(NULL, " {");
+            scan = sscanf(tok, "%f", &mat.specular);
+         }
+         else if (strcmp(tok, "diffuse") == 0)
+         {
+            tok = strtok(NULL, " {");
+            scan = sscanf(tok, "%f", &mat.diffuse);
+         }
+         else if (strcmp(tok, "roughness") == 0)
+         {
+            tok = strtok(NULL, " {");
+            scan = sscanf(tok, "%f", &mat.roughness);
+         }
+         else if (strcmp(tok, "reflection") == 0)
+         {
+            tok = strtok(NULL, " {");
+            scan = sscanf(tok, "%f", &mat.reflect);
+         }
+         else if (strcmp(tok, "refraction") == 0)
+         {
+            int tmp = -1;
+            tok = strtok(NULL, " {");
+            scan = sscanf(tok, "%d", &tmp);
+            mat.refract = (tmp != 0);
+         }
+         else if (strcmp(tok, "ior") == 0)
+         {
+            tok = strtok(NULL, " {");
+            scan = sscanf(tok, "%f", &mat.ior);
+         }
+         tok = strtok(NULL, " {");
       }
-      cout << "finish: " << scan << endl;
+      free(lineptr);
+      free(tok);
    }
    else if (option.compare("scale") == 0)
    {
@@ -126,4 +220,5 @@ void Geometry::getOption(std::string option, std::string line)
       printf("\tinvalid option: %s\n", option.c_str());
       printf("\t\t%s\n", line.c_str());
    }
+   return result;
 }

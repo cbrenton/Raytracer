@@ -14,7 +14,7 @@ class Image {
       Image() {};
       Image(int w, int h);
       ~Image();
-      Pixel ***data;
+      Pixel **data;
       void setSize(int w, int h);
       void setPixel(int x, int y, Pixel *pIn);
       void testPattern();
@@ -24,8 +24,6 @@ class Image {
       int width;
       int height;
       std::string filename;
-   //protected:
-      //std::ofstream myfile;
 };
 
 #endif

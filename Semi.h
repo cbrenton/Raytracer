@@ -10,14 +10,16 @@
 
 #include "Geometry.h"
 #include "Plane.h"
+#include "Box.h"
 
 class Semi : public Geometry {
    public:
       Semi() : Geometry() {};
       Semi(std::istream& input);
       Semi(vec3_t _loc, float _rad);
+      Box *bBox();
       ~Semi();
-      bool hit(Ray ray, float *t, float minT = 0.0, float maxT = DIST_MAX);
+      bool hit(Ray ray, float *t, HitData *data = NULL, float minT = 0.0, float maxT = DIST_MAX);
       vec3_t getNormal(vec3_t point);
       void debug();
       float radius;

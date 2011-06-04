@@ -43,7 +43,17 @@ Plane::Plane(std::istream& input)
    readOptions(input);
 }
 
-bool Plane::hit(Ray ray, float *t, float minT, float maxT)
+Box* Plane::bBox()
+{
+   return new Box();
+}
+
+bool Plane::hitBVH(Ray ray, float *t, HitData *data, float minT, float maxT)
+{
+   return hit(ray, t, data, minT, maxT);
+}
+
+bool Plane::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
 {
    float denominator = ray.dir.dot(location);
    if (denominator == 0.0)
@@ -56,6 +66,11 @@ bool Plane::hit(Ray ray, float *t, float minT, float maxT)
    *t = numerator / denominator;
    if (*t >= minT && *t <= maxT)
    {
+      data->hit = true;
+      data->point = ray.dir * (*t);
+      data->point += ray.point;
+      data->t = *t;
+      data->object = this;
       return true;
    }
    return false;

@@ -19,6 +19,7 @@
 #include <stdio.h>
 
 struct vec3_t;
+struct vec4_t;
 
 struct Matrix4 {
    union {
@@ -54,6 +55,7 @@ struct Matrix4 {
    Matrix4 &operator-=(const Matrix4& rhs);
    Matrix4 &operator*=(float scale);
    const vec3_t operator*(const vec3_t& rhs) const;
+   const vec4_t operator*(const vec4_t& rhs) const;
    const Matrix4 operator*(const Matrix4& rhs) const;
    const Matrix4 operator-(const Matrix4& rhs) const;
    const Matrix4 operator*(float scale) const;

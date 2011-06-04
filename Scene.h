@@ -19,31 +19,26 @@
 #include "Semi.h"
 #include "Triangle.h"
 #include "Pixel.h"
-
-struct HitData
-{
-   bool hit;
-   vec3_t point;
-   float t;
-   Geometry *object;
-   HitData() :
-      hit(false), t(-1.0)
-   {
-   }
-};
+#include "bvh_node.h"
 
 class Scene {
    public:
-      // Nothing yet.
+      Scene() {hasBVH = false;}
+      virtual ~Scene();
       static Scene* read(std::istream& input);
-      Pixel* getIntersect(Ray ray, int depth = 1);
-      //HitData* getIntersect(Ray ray);
-      //Pixel* seekLight(vec3_t origin, Geometry* hitObject);
-      Pixel* seekLight(HitData *data, vec3_t view);
+      void constructBVH();
+      bool hit(Ray ray, HitData *data);
+      Pixel getIntersect(Ray ray, int depth = 1);
+      Pixel seekLight(HitData *data, vec3_t view);
+      vec3_t reflect(vec3_t d, vec3_t n);
+      vec3_t refract(vec3_t d, vec3_t n, float n1, float n2, bool *success);
       Camera* camera;
+      vector<Geometry*> geometry_vec;
    private:
+      bool hasBVH;
       int lights_size, geometry_size, planes_size, spheres_size,
           triangles_size;
+      bvh_node *sceneBVH;
       Light **lights;
       Geometry **geometry;
       Plane **planes;
