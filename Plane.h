@@ -16,7 +16,7 @@ class Plane : public Geometry {
       Plane() {};
       Plane(vec3_t normal, float d);
       Plane(std::istream& input);
-      Box *bBox();
+      //Box *bBox();
       bool hitBVH(Ray ray, float *t, HitData *data = NULL, float minT = 0.0, float maxT = DIST_MAX);
       bool hit(Ray ray, float *t, HitData *data = NULL, float minT = 0.0, float maxT = DIST_MAX);
       vec3_t getNormal(vec3_t point);

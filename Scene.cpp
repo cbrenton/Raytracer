@@ -15,7 +15,7 @@
 
 using namespace std;
 
-Scene* Scene::read(istream& input)
+Scene* Scene::read(istream& input, bool _bb)
 {
    vector<Light*> lights_vec;
    //vector<Geometry*> geometry_vec;
@@ -23,7 +23,8 @@ Scene* Scene::read(istream& input)
    vector<Sphere*> spheres_vec;
    vector<Triangle*> triangles_vec;
 
-   Scene* curScene = new Scene();
+   Scene* curScene = new Scene(_bb);
+   
    curScene->lights_size = curScene->geometry_size = curScene->planes_size = curScene->spheres_size = 0;
    // Read file.
 

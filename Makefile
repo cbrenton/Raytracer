@@ -25,12 +25,15 @@ PROGNAME=raytrace
 INPUT_EXT=pov
 INPUT_DIR=input
 OUTPUT_DIR=output
-#INPUTNAME=bunny_small
+INPUTNAME=bunny_small
 #INPUTNAME=simple_spec
-INPUTNAME=recurse_simp
+#INPUTNAME=recurse_simp
 #INPUTNAME=simple
 
 HANDINDIR=csc473p1p3
+
+AA_FLAGS=-a -b
+NO_AA_FLAGS=-b
 
 OBJECTS=$(FILES:.cpp=.o)
 
@@ -44,7 +47,7 @@ $(PROGNAME): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 run:
-	./${PROGNAME} +W640 -H 480 -a -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} +W640 -H 480 ${AA_FLAGS} -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 urn: run
 
@@ -52,19 +55,19 @@ nicebig:
 	./${PROGNAME} +W1280 -H 960 -a=16 -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 small:
-	./${PROGNAME} +W320 -H 240 -a -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} +W320 -H 240 ${AA_FLAGS} -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 tiny:
-	./${PROGNAME} +W160 -H 120 -a -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} +W160 -H 120 ${AA_FLAGS} -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 noaa:
-	./${PROGNAME} +W640 -H 480 -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} +W640 -H 480 ${NO_AA_FLAGS} -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 smallnoaa:
-	./${PROGNAME} +W320 -H 240 -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} +W320 -H 240 ${NO_AA_FLAGS} -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 tinynoaa:
-	./${PROGNAME} +W160 -H 120 -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} +W160 -H 120 ${NO_AA_FLAGS} -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 bunny:
 	./${PROGNAME} -w640 -h480 -i bunny_small.${INPUT_EXT}
@@ -103,11 +106,16 @@ vg: valgrind
 
 vgf: valgrindfull
 
+vge: valgrinderror
+
 valgrind:
 	valgrind --tool=memcheck --leak-check=yes ./${PROGNAME} -h 20 -w 20 -i ${INPUT_DIR}/simple.${INPUT_EXT}
 
 valgrindfull:
 	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes ./${PROGNAME} -h 200 -w 200 -i ${INPUT_DIR}/simple.${INPUT_EXT}
+
+valgrinderror:
+	./${PROGNAME} -h 20 -w 20 -i ${INPUT_DIR}/simple.${INPUT_EXT}
 
 eog:
 	eog ${OUTPUT_DIR}/${INPUTNAME}.tga

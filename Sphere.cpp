@@ -35,6 +35,7 @@ Sphere::Sphere(std::istream& input)
       exit(EXIT_FAILURE);
    }
    readOptions(input);
+   thisBBox = bBox();
 }
 
 Sphere::Sphere(vec3_t _loc, float _rad) :

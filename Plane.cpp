@@ -43,10 +43,12 @@ Plane::Plane(std::istream& input)
    readOptions(input);
 }
 
+/*
 Box* Plane::bBox()
 {
    return new Box();
 }
+*/
 
 bool Plane::hitBVH(Ray ray, float *t, HitData *data, float minT, float maxT)
 {

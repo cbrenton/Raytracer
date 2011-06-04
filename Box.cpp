@@ -26,6 +26,8 @@ Box::Box(vec3_t c1, vec3_t c2)
    pFront = new Plane(vec3_t(0, 0, 1), location.z());
    //pBack = new Plane(vec3_t(0, 0, -1), corner2.z());
    pBack = new Plane(vec3_t(0, 0, 1), corner2.z());
+   //thisBBox = bBox();
+   thisBBox = this;
 }
 
 Box::Box(std::istream& input)
@@ -63,6 +65,7 @@ Box::Box(std::istream& input)
    pFront = new Plane(vec3_t(0, 0, 1), location.z());
    //pBack = new Plane(vec3_t(0, 0, -1), corner2.z());
    pBack = new Plane(vec3_t(0, 0, 1), corner2.z());
+   thisBBox = this;
 }
 
 Box::~Box()
@@ -78,6 +81,7 @@ Box::~Box()
 Box* Box::bBox()
 {
    return new Box(location, corner2);
+   //return this;
 }
 
 Box* Box::combine(Box *b1, Box *b2)

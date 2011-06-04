@@ -37,6 +37,7 @@ Cone::Cone(std::istream& input)
       exit(EXIT_FAILURE);
    }
    readOptions(input);
+   thisBBox = bBox();
 }
 
 Box* Cone::bBox()

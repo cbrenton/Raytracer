@@ -23,9 +23,9 @@
 
 class Scene {
    public:
-      Scene() {hasBVH = false;}
+      Scene(bool _bb = false) {useBB = _bb; hasBVH = false;}
       virtual ~Scene() {};
-      static Scene* read(std::istream& input);
+      static Scene* read(std::istream& input, bool _bb = false);
       void constructBVH();
       bool hit(Ray ray, HitData *data);
       Pixel getIntersect(Ray ray, int depth = 1);
@@ -36,6 +36,7 @@ class Scene {
       vector<Geometry*> geometry_vec;
    protected:
       bool hasBVH;
+      bool useBB;
       int lights_size, geometry_size, planes_size, spheres_size,
           triangles_size;
       bvh_node *sceneBVH;

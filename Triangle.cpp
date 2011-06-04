@@ -41,6 +41,7 @@ Triangle::Triangle(std::istream& input)
       exit(EXIT_FAILURE);
    }
    readOptions(input);
+   thisBBox = bBox();
 }
 
 Triangle::Triangle(vec3_t c1, vec3_t c2, vec3_t c3)

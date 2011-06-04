@@ -19,6 +19,7 @@ Geometry::Geometry()
 
 Geometry::~Geometry()
 {
+   delete thisBBox;
 }
 
 bool Geometry::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
@@ -28,11 +29,14 @@ bool Geometry::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
 
 bool Geometry::hitBVH(Ray ray, float *t, HitData *data, float minT, float maxT)
 {
+   //return hit(ray, t, data, minT, maxT);
    float boxT;
    HitData boxData;
-   Box *thisBBox = bBox();
+   if (thisBBox == NULL)
+   {
+      cerr << "null bounding box" << endl;
+   }
    bool boxHit = thisBBox->hit(ray, &boxT, &boxData, minT, maxT);
-   delete thisBBox;
    if (boxHit)
    {
       return hit(ray, t, data, minT, maxT);

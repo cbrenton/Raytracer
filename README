@@ -12,6 +12,10 @@ The format for the antialiasing flag is somewhat different.
          sign, with no spaces in between. If no argument is given, a
          default value of 4 is used.
 
+Additional command line arguments:
+   -b    : Use bounding boxes.
+   -p    : Disable printing of the progress bar (enabled by default).
+
 To build:
    $ make
 
@@ -19,4 +23,4 @@ To run with preset configuration:
    $ make run
 
 sample usage:
-   $ raytrace -w512 -H=512 -a=4 +Iimagein
+   $ raytrace -w512 -H=512 -a=4 -b -p +Iimagein

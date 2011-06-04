@@ -32,6 +32,7 @@ class Geometry {
       virtual vec3_t getNormal(vec3_t point);
       virtual Box *bBox();
       virtual void debug() {};
+      Box *thisBBox;
       Material mat;
       inline float getR()
       {

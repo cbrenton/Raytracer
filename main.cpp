@@ -21,9 +21,6 @@
 #define AA_RAYS 4
 #define RECURSION_DEPTH 6
 
-// Set to 0 to turn off progress tracking.
-#define SHOW_PROGRESS 1
-
 // Determines the length of the progress bar. If your terminal is being overrun, try decreasing this.
 #define BAR_LEN 20
 
@@ -33,6 +30,8 @@ Image *image;
 Scene *scene;
 string inputFileName;
 string filename;
+bool useBB = false;
+bool showProgress = true;
 int width = DEFAULT_W;
 int height = DEFAULT_H;
 int numAA = 1;
@@ -328,7 +327,7 @@ int main(int argc, char **argv)
    srand((int)time(NULL));
 
    int c;
-   while ((c = getopt(argc, argv, "a::A::i:I:h:H:w:W:")) != -1)
+   while ((c = getopt(argc, argv, "a::A::bBi:I:h:H:pPw:W:")) != -1)
    {
       switch (c)
       {
@@ -342,11 +341,17 @@ int main(int argc, char **argv)
             setAA((char *)"");
          }
          break;
+      case 'b': case 'B':
+         useBB = true;
+         break;
       case 'h': case 'H':
          setHeight(optarg);
          break;
       case 'i': case 'I':
          setFilename(optarg);
+         break;
+      case 'p': case 'P':
+         showProgress = false;
          break;
       case 'w': case 'W':
          setWidth(optarg);
@@ -367,11 +372,17 @@ int main(int argc, char **argv)
             setAA(argv[i] + 2);
             cout << "o1" << endl;
             break;
+         case 'b': case 'B':
+            useBB = true;
+            break;
          case 'h': case 'H':
             setHeight(argv[i] + 2);
             break;
          case 'i': case 'I':
             setFilename(argv[i] + 2);
+            break;
+         case 'p': case 'P':
+            showProgress = false;
             break;
          case 'w': case 'W':
             setWidth(argv[i] + 2);
@@ -392,7 +403,7 @@ int main(int argc, char **argv)
       cerr << "File " << inputFileName << " does not exist." << endl;
       exit(EXIT_FAILURE);
    }
-   scene = Scene::read(inputFileStream);
+   scene = Scene::read(inputFileStream, useBB);
 
    image = new Image(width, height);
    image->filename = filename;
@@ -421,10 +432,10 @@ int main(int argc, char **argv)
    int gridH = height / BLOCK_SIZE;
 
    if(width % BLOCK_SIZE != 0)
-      gridW++;
+   gridW++;
 
    if(height % BLOCK_SIZE != 0)
-      gridH++;
+   gridH++;
 
    //dim3 dimGrid(gridW, gridH);
    */
@@ -489,6 +500,15 @@ int main(int argc, char **argv)
       cout << "Antialiasing is turned off." << endl;
    }
 
+   if (useBB)
+   {
+      cout << "Using bounding boxes," << endl;
+   }
+   else
+   {
+      cout << "Not using bounding boxes," << endl;
+   }
+
    cout << "Testing intersections." << endl;
 
    //scene->constructBVH();
@@ -507,7 +527,7 @@ int main(int argc, char **argv)
             tmp.multiply(1.0f / (float)numAA);
             result->add(tmp);
          }
-         if (SHOW_PROGRESS)
+         if (showProgress)
          {
             // Set the frequency of ticks to update every .01%, if possible.
             int tick = max(image->width*image->height/numAA / 10000, 100);
@@ -519,7 +539,7 @@ int main(int argc, char **argv)
       }
    }
 
-   if (SHOW_PROGRESS)
+   if (showProgress)
    {
       cout << endl;
    }

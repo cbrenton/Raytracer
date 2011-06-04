@@ -14,7 +14,7 @@ class Plane;
 
 class Box : public Geometry {
    public:
-      Box() {};
+      Box() {thisBBox = this;};
       Box(vec3_t c1, vec3_t c2);
       Box(std::istream& input);
       ~Box();
