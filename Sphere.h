@@ -9,7 +9,7 @@
 #define __SPHERE_H__
 
 #include "Geometry.h"
-#include "Intersection_K.h"
+#include "cuda/Intersection_K.h"
 #include "Box.h"
 
 class Sphere : public Geometry

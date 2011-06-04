@@ -9,7 +9,7 @@
 #define __TRIANGLE_H__
 
 #include "Geometry.h"
-#include "Intersection_K.h"
+#include "cuda/Intersection_K.h"
 #include "Box.h"
 
 class Triangle : public Geometry

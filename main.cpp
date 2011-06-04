@@ -13,8 +13,7 @@
 #include "Scene.h"
 
 // Include kernel structs and functions.
-//#include "Intersection_Kernel.h"
-#include "Intersection_K.h"
+#include "cuda/Intersection_K.h"
 
 #define POV_EXT ".pov"
 #define DEFAULT_W 256
