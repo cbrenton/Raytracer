@@ -19,7 +19,7 @@
 #define DEFAULT_W 256
 #define DEFAULT_H 256
 #define AA_RAYS 4
-#define RECURSION_DEPTH 2
+#define RECURSION_DEPTH 6
 
 // Determines the length of the progress bar. If your terminal is being overrun, try decreasing this.
 #define BAR_LEN 20
@@ -30,7 +30,7 @@ Image *image;
 Scene *scene;
 string inputFileName;
 string filename;
-bool useBB = false;
+bool useBVH = false;
 bool showProgress = true;
 int width = DEFAULT_W;
 int height = DEFAULT_H;
@@ -342,7 +342,7 @@ int main(int argc, char **argv)
          }
          break;
       case 'b': case 'B':
-         useBB = true;
+         useBVH = true;
          break;
       case 'h': case 'H':
          setHeight(optarg);
@@ -373,7 +373,7 @@ int main(int argc, char **argv)
             cout << "o1" << endl;
             break;
          case 'b': case 'B':
-            useBB = true;
+            useBVH = true;
             break;
          case 'h': case 'H':
             setHeight(argv[i] + 2);
@@ -403,7 +403,7 @@ int main(int argc, char **argv)
       cerr << "File " << inputFileName << " does not exist." << endl;
       exit(EXIT_FAILURE);
    }
-   scene = Scene::read(inputFileStream, useBB);
+   scene = Scene::read(inputFileStream);
 
    image = new Image(width, height);
    image->filename = filename;
@@ -500,7 +500,7 @@ int main(int argc, char **argv)
       cout << "Antialiasing is turned off." << endl;
    }
 
-   if (useBB)
+   if (useBVH)
    {
       cout << "Using bounding boxes." << endl;
    }
@@ -511,7 +511,7 @@ int main(int argc, char **argv)
 
    cout << "Testing intersections." << endl;
 
-   if (useBB)
+   if (useBVH)
    {
       scene->constructBVH();
    }

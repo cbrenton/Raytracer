@@ -15,7 +15,7 @@
 
 using namespace std;
 
-Scene* Scene::read(istream& input, bool _bb)
+Scene* Scene::read(istream& input)
 {
    vector<Light*> lights_vec;
    //vector<Geometry*> geometry_vec;
@@ -23,7 +23,7 @@ Scene* Scene::read(istream& input, bool _bb)
    //vector<Sphere*> spheres_vec;
    //vector<Triangle*> triangles_vec;
 
-   Scene* curScene = new Scene(_bb);
+   Scene* curScene = new Scene();
    
    curScene->lights_size = curScene->geometry_size = curScene->planes_size = curScene->spheres_size = 0;
    // Read file.
@@ -49,7 +49,6 @@ Scene* Scene::read(istream& input, bool _bb)
          else
          {
             // Create items.
-
             if (curItemName.compare("camera") == 0)
             {
                // Create camera.
@@ -235,56 +234,41 @@ Pixel Scene::seekLight(HitData *data, vec3_t view)
 bool Scene::hit(Ray ray, HitData *data)
 {
    int hitObject = -1;
-   float t;
+   float t = -1;
    bool hitFound = false;
    float curDepth = 0.0;
-   //HitData *closestData = new HitData();
+   HitData *closestData = new HitData();
    if (hasBVH)
    {
-      //cerr << "has bvh." << endl;
       bool bvhHit = sceneBVH->hit(ray, &t, data);
-      return bvhHit;
-      //return sceneBVH->hit(ray, &t, data);
-      /*
-      cout << "planes: " << planes_vec.size() << endl;
       for (unsigned i = 0; i < planes_vec.size(); i++)
       {
-         cerr << "i: " << i << endl;
          Plane *curObject = planes_vec[i];
-         t = -1.0;
+         float planeT = -1.0;
          HitData tmpData;
          bool intersected = false;
-            intersected = curObject->hit(ray, &t, &tmpData);
+            intersected = curObject->hit(ray, &planeT, &tmpData);
          if (intersected)
          {
-            cerr << "\n\nhit" << endl;
-            if (t >= 0 && (!hitFound || (hitFound && t < curDepth)))
+            if (planeT >= 0 && (!hitFound || (hitFound && planeT < curDepth)))
             {
-               curDepth = t;
+               curDepth = planeT;
                hitObject = i;
                closestData = &tmpData;
             }
          }
          hitFound |= (intersected && curDepth > 0.0);
       }
-      if (hitFound && curDepth > t)
+      if (hitFound && (curDepth < t || !bvhHit))
       {
-         //data = closestData;w
-         cerr << "plane hit" << endl;
          data->hit = true;
          data->point = ray.dir * curDepth;
          data->point += ray.point;
          data->t = curDepth;
          data->object = planes_vec[hitObject];
          t = curDepth;
-         cerr << "plane hit done" << endl;
-      }
-      else
-      {
-         cerr << "no plane hit" << endl;
       }
       return (bvhHit || hitFound);
-      */
    }
    else
    {
@@ -358,14 +342,7 @@ bool Scene::hit(Ray ray, HitData *data)
          t = -1.0;
          HitData tmpData;
          bool intersected = false;
-         if (useBB)
-         {
-            intersected = curObject->hitBVH(ray, &t, &tmpData);
-         }
-         else
-         {
-            intersected = curObject->hit(ray, &t, &tmpData);
-         }
+         intersected = curObject->hit(ray, &t, &tmpData);
          if (intersected)
          {
             if (t >= 0 && (!hitFound || (hitFound && t < curDepth)))
@@ -380,7 +357,7 @@ bool Scene::hit(Ray ray, HitData *data)
       if (hitFound)
       {
          //data = closestData;
-         ///*
+         //*
          data->hit = true;
          data->point = ray.dir * curDepth;
          data->point += ray.point;

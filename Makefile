@@ -23,18 +23,18 @@ FILES=main.cpp Pixel.cpp Image.cpp Scene.cpp Geometry.cpp Camera.cpp Light.cpp P
 PROGNAME=raytrace
 
 INPUT_EXT=pov
-#INPUT_DIR=input/
-INPUT_DIR=~shirsh/cpe473/Final/
+INPUT_DIR=input/
+#INPUT_DIR=~shirsh/cpe473/Final/
 OUTPUT_DIR=output
 #INPUTNAME=bunny_tasty
-INPUTNAME=bunny_jumbo_reflect
-#INPUTNAME=recurse_simp
+#INPUTNAME=bunny_jumbo_reflect
+INPUTNAME=recurse_simp
 #INPUTNAME=simple_bvh
 
 HANDINDIR=csc473p1p3
 
 AA_FLAGS=-a -b
-NO_AA_FLAGS=-b
+NO_AA_FLAGS=-b -p
 
 OBJECTS=$(FILES:.cpp=.o)
 
