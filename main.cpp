@@ -19,7 +19,7 @@
 #define DEFAULT_W 256
 #define DEFAULT_H 256
 #define AA_RAYS 4
-#define RECURSION_DEPTH 6
+#define RECURSION_DEPTH 2
 
 // Determines the length of the progress bar. If your terminal is being overrun, try decreasing this.
 #define BAR_LEN 20
@@ -152,10 +152,10 @@ void badTest()
 
 float randFloat()
 {
-   float maxJitter = 0.5f;
-   float minJitter = -0.5f;
-   //float maxJitter = 1.0f;
-   //float minJitter = -1.0f;
+   //float maxJitter = 0.5f;
+   //float minJitter = -0.5f;
+   float maxJitter = 1.0f;
+   float minJitter = 0.0f;
    return (float)rand()/(float)RAND_MAX*(maxJitter - minJitter);
 }
 
@@ -502,16 +502,19 @@ int main(int argc, char **argv)
 
    if (useBB)
    {
-      cout << "Using bounding boxes," << endl;
+      cout << "Using bounding boxes." << endl;
    }
    else
    {
-      cout << "Not using bounding boxes," << endl;
+      cout << "Not using bounding boxes." << endl;
    }
 
    cout << "Testing intersections." << endl;
 
-   //scene->constructBVH();
+   if (useBB)
+   {
+      scene->constructBVH();
+   }
 
    // Test intersections for each ray.
    for (int i = 0; i < image->width; i++)

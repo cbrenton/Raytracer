@@ -11,13 +11,13 @@
 
 #define EXP_ARGS 4
 
-Plane::Plane(vec3_t normal, float d)
+Plane::Plane(vec3_t normal, float d) : Geometry()
 {
    location = normal;
    planeOffset = d;
 }
 
-Plane::Plane(std::istream& input)
+Plane::Plane(std::istream& input) : Geometry()
 {
    std::string line;
    getline(input, line);
@@ -44,11 +44,11 @@ Plane::Plane(std::istream& input)
 }
 
 /*
-Box* Plane::bBox()
-{
+   Box* Plane::bBox()
+   {
    return new Box();
-}
-*/
+   }
+   */
 
 bool Plane::hitBVH(Ray ray, float *t, HitData *data, float minT, float maxT)
 {
@@ -71,7 +71,7 @@ bool Plane::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
       data->hit = true;
       data->point = ray.dir * (*t);
       data->point += ray.point;
-      data->t = *t;
+      data->t = (*t);
       data->object = this;
       return true;
    }

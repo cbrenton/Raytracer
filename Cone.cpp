@@ -11,7 +11,7 @@
 
 #define EXP_ARGS 8
 
-Cone::Cone(std::istream& input)
+Cone::Cone(std::istream& input) : Geometry()
 {
    std::string line;
    getline(input, line);

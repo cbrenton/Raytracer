@@ -12,7 +12,7 @@
 
 #define EXP_ARGS 9
 
-Triangle::Triangle(std::istream& input)
+Triangle::Triangle(std::istream& input) : Geometry()
 {
    std::string line;
    getline(input, line);
@@ -44,7 +44,7 @@ Triangle::Triangle(std::istream& input)
    thisBBox = bBox();
 }
 
-Triangle::Triangle(vec3_t c1, vec3_t c2, vec3_t c3)
+Triangle::Triangle(vec3_t c1, vec3_t c2, vec3_t c3) : Geometry()
 {
    location = c1;
    corner2 = c2;
@@ -135,6 +135,14 @@ bool Triangle::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
       result = bT;
    }
    *t = result;
+   if (result > 0.01)
+   {
+      data->hit = true;
+      data->point = ray.dir * (*t);
+      data->point += ray.point;
+      data->t = (*t);
+      data->object = this;
+   }
    return (result > 0.01);
 }
 

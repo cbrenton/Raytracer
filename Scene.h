@@ -34,6 +34,7 @@ class Scene {
       vec3_t refract(vec3_t d, vec3_t n, float n1, float n2, bool *success);
       Camera* camera;
       vector<Geometry*> geometry_vec;
+      vector<Plane*> planes_vec;
    protected:
       bool hasBVH;
       bool useBB;

@@ -13,19 +13,19 @@
 
 #define EXP_ARGS 6
 
-Box::Box(vec3_t c1, vec3_t c2)
+Box::Box(vec3_t c1, vec3_t c2) : Geometry()
 {
    location = c1;
    corner2 = c2;
    pLeft = new Plane(vec3_t(1, 0, 0), location.x());
-   //pRight = new Plane(vec3_t(-1, 0, 0), corner2.x());
-   pRight = new Plane(vec3_t(1, 0, 0), corner2.x());
+   pRight = new Plane(vec3_t(-1, 0, 0), -corner2.x());
+   //pRight = new Plane(vec3_t(1, 0, 0), corner2.x());
    pBottom = new Plane(vec3_t(0, 1, 0), location.y());
-   //pTop = new Plane(vec3_t(0, -1, 0), corner2.y());
-   pTop = new Plane(vec3_t(0, 1, 0), corner2.y());
+   pTop = new Plane(vec3_t(0, -1, 0), -corner2.y());
+   //pTop = new Plane(vec3_t(0, 1, 0), corner2.y());
    pFront = new Plane(vec3_t(0, 0, 1), location.z());
-   //pBack = new Plane(vec3_t(0, 0, -1), corner2.z());
-   pBack = new Plane(vec3_t(0, 0, 1), corner2.z());
+   pBack = new Plane(vec3_t(0, 0, -1), -corner2.z());
+   //pBack = new Plane(vec3_t(0, 0, 1), corner2.z());
    //thisBBox = bBox();
    thisBBox = this;
 }
@@ -57,14 +57,14 @@ Box::Box(std::istream& input)
    }
    readOptions(input);
    pLeft = new Plane(vec3_t(1, 0, 0), location.x());
-   //pRight = new Plane(vec3_t(-1, 0, 0), corner2.x());
-   pRight = new Plane(vec3_t(1, 0, 0), corner2.x());
+   pRight = new Plane(vec3_t(-1, 0, 0), -corner2.x());
+   //pRight = new Plane(vec3_t(1, 0, 0), corner2.x());
    pBottom = new Plane(vec3_t(0, 1, 0), location.y());
-   //pTop = new Plane(vec3_t(0, -1, 0), corner2.y());
-   pTop = new Plane(vec3_t(0, 1, 0), corner2.y());
+   pTop = new Plane(vec3_t(0, -1, 0), -corner2.y());
+   //pTop = new Plane(vec3_t(0, 1, 0), corner2.y());
    pFront = new Plane(vec3_t(0, 0, 1), location.z());
-   //pBack = new Plane(vec3_t(0, 0, -1), corner2.z());
-   pBack = new Plane(vec3_t(0, 0, 1), corner2.z());
+   pBack = new Plane(vec3_t(0, 0, -1), -corner2.z());
+   //pBack = new Plane(vec3_t(0, 0, 1), corner2.z());
    thisBBox = this;
 }
 
@@ -84,7 +84,7 @@ Box* Box::bBox()
    //return this;
 }
 
-Box* Box::combine(Box *b1, Box *b2)
+void Box::combine(Box *b1, Box *b2)
 {
    float corners[3][2];
    for (int i = 0; i < 3; i++)
@@ -96,12 +96,34 @@ Box* Box::combine(Box *b1, Box *b2)
    }
    vec3_t c1 = vec3_t(corners[0][0], corners[1][0], corners[2][0]);
    vec3_t c2 = vec3_t(corners[0][1], corners[1][1], corners[2][1]);
-   return new Box(c1, c2);
+   location = c1;
+   corner2 = c2;
+}
+
+bool Box::closeEnough(vec_t a, vec_t b)
+{
+   return (max(a - b, b - a) < EPSILON);
 }
 
 vec3_t Box::getNormal(vec3_t point)
 {
-   return vec3_t(1.0, 0, 0);
+   if (closeEnough(point.x(), location.x()))
+      return pLeft->location;
+   else if (closeEnough(point.x(), corner2.x()))
+      return pRight->location;
+   else if (closeEnough(point.y(), location.y()))
+      return pBottom->location;
+   else if (closeEnough(point.y(), corner2.y()))
+      return pTop->location;
+   else if (closeEnough(point.z(), location.z()))
+      return pBack->location;
+   else if (closeEnough(point.z(), corner2.z()))
+      return pFront->location;
+   else
+   {
+      cerr << "Point not on box." << endl;
+      return vec3_t(0, 0, 0);
+   }
 }
 
 bool Box::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
@@ -160,9 +182,9 @@ bool Box::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
    *t = tNear;
 
    data->hit = true;
-   data->point = ray.dir * tNear;
+   data->point = ray.dir * (*t);
    data->point += ray.point;
-   data->t = tNear;
+   data->t = (*t);
    data->object = this;
    return true;
 }

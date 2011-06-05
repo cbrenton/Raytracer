@@ -11,7 +11,7 @@
 
 #define EXP_ARGS 5
 
-Semi::Semi(std::istream& input)
+Semi::Semi(std::istream& input) : Geometry()
 {
    std::string line;
    getline(input, line);
@@ -52,6 +52,7 @@ Semi::Semi(std::istream& input)
 }
 
 Semi::Semi(vec3_t _loc, float _rad) :
+   Geometry(),
    radius(_rad) {
       location = _loc;
    }
@@ -109,6 +110,11 @@ bool Semi::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
                //printf("plane intersect at tP\n");
                //printf("t1->tP->t0: %f->%f->%f\n", t1, tP, t0);
                *t = tP;
+               data->hit = true;
+               data->point = ray.dir * (*t);
+               data->point += ray.point;
+               data->t = (*t);
+               data->object = this;
                return true;
             }
          }
@@ -119,6 +125,11 @@ bool Semi::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
                //printf("plane intersect at tP\n");
                //printf("t0->tP->t1: %f->%f->%f\n", t0, tP, t1);
                *t = tP;
+               data->hit = true;
+               data->point = ray.dir * (*t);
+               data->point += ray.point;
+               data->t = (*t);
+               data->object = this;
                return true;
             }
          }
@@ -132,23 +143,43 @@ bool Semi::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
          //if (t0 < t1)
       {
          *t = t0;
+         data->hit = true;
+         data->point = ray.dir * (*t);
+         data->point += ray.point;
+         data->t = (*t);
+         data->object = this;
          return true;
       }
       else if (t1 < t0 && canBeT1)
          //else if (t1 < t0)
       {
          *t = t1;
+         data->hit = true;
+         data->point = ray.dir * (*t);
+         data->point += ray.point;
+         data->t = (*t);
+         data->object = this;
          return true;
       }
    }
    else if (t0 >= minT && t0 <= maxT && canBeT0)
    {
       *t = t0;
+      data->hit = true;
+      data->point = ray.dir * (*t);
+      data->point += ray.point;
+      data->t = (*t);
+      data->object = this;
       return true;
    }
    else if (t1 >= minT && t1 <= maxT && canBeT1)
    {
       *t = t1;
+      data->hit = true;
+      data->point = ray.dir * (*t);
+      data->point += ray.point;
+      data->t = (*t);
+      data->object = this;
       return true;
    }
    return false;

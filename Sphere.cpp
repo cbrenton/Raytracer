@@ -11,7 +11,7 @@
 
 #define EXP_ARGS 4
 
-Sphere::Sphere(std::istream& input)
+Sphere::Sphere(std::istream& input) : Geometry()
 {
    std::string line;
    getline(input, line);
@@ -39,6 +39,7 @@ Sphere::Sphere(std::istream& input)
 }
 
 Sphere::Sphere(vec3_t _loc, float _rad) :
+   Geometry(),
    radius(_rad) {
       location = _loc;
    }
@@ -76,9 +77,9 @@ bool Sphere::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
          *t = t0;
 
          data->hit = true;
-         data->point = ray.dir * t0;
+         data->point = ray.dir * (*t);
          data->point += ray.point;
-         data->t = t0;
+         data->t = (*t);
          data->object = this;
          return true;
       }
@@ -87,9 +88,9 @@ bool Sphere::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
          *t = t1;
 
          data->hit = true;
-         data->point = ray.dir * t1;
+         data->point = ray.dir * (*t);
          data->point += ray.point;
-         data->t = t1;
+         data->t = (*t);
          data->object = this;
          return true;
       }
@@ -99,9 +100,9 @@ bool Sphere::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
       *t = t0;
 
       data->hit = true;
-      data->point = ray.dir * t0;
+      data->point = ray.dir * (*t);
       data->point += ray.point;
-      data->t = t0;
+      data->t = (*t);
       data->object = this;
       return true;
    }
@@ -110,9 +111,9 @@ bool Sphere::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
       *t = t1;
 
       data->hit = true;
-      data->point = ray.dir * t1;
+      data->point = ray.dir * (*t);
       data->point += ray.point;
-      data->t = t1;
+      data->t = (*t);
       data->object = this;
       return true;
    }

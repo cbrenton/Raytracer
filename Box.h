@@ -10,6 +10,8 @@
 
 #include "Geometry.h"
 
+#define EPSILON 0.001f
+
 class Plane;
 
 class Box : public Geometry {
@@ -19,7 +21,8 @@ class Box : public Geometry {
       Box(std::istream& input);
       ~Box();
       Box *bBox();
-      Box *combine(Box *b1, Box *b2);
+      void combine(Box *b1, Box *b2);
+      bool closeEnough(vec_t a, vec_t b);
       vec3_t getNormal(vec3_t point);
       bool hit(Ray ray, float *t, HitData *data = NULL, float minT = 0.0, float maxT = DIST_MAX);
       inline void debug()

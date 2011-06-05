@@ -19,9 +19,9 @@ Scene* Scene::read(istream& input, bool _bb)
 {
    vector<Light*> lights_vec;
    //vector<Geometry*> geometry_vec;
-   vector<Plane*> planes_vec;
-   vector<Sphere*> spheres_vec;
-   vector<Triangle*> triangles_vec;
+   //vector<Plane*> planes_vec;
+   //vector<Sphere*> spheres_vec;
+   //vector<Triangle*> triangles_vec;
 
    Scene* curScene = new Scene(_bb);
    
@@ -63,35 +63,36 @@ Scene* Scene::read(istream& input, bool _bb)
             else if (curItemName.compare("box") == 0)
             {
                curScene->geometry_vec.push_back(new Box(input));
-               curScene->geometry_size++;
+               //curScene->geometry_size++;
             }
             else if (curItemName.compare("cone") == 0)
             {
                curScene->geometry_vec.push_back(new Cone(input));
-               curScene->geometry_size++;
+               //curScene->geometry_size++;
             }
             else if (curItemName.compare("plane") == 0)
             {
                //planes_vec.push_back(new Plane(input));
-               curScene->geometry_vec.push_back(new Plane(input));
-               curScene->planes_size++;
+               //curScene->geometry_vec.push_back(new Plane(input));
+               curScene->planes_vec.push_back(new Plane(input));
+               //curScene->planes_size++;
             }
             else if (curItemName.compare("sphere") == 0)
             {
                //spheres_vec.push_back(new Sphere(input));
                curScene->geometry_vec.push_back(new Sphere(input));
-               curScene->spheres_size++;
+               //curScene->spheres_size++;
             }
             else if (curItemName.compare("semi") == 0)
             {
                curScene->geometry_vec.push_back(new Semi(input));
-               curScene->geometry_size++;
+               //curScene->geometry_size++;
             }
             else if (curItemName.compare("triangle") == 0)
             {
                //triangles_vec.push_back(new Triangle(input));
                curScene->geometry_vec.push_back(new Triangle(input));
-               curScene->triangles_size++;
+               //curScene->triangles_size++;
             }
             // Next do the other ones.
 
@@ -130,6 +131,11 @@ Scene* Scene::read(istream& input, bool _bb)
 void Scene::constructBVH()
 {
    sceneBVH = new bvh_node(geometry_vec, 0);
+   /*
+   vector<Geometry*> geometry_vec1;
+   geometry_vec1.push_back(geometry_vec[0]);
+   sceneBVH = new bvh_node(geometry_vec1, 0);
+   */
    hasBVH = true;
 }
 
@@ -232,11 +238,53 @@ bool Scene::hit(Ray ray, HitData *data)
    float t;
    bool hitFound = false;
    float curDepth = 0.0;
+   //HitData *closestData = new HitData();
    if (hasBVH)
    {
       //cerr << "has bvh." << endl;
-      return sceneBVH->hit(ray, &t, data);
-      //return false;
+      bool bvhHit = sceneBVH->hit(ray, &t, data);
+      return bvhHit;
+      //return sceneBVH->hit(ray, &t, data);
+      /*
+      cout << "planes: " << planes_vec.size() << endl;
+      for (unsigned i = 0; i < planes_vec.size(); i++)
+      {
+         cerr << "i: " << i << endl;
+         Plane *curObject = planes_vec[i];
+         t = -1.0;
+         HitData tmpData;
+         bool intersected = false;
+            intersected = curObject->hit(ray, &t, &tmpData);
+         if (intersected)
+         {
+            cerr << "\n\nhit" << endl;
+            if (t >= 0 && (!hitFound || (hitFound && t < curDepth)))
+            {
+               curDepth = t;
+               hitObject = i;
+               closestData = &tmpData;
+            }
+         }
+         hitFound |= (intersected && curDepth > 0.0);
+      }
+      if (hitFound && curDepth > t)
+      {
+         //data = closestData;w
+         cerr << "plane hit" << endl;
+         data->hit = true;
+         data->point = ray.dir * curDepth;
+         data->point += ray.point;
+         data->t = curDepth;
+         data->object = planes_vec[hitObject];
+         t = curDepth;
+         cerr << "plane hit done" << endl;
+      }
+      else
+      {
+         cerr << "no plane hit" << endl;
+      }
+      return (bvhHit || hitFound);
+      */
    }
    else
    {
@@ -303,27 +351,35 @@ bool Scene::hit(Ray ray, HitData *data)
          hitFound |= (intersected && curDepth > 0.0);
       }
       */
-      HitData *curData;
+      HitData *closestData;
       for (unsigned i = 0; i < geometry_vec.size(); i++)
       {
          Geometry *curObject = geometry_vec[i];
          t = -1.0;
          HitData tmpData;
-         bool intersected = curObject->hitBVH(ray, &t, &tmpData);
+         bool intersected = false;
+         if (useBB)
+         {
+            intersected = curObject->hitBVH(ray, &t, &tmpData);
+         }
+         else
+         {
+            intersected = curObject->hit(ray, &t, &tmpData);
+         }
          if (intersected)
          {
             if (t >= 0 && (!hitFound || (hitFound && t < curDepth)))
             {
                curDepth = t;
                hitObject = i;
-               curData = &tmpData;
+               closestData = &tmpData;
             }
          }
          hitFound |= (intersected && curDepth > 0.0);
       }
       if (hitFound)
       {
-         //data = curData;
+         //data = closestData;
          ///*
          data->hit = true;
          data->point = ray.dir * curDepth;
@@ -445,7 +501,8 @@ Pixel Scene::getIntersect(Ray ray, int depth)
          {
             if (ray.dir.dot(n) < 0)
             {
-               refractPix = getIntersect(refractRay, depth);
+               //refractPix = getIntersect(refractRay, depth);
+               refractPix = getIntersect(refractRay, depth - 1);
             }
             else
             {

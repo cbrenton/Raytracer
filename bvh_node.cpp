@@ -37,17 +37,36 @@ bvh_node::bvh_node(vector<Geometry*> A, int axis)
       left = A[0];
       right = NULL;
       thisBBox = A[0]->bBox();
+      //cout << "bounding box (1): " << endl;
+      //thisBBox->debug();
    }
    else if (A.size() == 2)
    {
       left = A[0];
       right = A[1];
+      //thisBBox = A[0]->bBox();
       thisBBox->combine(A[0]->bBox(), A[1]->bBox());
+      //cout << "bounding box (2): " << endl;
+      //thisBBox->debug();
+      //left->debug();
+      //right->debug();
    }
    else
    {
+      //cout << "more than 2, splitting." << endl;
       // More than 2: sort and divide into 2 groups.
-      // TODO : Sort A by axis.
+      switch (axis)
+      {
+      case 0:
+         sort(A.begin(), A.end(), xCmp());
+         break;
+      case 1:
+         sort(A.begin(), A.end(), yCmp());
+         break;
+      case 2:
+         sort(A.begin(), A.end(), zCmp());
+         break;
+      }
       vector<Geometry*>::const_iterator first = A.begin();
       vector<Geometry*>::const_iterator mid = A.begin() + A.size() / 2 + 1;
       vector<Geometry*>::const_iterator last = A.end();
@@ -55,39 +74,56 @@ bvh_node::bvh_node(vector<Geometry*> A, int axis)
       vector<Geometry*> rightVec(mid, last);
       left = new bvh_node(leftVec, (axis + 1) % 3);
       right = new bvh_node(rightVec, (axis + 1) % 3);
-      thisBBox->combine(A[0]->bBox(), A[1]->bBox());
+      thisBBox->combine(left->bBox(), right->bBox());
+      //cout << "bounding box (>2): " << endl;
+      //thisBBox->debug();
    }
 }
 
 bool bvh_node::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
 {
-   //cerr << "bvh_node::hit()" << endl;
    if (left == NULL && right == NULL)
    {
-      //cerr << "both nodes null" << endl;
       return false;
    }
+   // If this node's bounding box is not intersected by the ray, return false.
    if (!bBox()->hit(ray, t, data))
    {
-      //cerr << "did not hit." << endl;
       return false;
    }
    else
    {
-      //cerr << "testing both nodes." << endl;
       float lT = -1;
       float rT = -1;
       HitData lData, rData;
-      bool hitLeft = left->hit(ray, &lT, &lData);
-      bool hitRight = right->hit(ray, &rT, &rData);
+      bool hitLeft = false;
+      bool hitRight = false;
+
+      // If there is a left node, calculate hit for the left side.
+      if (left != NULL)
+      {
+         hitLeft = left->hit(ray, &lT, &lData);
+      }
+      // If there is a right node, calculate hit for the right side.
+      if (right != NULL)
+      {
+         hitRight = right->hit(ray, &rT, &rData);
+      }
+      
+      // If both boxes are hit, find both intersections and pick the one
+      // closer to the ray origin.
       if (hitLeft && hitRight)
       {
-         if (lT > rT)
+         // If left intersection is closer than right intersection, return
+         // the left intersection.
+         if (lT < rT)
          {
             *t = lT;
             *data = lData;
             return true;
          }
+         // If right intersection is closer than left intersection, return
+         // the right intersection.
          else
          {
             *t = rT;
@@ -95,16 +131,21 @@ bool bvh_node::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
             return true;
          }
       }
+      // If only the left box is hit, return that intersection.
       else if (hitLeft)
       {
          *t = lT;
+         *data = lData;
          return true;
       }
+      // If only the right box is hit, return that intersection.
       else if (hitRight)
       {
          *t = rT;
+         *data = rData;
          return true;
       }
+      // If no box is hit, return false.
       return false;
    }
 }

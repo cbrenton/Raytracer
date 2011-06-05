@@ -24,22 +24,19 @@ Geometry::~Geometry()
 
 bool Geometry::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
 {
+   cerr << "Default Geometry hit check - should never be here." << endl;
    return -1.0;
 }
 
 bool Geometry::hitBVH(Ray ray, float *t, HitData *data, float minT, float maxT)
 {
-   //return hit(ray, t, data, minT, maxT);
    float boxT;
    HitData boxData;
-   if (thisBBox == NULL)
-   {
-      cerr << "null bounding box" << endl;
-   }
    bool boxHit = thisBBox->hit(ray, &boxT, &boxData, minT, maxT);
    if (boxHit)
    {
-      return hit(ray, t, data, minT, maxT);
+      bool itemHit = hit(ray, t, data, minT, maxT);
+      return itemHit;
    }
    return false;
 }
