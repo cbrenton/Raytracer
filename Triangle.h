@@ -24,6 +24,7 @@ class Triangle : public Geometry
       void debug();
    protected:
       // Corner1 is Geometry::location
+      bool matSet;
       vec3_t corner2;
       vec3_t corner3;
 };

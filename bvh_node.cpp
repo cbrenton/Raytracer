@@ -14,18 +14,9 @@
 
 bvh_node::~bvh_node()
 {
-   if (left != NULL)
-   {
-      delete left;
-   }
-   if (right != NULL)
-   {
-      delete right;
-   }
-   if (thisBBox != NULL)
-   {
-      delete thisBBox;
-   }
+   delete left;
+   delete right;
+   delete thisBBox;
 }
 
 bvh_node::bvh_node(vector<Geometry*> A, int axis)
@@ -37,23 +28,15 @@ bvh_node::bvh_node(vector<Geometry*> A, int axis)
       left = A[0];
       right = NULL;
       thisBBox = A[0]->bBox();
-      //cout << "bounding box (1): " << endl;
-      //thisBBox->debug();
    }
    else if (A.size() == 2)
    {
       left = A[0];
       right = A[1];
-      //thisBBox = A[0]->bBox();
       thisBBox->combine(A[0]->bBox(), A[1]->bBox());
-      //cout << "bounding box (2): " << endl;
-      //thisBBox->debug();
-      //left->debug();
-      //right->debug();
    }
    else
    {
-      //cout << "more than 2, splitting." << endl;
       // More than 2: sort and divide into 2 groups.
       switch (axis)
       {
@@ -75,8 +58,6 @@ bvh_node::bvh_node(vector<Geometry*> A, int axis)
       left = new bvh_node(leftVec, (axis + 1) % 3);
       right = new bvh_node(rightVec, (axis + 1) % 3);
       thisBBox->combine(left->bBox(), right->bBox());
-      //cout << "bounding box (>2): " << endl;
-      //thisBBox->debug();
    }
 }
 
@@ -109,7 +90,7 @@ bool bvh_node::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
       {
          hitRight = right->hit(ray, &rT, &rData);
       }
-      
+
       // If both boxes are hit, find both intersections and pick the one
       // closer to the ray origin.
       if (hitLeft && hitRight)

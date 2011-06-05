@@ -18,23 +18,24 @@ CFLAGS=$(PLATFORMSPECIFICCFLAGS) -Wall -c $(DEBUG) $(PROFILE) $(OPTIMIZE) $(STRI
 
 CC=g++
 
-FILES=main.cpp Pixel.cpp Image.cpp Scene.cpp Geometry.cpp Camera.cpp Light.cpp Plane.cpp Triangle.cpp Box.cpp Cone.cpp Sphere.cpp Matrix4.cpp Semi.cpp Material.cpp Ray.cpp bvh_node.cpp
+FILES=main.cpp Pixel.cpp Image.cpp Scene.cpp Geometry.cpp Camera.cpp Light.cpp Plane.cpp Triangle.cpp Box.cpp Cone.cpp Sphere.cpp Matrix4.cpp Semi.cpp Material.cpp Ray.cpp bvh_node.cpp Mesh.cpp
 
 PROGNAME=raytrace
 
 INPUT_EXT=pov
-INPUT_DIR=input/
+INPUT_DIR=input
 #INPUT_DIR=~shirsh/cpe473/Final/
 OUTPUT_DIR=output
 #INPUTNAME=bunny_tasty
 #INPUTNAME=bunny_jumbo_reflect
-INPUTNAME=recurse_simp
-#INPUTNAME=simple_bvh
+#INPUTNAME=recurse_simp
+#INPUTNAME=mesh
+INPUTNAME=simple_tri
 
 HANDINDIR=csc473p1p3
 
-AA_FLAGS=-a -b
-NO_AA_FLAGS=-b -p
+AA_FLAGS=-a -b -p
+NO_AA_FLAGS=
 
 OBJECTS=$(FILES:.cpp=.o)
 
@@ -48,41 +49,41 @@ $(PROGNAME): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 run:
-	./${PROGNAME} +W640 -H 480 ${AA_FLAGS} -I ${INPUT_DIR}${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} +W640 -H 480 ${AA_FLAGS} -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 urn: run
 
 rnu: run
 
-huge:
-	time ./${PROGNAME} -w 5120 -h 3840 -b -I ${INPUT_DIR}${INPUTNAME}.${INPUT_EXT}
+HUGE:
+	time ./${PROGNAME} -w 5120 -h 3840 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 nicebig:
-	./${PROGNAME} +W1280 -H 960 -a=16 -b -I ${INPUT_DIR}${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} +W1280 -H 960 -a=16 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 big:
-	./${PROGNAME} +W1280 -H 960 -b -I ${INPUT_DIR}${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} +W1280 -H 960 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 small:
-	./${PROGNAME} +W320 -H 240 ${AA_FLAGS} -I ${INPUT_DIR}${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} +W320 -H 240 ${AA_FLAGS} -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 tiny:
-	./${PROGNAME} +W160 -H 120 ${AA_FLAGS} -I ${INPUT_DIR}${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} +W160 -H 120 ${AA_FLAGS} -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 teeny:
-	./${PROGNAME} +W40 -H 30 ${AA_FLAGS} -I ${INPUT_DIR}${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} +W40 -H 30 ${AA_FLAGS} -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 noaa:
-	./${PROGNAME} +W640 -H 480 ${NO_AA_FLAGS} -I ${INPUT_DIR}${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} +W640 -H 480 ${NO_AA_FLAGS} -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 smallnoaa:
-	./${PROGNAME} +W320 -H 240 ${NO_AA_FLAGS} -I ${INPUT_DIR}${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} +W320 -H 240 ${NO_AA_FLAGS} -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 tinynoaa:
-	./${PROGNAME} +W160 -H 120 ${NO_AA_FLAGS} -I ${INPUT_DIR}${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} +W160 -H 120 ${NO_AA_FLAGS} -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 teenynoaa:
-	./${PROGNAME} +W40 -H 30 ${NO_AA_FLAGS} -I ${INPUT_DIR}${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} +W40 -H 30 ${NO_AA_FLAGS} -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 bunny:
 	./${PROGNAME} -w640 -h480 -i bunny_small.${INPUT_EXT}

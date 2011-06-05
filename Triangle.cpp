@@ -17,8 +17,40 @@ Triangle::Triangle(std::istream& input) : Geometry()
    std::string line;
    getline(input, line);
    int scan = 0;
+   bool isDone = false;
+   int braceCount = 0;
+   //for (unsigned i = 0; i < line.size(); i++)
+   unsigned start = line.find("triangle {");
+   if (start == string::npos)
+   {
+      if (line[0] == '{')
+      {
+         start = 1;
+      }
+      else
+      {
+         start = 0;
+      }
+   }
+   for (unsigned i = start; i < line.size(); i++)
+   {
+      if (line[i] == '{')
+      {
+         braceCount++;
+      }
+      else if (line[i] == '}')
+      {
+         braceCount--;
+      }
+   }
+   isDone = (braceCount < 0);
+   //while (line == "")
+   while (line.empty())
+   {
+      getline(input, line);
+   }
    // If the line is only an opening curly brace, skip it.
-   if (line == "{")
+   if (line == "{" || line == " {")
    {
       // Get the good stuff.
       getline(input, line);
@@ -33,13 +65,29 @@ Triangle::Triangle(std::istream& input) : Geometry()
             &location.v[0], &location.v[1], &location.v[2],
             &corner2.v[0], &corner2.v[1], &corner2.v[2],
             &corner3.v[0], &corner3.v[1], &corner3.v[2]);
+      /*
+      if (scan == 0)
+      {
+            scan = sscanf(line.c_str(), " < %f , %f , %f > , < %f , %f , %f > , < %f , %f , %f >",
+            &location.v[0], &location.v[1], &location.v[2],
+            &corner2.v[0], &corner2.v[1], &corner2.v[2],
+            &corner3.v[0], &corner3.v[1], &corner3.v[2]);
+      }
+      */
    }
    if (scan < EXP_ARGS)
    {
-      printf("Invalid triangle format: expected %d, found %d.\n", scan, EXP_ARGS);
+      printf("Invalid triangle format: expected %d, found %d.\n", EXP_ARGS, scan);
       std::cout << "\tline: " << line << std::endl;
       exit(EXIT_FAILURE);
    }
+   /*
+   if (!isDone)
+   {
+      //matSet = readOptions(input);
+      readOptions(input);
+   }
+   */
    readOptions(input);
    thisBBox = bBox();
 }
@@ -184,4 +232,8 @@ void Triangle::debug()
          corner2.v[0], corner2.v[1], corner2.v[2]);
    printf("  <%f, %f, %f>\n",
          corner3.v[0], corner3.v[1], corner3.v[2]);
+   if (!matSet)
+   {
+      printf(" matSet: false\n");
+   }
 }

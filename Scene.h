@@ -14,6 +14,7 @@
 #include "Geometry.h"
 #include "Box.h"
 #include "Cone.h"
+#include "Mesh.h"
 #include "Plane.h"
 #include "Sphere.h"
 #include "Semi.h"

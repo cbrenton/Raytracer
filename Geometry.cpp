@@ -79,7 +79,14 @@ void Geometry::readOptions(std::istream& input)
          curChar = line[count++];
          option += (char)curChar;
       }
-      isDone = getOption(option, line.substr(count));
+      if (option != "}")
+      {
+         isDone = getOption(option, line.substr(count));
+      }
+      else
+      {
+         isDone = true;
+      }
       getline(input, line);
    }
    transformInv = transform.inverse();
