@@ -44,14 +44,14 @@ struct zCmp
 class bvh_node : public Geometry
 {
    public:
-      bvh_node() : Geometry() {thisBBox = new Box();};
+      bvh_node() : Geometry() {boundingBox = new Box();};
       bvh_node(vector<Geometry*> A, int axis);
       virtual ~bvh_node();
       bool hit(Ray ray, float *t, HitData *data = NULL, float minT = 0.0, float maxT = DIST_MAX);
       Box *bBox();
       Geometry *left;
       Geometry *right;
-      Box *thisBBox;
+      Box *boundingBox;
       inline void debug()
       {
          if (left == NULL)

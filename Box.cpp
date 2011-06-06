@@ -26,8 +26,8 @@ Box::Box(vec3_t c1, vec3_t c2) : Geometry()
    pFront = new Plane(vec3_t(0, 0, 1), location.z());
    pBack = new Plane(vec3_t(0, 0, -1), -corner2.z());
    //pBack = new Plane(vec3_t(0, 0, 1), corner2.z());
-   //thisBBox = bBox();
-   thisBBox = this;
+   //boundingBox = bBox();
+   boundingBox = this;
 }
 
 Box::Box(std::istream& input)
@@ -65,7 +65,7 @@ Box::Box(std::istream& input)
    pFront = new Plane(vec3_t(0, 0, 1), location.z());
    pBack = new Plane(vec3_t(0, 0, -1), -corner2.z());
    //pBack = new Plane(vec3_t(0, 0, 1), corner2.z());
-   thisBBox = this;
+   boundingBox = this;
 }
 
 Box::~Box()
@@ -187,4 +187,14 @@ bool Box::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
    data->t = (*t);
    data->object = this;
    return true;
+}
+
+vec3_t Box::getMin()
+{
+   return location;
+}
+
+vec3_t Box::getMax()
+{
+   return corner2;
 }

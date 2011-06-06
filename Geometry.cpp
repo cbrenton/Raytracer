@@ -19,7 +19,7 @@ Geometry::Geometry()
 
 Geometry::~Geometry()
 {
-   delete thisBBox;
+   delete boundingBox;
 }
 
 bool Geometry::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
@@ -32,7 +32,7 @@ bool Geometry::hitBVH(Ray ray, float *t, HitData *data, float minT, float maxT)
 {
    float boxT;
    HitData boxData;
-   bool boxHit = thisBBox->hit(ray, &boxT, &boxData, minT, maxT);
+   bool boxHit = boundingBox->hit(ray, &boxT, &boxData, minT, maxT);
    if (boxHit)
    {
       bool itemHit = hit(ray, t, data, minT, maxT);

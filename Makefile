@@ -28,9 +28,10 @@ INPUT_DIR=input
 OUTPUT_DIR=output
 #INPUTNAME=bunny_tasty
 #INPUTNAME=bunny_jumbo_reflect
+INPUTNAME=bunny_jumbo
 #INPUTNAME=recurse_simp
 #INPUTNAME=mesh
-INPUTNAME=simple_tri
+#INPUTNAME=simple_tri
 
 HANDINDIR=csc473p1p3
 
@@ -57,6 +58,9 @@ rnu: run
 
 HUGE:
 	time ./${PROGNAME} -w 5120 -h 3840 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
+
+NICEHUGE:
+	time ./${PROGNAME} -a 4 -w 5120 -h 3840 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 nicebig:
 	./${PROGNAME} +W1280 -H 960 -a=16 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}

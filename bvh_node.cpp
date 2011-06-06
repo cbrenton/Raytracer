@@ -16,24 +16,24 @@ bvh_node::~bvh_node()
 {
    delete left;
    delete right;
-   delete thisBBox;
+   delete boundingBox;
 }
 
 bvh_node::bvh_node(vector<Geometry*> A, int axis)
 {
-   thisBBox = new Box();
+   boundingBox = new Box();
    // If there is only one object, put it on the left.
    if (A.size() == 1)
    {
       left = A[0];
       right = NULL;
-      thisBBox = A[0]->bBox();
+      boundingBox = A[0]->boundingBox;
    }
    else if (A.size() == 2)
    {
       left = A[0];
       right = A[1];
-      thisBBox->combine(A[0]->bBox(), A[1]->bBox());
+      boundingBox->combine(A[0]->boundingBox, A[1]->boundingBox);
    }
    else
    {
@@ -57,7 +57,8 @@ bvh_node::bvh_node(vector<Geometry*> A, int axis)
       vector<Geometry*> rightVec(mid, last);
       left = new bvh_node(leftVec, (axis + 1) % 3);
       right = new bvh_node(rightVec, (axis + 1) % 3);
-      thisBBox->combine(left->bBox(), right->bBox());
+      //boundingBox->combine(left->boundingBox, right->boundingBox);
+      boundingBox->combine(left->bBox(), right->bBox());
    }
 }
 
@@ -68,7 +69,7 @@ bool bvh_node::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
       return false;
    }
    // If this node's bounding box is not intersected by the ray, return false.
-   if (!bBox()->hit(ray, t, data))
+   if (!boundingBox->hit(ray, t, data))
    {
       return false;
    }
@@ -133,5 +134,5 @@ bool bvh_node::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
 
 Box* bvh_node::bBox()
 {
-   return thisBBox;
+   return boundingBox;
 }

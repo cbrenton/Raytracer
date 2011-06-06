@@ -103,6 +103,9 @@ Scene* Scene::read(istream& input)
       }
    }
 
+   //for (unsigned i = 0; i < curScene->geometry_vec.size(); i++)
+      //curScene->geometry_vec[i]->debug();
+
    curScene->lights = new Light *[curScene->lights_size];
    copy(lights_vec.begin(), lights_vec.end(), curScene->lights);
    /*
@@ -309,11 +312,13 @@ bool Scene::hit(Ray ray, HitData *data)
       {
          *data = *closestData;
          t = curDepth;
+         delete closestData;
          return true;
       }
       // Else if geometry was intersected, return geometry intersection data.
       else
       {
+         delete closestData;
          return geomHit;
       }
    }

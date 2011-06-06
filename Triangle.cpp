@@ -89,7 +89,7 @@ Triangle::Triangle(std::istream& input) : Geometry()
    }
    */
    readOptions(input);
-   thisBBox = bBox();
+   boundingBox = bBox();
 }
 
 Triangle::Triangle(vec3_t c1, vec3_t c2, vec3_t c3) : Geometry()
@@ -208,8 +208,6 @@ triangle_dev_t Triangle::getStruct()
    float c1[3] = {location.v[0], location.v[1], location.v[2]};
    float c2[3] = {corner2.v[0], corner2.v[1], corner2.v[2]};
    float c3[3] = {corner3.v[0], corner3.v[1], corner3.v[2]};
-   //vec3_t c2 = corner2;
-   //vec3_t c3 = corner3;
    triangle_dev_t ret;
    ret.c1[0] = c1[0];
    ret.c1[1] = c1[1];

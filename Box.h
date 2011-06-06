@@ -16,7 +16,7 @@ class Plane;
 
 class Box : public Geometry {
    public:
-      Box() {thisBBox = this;};
+      Box() {boundingBox = this;};
       Box(vec3_t c1, vec3_t c2);
       Box(std::istream& input);
       ~Box();
@@ -25,6 +25,8 @@ class Box : public Geometry {
       bool closeEnough(vec_t a, vec_t b);
       vec3_t getNormal(vec3_t point);
       bool hit(Ray ray, float *t, HitData *data = NULL, float minT = 0.0, float maxT = DIST_MAX);
+      vec3_t getMin();
+      vec3_t getMax();
       inline void debug()
       {
          printf("Box: { <%f, %f, %f>, <%f, %f, %f>\n",

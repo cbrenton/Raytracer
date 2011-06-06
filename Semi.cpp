@@ -48,7 +48,7 @@ Semi::Semi(std::istream& input) : Geometry()
    }
    bisect = new Plane(*bisectNormal, location.y());
    delete bisectNormal;
-   thisBBox = bBox();
+   boundingBox = bBox();
 }
 
 Semi::Semi(vec3_t _loc, float _rad) :
