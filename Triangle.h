@@ -19,6 +19,7 @@ class Triangle : public Geometry
       Triangle(vec3_t c1, vec3_t c2, vec3_t c3);
       Box *bBox();
       bool hit(Ray ray, float *t, HitData *data = NULL, float minT = 0.0, float maxT = DIST_MAX);
+      bool hit(vec3_t pt);
       vec3_t getNormal(vec3_t point = vec3_t(0, 0, 0));
       bool contains(vec3_t pt);
       bool isNeighbor(Triangle *other);
@@ -26,7 +27,6 @@ class Triangle : public Geometry
       void debug();
    protected:
       // Corner1 is Geometry::location
-      bool matSet;
       vec3_t corner2;
       vec3_t corner3;
 };

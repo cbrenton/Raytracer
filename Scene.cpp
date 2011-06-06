@@ -103,9 +103,6 @@ Scene* Scene::read(istream& input)
       }
    }
 
-   //for (unsigned i = 0; i < curScene->geometry_vec.size(); i++)
-      //curScene->geometry_vec[i]->debug();
-
    curScene->lights = new Light *[curScene->lights_size];
    copy(lights_vec.begin(), lights_vec.end(), curScene->lights);
    /*
@@ -147,6 +144,11 @@ Pixel Scene::seekLight(HitData *data, vec3_t view)
 
       HitData tmp;
       isShadow = hit(feeler, &tmp);
+
+      if ((dynamic_cast<Mesh*> (data->object)) != NULL)
+      {
+         cout << "mesh" << endl;
+      }
 
       // Ambient.
       result.r += (data->object->getAmbient()*data->object->getR())

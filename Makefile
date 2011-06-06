@@ -23,20 +23,19 @@ FILES=main.cpp Pixel.cpp Image.cpp Scene.cpp Geometry.cpp Camera.cpp Light.cpp P
 PROGNAME=raytrace
 
 INPUT_EXT=pov
-INPUT_DIR=input
 #INPUT_DIR=~shirsh/cpe473/Final/
+INPUT_DIR=input
 OUTPUT_DIR=output
-#INPUTNAME=bunny_tasty
 #INPUTNAME=bunny_jumbo_reflect
-INPUTNAME=bunny_jumbo
-#INPUTNAME=recurse_simp
-#INPUTNAME=mesh
+#INPUTNAME=bunny_nasty_8k
+#INPUTNAME=bunny_tasty
+INPUTNAME=mesh2
 #INPUTNAME=simple_tri
 
 HANDINDIR=csc473p1p3
 
 AA_FLAGS=-a -b -p
-NO_AA_FLAGS=
+NO_AA_FLAGS=-b -p
 
 OBJECTS=$(FILES:.cpp=.o)
 
@@ -56,11 +55,14 @@ urn: run
 
 rnu: run
 
+8k:
+	time ./${PROGNAME} -a 4 -w 8192 -h 4320 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
+
 HUGE:
 	time ./${PROGNAME} -w 5120 -h 3840 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 NICEHUGE:
-	time ./${PROGNAME} -a 4 -w 5120 -h 3840 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
+	time ./${PROGNAME} -a 16 -w 5120 -h 3840 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 nicebig:
 	./${PROGNAME} +W1280 -H 960 -a=16 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}

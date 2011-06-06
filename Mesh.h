@@ -16,24 +16,25 @@ class Mesh : public Geometry {
    public:
       Mesh() {nVertices = 0;};
       Mesh(std::istream& input);
+      ~Mesh();
       Box *bBox();
-      bool isTriLine(std::string line, bool *isComment);
-      void findTriLine(std::istream& input);
       bool hit(Ray ray, float *t, HitData *data = NULL, float minT = 0.0, float maxT = DIST_MAX);
-      vec3_t getNormal(vec3_t point);
       void setMats(Material matIn);
       inline void debug()
       {
-         printf("Mesh.\n\n");
+         printf("Mesh.\n");
+         printf("\nVertices:\n");
+         for (unsigned i = 0; i < points.size(); i++)
+            cout << *points[i] << endl;
+         printf("\nFaces:\n");
          for (unsigned i = 0; i < faces.size(); i++)
             faces[i]->debug();
          printf("End of mesh.\n\n");
       }
    private:
-      vector<vec3_t> points;
+      vector<vec3_t*> points;
       vector<Triangle*> faces;
-      int nVertices;
-      //float extrema[3][2];
+      int nVertices, nFaces;
 };
 
 #endif

@@ -194,6 +194,15 @@ bool Triangle::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
    return (result > 0.01);
 }
 
+bool Triangle::hit(vec3_t pt)
+{
+   Ray *tmp = new Ray(pt, vec3_t(0, 0, 0));
+   float t = 0;
+   bool ret = hit(*tmp, &t);
+   delete tmp;
+   return ret;
+}
+
 vec3_t Triangle::getNormal(vec3_t point)
 {
    vec3_t s1 = corner2 - location;
@@ -253,8 +262,4 @@ void Triangle::debug()
          corner2.v[0], corner2.v[1], corner2.v[2]);
    printf("  <%f, %f, %f>\n",
          corner3.v[0], corner3.v[1], corner3.v[2]);
-   if (!matSet)
-   {
-      printf(" matSet: false\n");
-   }
 }
