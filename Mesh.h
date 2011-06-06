@@ -14,6 +14,7 @@
 
 class Mesh : public Geometry {
    public:
+      Mesh() {nVertices = 0;};
       Mesh(std::istream& input);
       Box *bBox();
       bool isTriLine(std::string line, bool *isComment);
@@ -29,8 +30,9 @@ class Mesh : public Geometry {
          printf("End of mesh.\n\n");
       }
    private:
-      //vector<vec3_t> points;
+      vector<vec3_t> points;
       vector<Triangle*> faces;
+      int nVertices;
       //float extrema[3][2];
 };
 

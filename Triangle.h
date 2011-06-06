@@ -20,6 +20,8 @@ class Triangle : public Geometry
       Box *bBox();
       bool hit(Ray ray, float *t, HitData *data = NULL, float minT = 0.0, float maxT = DIST_MAX);
       vec3_t getNormal(vec3_t point = vec3_t(0, 0, 0));
+      bool contains(vec3_t pt);
+      bool isNeighbor(Triangle *other);
       triangle_dev_t getStruct();
       void debug();
    protected:

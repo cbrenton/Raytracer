@@ -10,24 +10,54 @@
 #include <string>
 #include "Mesh.h"
 
-#define EXP_ARGS 9
+#define PT_ARGS 3
+#define FACE_ARGS 3
 
 Mesh::Mesh(std::istream& input) : Geometry()
 {
    std::string line;
    getline(input, line);
-   while (line != "}")
+   if (line.find("vertices:") != string::npos)
    {
-      vec3_t c1, c2, c3;
-      int scan = sscanf(line.c_str(), " face { < %f , %f , %f > , < %f , %f , %f > , < %f , %f , %f >",
-            &c1.v[0], &c1.v[1], &c1.v[2],
-            &c2.v[0], &c2.v[1], &c2.v[2],
-            &c3.v[0], &c3.v[1], &c3.v[2]);
-      if (scan == EXP_ARGS)
-      {
-         faces.push_back(new Triangle(c1, c2, c3));
-      }
       getline(input, line);
+      // Get number of vertices from line.
+      sscanf(line.c_str(), "%d", &nVertices);
+      // While line contains vertices.
+      while (line != "}" &&
+            line.find("faces:") == string::npos &&
+            line.find("pigment") == string::npos &&
+            line.find("finish") == string::npos)
+      {
+         vec3_t pt;
+            // Get current point.
+            int scan = sscanf(line.c_str(), " < %f , %f , %f >",
+                  &pt.v[0], &pt.v[1], &pt.v[2]);
+         if (scan == PT_ARGS)
+         {
+            // Push back pt.
+            //points.push_back(pt);
+         }
+         getline(input, line);
+      }
+   }
+   if (line.find("faces:") != string::npos)
+   {
+      getline(input, line);
+      while (line != "}" &&
+            line.find("pigment") == string::npos &&
+            line.find("finish") == string::npos)
+      {
+         int p1, p2, p3;
+         p1 = p2 = p3 = -1;
+         int scan = sscanf(line.c_str(), " < %d , %d , %d >",
+               &p1, &p2, &p3);
+         if (scan == FACE_ARGS)
+         {
+            // Add new triangle.
+            // Represent neighboring faces somehow.
+            //faces.push_back
+         }
+      }
    }
    //findTriLine(input);
    //readOptions(input);

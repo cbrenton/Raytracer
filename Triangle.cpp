@@ -203,6 +203,29 @@ vec3_t Triangle::getNormal(vec3_t point)
    return normal;
 }
 
+bool Triangle::contains(vec3_t pt)
+{
+   return (location == pt || corner2 == pt || corner3 == pt);
+}
+
+bool Triangle::isNeighbor(Triangle *other)
+{
+   int samePts = 0;
+   if (other->contains(location))
+   {
+      samePts++;
+   }
+   if (other->contains(corner2))
+   {
+      samePts++;
+   }
+   if (other->contains(corner3))
+   {
+      samePts++;
+   }
+   return (samePts >= 2);
+}
+
 triangle_dev_t Triangle::getStruct()
 {
    float c1[3] = {location.v[0], location.v[1], location.v[2]};
