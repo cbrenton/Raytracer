@@ -25,6 +25,8 @@ class Triangle : public Geometry
       bool contains(vec3_t pt);
       bool isNeighbor(Triangle *other);
       bool isNeighbor(vec3_t c1, vec3_t c2);
+      //vector<Triangle*> subdivide(Triangle *tri1, Triangle* tri2, Triangle* tri3);
+      void findAdj(vector<Triangle*> tris);
       vector<Triangle*> subdivide();
       vec3_t getFacePoint();
       vec3_t getMidAvg(vec3_t pt);
@@ -35,6 +37,7 @@ class Triangle : public Geometry
       vec3_t corner2;
       vec3_t corner3;
       vec3_t facePt;
+      vector<Triangle*> adj;
 };
 
 #endif

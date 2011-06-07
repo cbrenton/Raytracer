@@ -66,14 +66,14 @@ Triangle::Triangle(std::istream& input) : Geometry()
             &corner2.v[0], &corner2.v[1], &corner2.v[2],
             &corner3.v[0], &corner3.v[1], &corner3.v[2]);
       /*
-      if (scan == 0)
-      {
-            scan = sscanf(line.c_str(), " < %f , %f , %f > , < %f , %f , %f > , < %f , %f , %f >",
-            &location.v[0], &location.v[1], &location.v[2],
-            &corner2.v[0], &corner2.v[1], &corner2.v[2],
-            &corner3.v[0], &corner3.v[1], &corner3.v[2]);
-      }
-      */
+         if (scan == 0)
+         {
+         scan = sscanf(line.c_str(), " < %f , %f , %f > , < %f , %f , %f > , < %f , %f , %f >",
+         &location.v[0], &location.v[1], &location.v[2],
+         &corner2.v[0], &corner2.v[1], &corner2.v[2],
+         &corner3.v[0], &corner3.v[1], &corner3.v[2]);
+         }
+         */
    }
    if (scan < EXP_ARGS)
    {
@@ -82,10 +82,10 @@ Triangle::Triangle(std::istream& input) : Geometry()
       exit(EXIT_FAILURE);
    }
    /*
-   if (!isDone)
-   {
-      //matSet = readOptions(input);
-      readOptions(input);
+      if (!isDone)
+      {
+   //matSet = readOptions(input);
+   readOptions(input);
    }
    */
    readOptions(input);
@@ -242,23 +242,98 @@ bool Triangle::isNeighbor(vec3_t c1, vec3_t c2)
    return (contains(c1) && contains(c2));
 }
 
+void Triangle::findAdj(vector<Triangle*> tris)
+{
+   for (unsigned i = 0; i < tris.size(); i++)
+   {
+      if (isNeighbor(tris[i]))
+      {
+         adj.push_back(tris[i]);
+      }
+   }
+}
+
 vector<Triangle*> Triangle::subdivide()
 {
-   //Triangle **ret = new Triangle*[6];
+   /*
+      if (adj.size() != 3)
+      {
+      cerr << "Mesh error." << endl;
+      }
+      */
+   vector<Triangle*> lC2Adj;
+   vector<Triangle*> lC3Adj;
+   vector<Triangle*> c2C3Adj;
+   for (unsigned i = 0; i < adj.size(); i++)
+   {
+      if (adj[i]->isNeighbor(location, corner2))
+      {
+         lC2Adj.push_back(adj[i]);
+      }
+      if (adj[i]->isNeighbor(location, corner3))
+      {
+         lC3Adj.push_back(adj[i]);
+      }
+      if (adj[i]->isNeighbor(corner2, corner3))
+      {
+         c2C3Adj.push_back(adj[i]);
+      }
+   }
+   //cout << facePt << endl;
    vector<Triangle*> ret;
-   vec3_t *mids = new vec3_t[3];
-   mids[0] = location + corner2;
-   mids[0] /= 2;
-   mids[1] = location + corner3;
-   mids[1] /= 2;
-   mids[2] = corner2 + corner3;
-   mids[2] /= 2;
-   ret.push_back(new Triangle(facePt, mids[0], mids[1]));
-   ret.push_back(new Triangle(location, mids[0], mids[1]));
-   ret.push_back(new Triangle(facePt, mids[2], mids[0]));
-   ret.push_back(new Triangle(corner2, mids[2], mids[0]));
-   ret.push_back(new Triangle(facePt, mids[1], mids[2]));
-   ret.push_back(new Triangle(corner3, mids[1], mids[2]));
+   vector<vec3_t*> edgePts;
+   // TODO: Comment this better.
+   vec3_t q = vec3_t(0, 0, 0);
+   vec3_t lC2Edge = location + corner2;
+   vec3_t lC3Edge = location + corner3;
+   vec3_t c2C3Edge = corner2 + corner3;
+   cout << lC2Edge << endl;
+   cout << lC3Edge << endl;
+   cout << c2C3Edge << endl;
+   lC2Edge += facePt;
+   lC3Edge += facePt;
+   c2C3Edge += facePt;
+   for (unsigned j = 0; j < lC2Adj.size(); j++)
+   {
+      vec3_t facePt = lC2Adj[j]->getFacePoint();
+      lC2Edge += facePt;
+      q += facePt;
+      //cout << "Q: + " << facePt << " = " << q << endl;
+   }
+   for (unsigned k = 0; k < lC3Adj.size(); k++)
+   {
+      vec3_t facePt = lC3Adj[k]->getFacePoint();
+      lC3Edge += facePt;
+      q += facePt;
+      //cout << "Q: + " << facePt << " = " << q << endl;
+   }
+   for (unsigned l = 0; l < c2C3Adj.size(); l++)
+   {
+      vec3_t facePt = c2C3Adj[l]->getFacePoint();
+      c2C3Edge += facePt;
+      q += facePt;
+      //cout << "Q: + " << facePt << " = " << q << endl;
+   }
+   q /= (float)adj.size();
+   cout << "Q: " << q << endl;
+   lC2Edge /= 3 + (float)lC2Adj.size();
+   lC3Edge /= 3 + (float)lC3Adj.size();
+   c2C3Edge /= 3 + (float)c2C3Adj.size();
+   if (c2C3Adj.size() == 0)
+   {
+      ret.push_back(new Triangle(facePt, lC2Edge, lC3Edge));
+      ret.push_back(new Triangle(q, lC2Edge, lC3Edge));
+   }
+   if (lC2Adj.size() == 0)
+   {
+      ret.push_back(new Triangle(facePt, c2C3Edge, lC3Edge));
+      ret.push_back(new Triangle(q, c2C3Edge, lC3Edge));
+   }
+   if (lC3Adj.size() == 0)
+   {
+      ret.push_back(new Triangle(facePt, c2C3Edge, lC2Edge));
+      ret.push_back(new Triangle(q, c2C3Edge, lC2Edge));
+   }
    return ret;
 }
 

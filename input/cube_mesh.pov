@@ -33,10 +33,10 @@ mesh {
    finish {ambient 0.2 diffuse 0.5 specular 0.4}
 }
 
-sphere {<-4, 3, 2>, 1
-   pigment {color rgb <0.7, 0.6, 0.1>}
-   finish {ambient 0.4 diffuse 0.8}
-}
+//sphere {<-4, 3, 2>, 1
+   //pigment {color rgb <0.7, 0.6, 0.1>}
+   //finish {ambient 0.4 diffuse 0.8}
+//}
 
 //triangle {
    //<-2, -2, -3>, <2, -2, -3>, <2, 2, -3>

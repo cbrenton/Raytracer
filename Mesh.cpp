@@ -267,6 +267,8 @@ void Mesh::subdivide()
    vector<Triangle*> fullFaces;
    for (unsigned i = 0; i < faces.size(); i++)
    {
+      faces[i]->findAdj(faces);
+      //cout << faces.size() << endl;
       vector<Triangle*> newFaces = faces[i]->subdivide();
       fullFaces.insert(fullFaces.end(), newFaces.begin(), newFaces.end());
    }
