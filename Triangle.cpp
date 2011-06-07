@@ -242,12 +242,57 @@ bool Triangle::isNeighbor(vec3_t c1, vec3_t c2)
    return (contains(c1) && contains(c2));
 }
 
+vector<Triangle*> Triangle::subdivide()
+{
+   //Triangle **ret = new Triangle*[6];
+   vector<Triangle*> ret;
+   vec3_t *mids = new vec3_t[3];
+   mids[0] = location + corner2;
+   mids[0] /= 2;
+   mids[1] = location + corner3;
+   mids[1] /= 2;
+   mids[2] = corner2 + corner3;
+   mids[2] /= 2;
+   ret.push_back(new Triangle(facePt, mids[0], mids[1]));
+   ret.push_back(new Triangle(location, mids[0], mids[1]));
+   ret.push_back(new Triangle(facePt, mids[2], mids[0]));
+   ret.push_back(new Triangle(corner2, mids[2], mids[0]));
+   ret.push_back(new Triangle(facePt, mids[1], mids[2]));
+   ret.push_back(new Triangle(corner3, mids[1], mids[2]));
+   return ret;
+}
+
 vec3_t Triangle::getFacePoint()
 {
    vec3_t ret;
    ret = location + corner2 + corner3;
    ret /= 3;
    return ret;
+}
+
+vec3_t Triangle::getMidAvg(vec3_t pt)
+{
+   vec3_t avg = vec3_t();
+   if (location != pt)
+   {
+      vec3_t mid = (pt + location);
+      mid /= 2;
+      avg += mid;
+   }
+   if (corner2 != pt)
+   {
+      vec3_t mid = (pt + corner2);
+      mid /= 2;
+      avg += mid;
+   }
+   if (corner3 != pt)
+   {
+      vec3_t mid = (pt + corner3);
+      mid /= 2;
+      avg += mid;
+   }
+   avg /= 2;
+   return avg;
 }
 
 triangle_dev_t Triangle::getStruct()

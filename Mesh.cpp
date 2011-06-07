@@ -178,7 +178,7 @@ Mesh::Mesh(istream& input) : Geometry()
    readOptions(input);
    // Set all mesh face materials to the mesh's material.
    //setMats(mat);
-   //randMats();
+   randMats();
    boundingBox = bBox();
    subdivide();
 }
@@ -264,6 +264,13 @@ void Mesh::randMats()
 
 void Mesh::subdivide()
 {
+   vector<Triangle*> fullFaces;
+   for (unsigned i = 0; i < faces.size(); i++)
+   {
+      vector<Triangle*> newFaces = faces[i]->subdivide();
+      fullFaces.insert(fullFaces.end(), newFaces.begin(), newFaces.end());
+   }
+   /*
    vector<vec3_t*> facePts;
    vector<vec3_t*> fullPts;
    vector<Triangle*> fullFaces;
@@ -272,6 +279,7 @@ void Mesh::subdivide()
       vec3_t facePoint = faces[i]->facePt;
       facePts.push_back(&facePoint);
       vec3_t edgePts[3];
+      // TODO: comment this better
       edgePts[0] = faces[i]->location + faces[i]->corner2 + faces[i]->facePt;
       edgePts[1] = faces[i]->corner2 + faces[i]->corner3 + faces[i]->facePt;
       edgePts[2] = faces[i]->location + faces[i]->corner3 + faces[i]->facePt;
@@ -294,18 +302,20 @@ void Mesh::subdivide()
             cout << i << "[2]" << endl;
          }
       }
-      edgePts[0] /= 4;
-      edgePts[1] /= 4;
-      edgePts[2] /= 4;
+      // TODO: move original points
+      vec3_t newLoc = faces[i]->location;
+      vec3_t newC2 = faces[i]->corner2;
+      vec3_t newC3 = faces[i]->corner3;
       // TODO: comment this better
-      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[0], faces[i]->location));
-      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[0], faces[i]->corner2));
-      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[1], faces[i]->corner2));
-      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[1], faces[i]->corner3));
-      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[2], faces[i]->location));
-      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[2], faces[i]->corner3));
+      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[0], newLoc));
+      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[0], newC2));
+      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[1], newC2));
+      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[1], newC3));
+      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[2], newLoc));
+      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[2], newC3));
    }
-   // TODO: move original points
+   */
+
    faces.clear();
    faces.insert(faces.end(), fullFaces.begin(), fullFaces.end());
    cout << faces.size() << " total faces." << endl;

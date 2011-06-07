@@ -29,8 +29,8 @@ OUTPUT_DIR=output
 #INPUTNAME=bunny_jumbo_reflect
 #INPUTNAME=bunny_nasty_8k
 #INPUTNAME=bunny_tasty
-#INPUTNAME=simple_mesh
-INPUTNAME=cube_mesh
+INPUTNAME=simple_mesh
+#INPUTNAME=cube_mesh
 #INPUTNAME=simple_tri
 
 HANDINDIR=csc473p1p3

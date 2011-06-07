@@ -25,7 +25,9 @@ class Triangle : public Geometry
       bool contains(vec3_t pt);
       bool isNeighbor(Triangle *other);
       bool isNeighbor(vec3_t c1, vec3_t c2);
+      vector<Triangle*> subdivide();
       vec3_t getFacePoint();
+      vec3_t getMidAvg(vec3_t pt);
       triangle_dev_t getStruct();
       void debug();
    //protected:
