@@ -15,6 +15,7 @@ class Material
             float _a = 1.0, float _d = 0.0, float _s = 0.0, float _rough = 1.0,
             float _reflect = 0.0, bool _refract = false, float _ior = 0.0);
       ~Material();
+      void random();
       float r, g, b, f, ambient, diffuse, specular, roughness, reflect;
       bool refract;
       float ior;

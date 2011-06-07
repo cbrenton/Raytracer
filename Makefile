@@ -18,7 +18,7 @@ CFLAGS=$(PLATFORMSPECIFICCFLAGS) -Wall -c $(DEBUG) $(PROFILE) $(OPTIMIZE) $(STRI
 
 CC=g++
 
-FILES=main.cpp Pixel.cpp Image.cpp Scene.cpp Geometry.cpp Camera.cpp Light.cpp Plane.cpp Triangle.cpp Box.cpp Cone.cpp Sphere.cpp Matrix4.cpp Semi.cpp Material.cpp Ray.cpp bvh_node.cpp Mesh.cpp
+FILES=main.cpp Pixel.cpp Image.cpp Scene.cpp Geometry.cpp Camera.cpp Light.cpp Plane.cpp Triangle.cpp Box.cpp Cone.cpp Sphere.cpp Matrix4.cpp Semi.cpp Material.cpp Ray.cpp bvh_node.cpp Mesh.cpp Quad.cpp
 
 PROGNAME=raytrace
 
@@ -29,13 +29,14 @@ OUTPUT_DIR=output
 #INPUTNAME=bunny_jumbo_reflect
 #INPUTNAME=bunny_nasty_8k
 #INPUTNAME=bunny_tasty
-INPUTNAME=mesh2
+#INPUTNAME=simple_mesh
+INPUTNAME=cube_mesh
 #INPUTNAME=simple_tri
 
 HANDINDIR=csc473p1p3
 
 AA_FLAGS=-a -b -p
-NO_AA_FLAGS=-b -p
+NO_AA_FLAGS=-b
 
 OBJECTS=$(FILES:.cpp=.o)
 
@@ -55,13 +56,15 @@ urn: run
 
 rnu: run
 
+test: noaa eog
+
 8k:
 	time ./${PROGNAME} -a 4 -w 8192 -h 4320 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
-HUGE:
+mehard:
 	time ./${PROGNAME} -w 5120 -h 3840 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
-NICEHUGE:
+mesohard:
 	time ./${PROGNAME} -a 16 -w 5120 -h 3840 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 nicebig:

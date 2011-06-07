@@ -90,6 +90,7 @@ Triangle::Triangle(std::istream& input) : Geometry()
    */
    readOptions(input);
    boundingBox = bBox();
+   facePt = getFacePoint();
 }
 
 Triangle::Triangle(vec3_t c1, vec3_t c2, vec3_t c3) : Geometry()
@@ -97,6 +98,7 @@ Triangle::Triangle(vec3_t c1, vec3_t c2, vec3_t c3) : Geometry()
    location = c1;
    corner2 = c2;
    corner3 = c3;
+   facePt = getFacePoint();
 }
 
 Box* Triangle::bBox()
@@ -232,7 +234,20 @@ bool Triangle::isNeighbor(Triangle *other)
    {
       samePts++;
    }
-   return (samePts >= 2);
+   return (samePts == 2);
+}
+
+bool Triangle::isNeighbor(vec3_t c1, vec3_t c2)
+{
+   return (contains(c1) && contains(c2));
+}
+
+vec3_t Triangle::getFacePoint()
+{
+   vec3_t ret;
+   ret = location + corner2 + corner3;
+   ret /= 3;
+   return ret;
 }
 
 triangle_dev_t Triangle::getStruct()

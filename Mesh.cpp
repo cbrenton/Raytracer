@@ -148,17 +148,17 @@ Mesh::Mesh(istream& input) : Geometry()
                fCount++;
                // Add new triangle.
                // Represent neighboring faces somehow.
-               if (p1 > (int)points.size() || p1 < 0)
+               if (p1 >= (int)points.size() || p1 < 0)
                {
                   cerr << "Error: vertex index out of range (" << p1 << ")." << endl;
                   exit(EXIT_FAILURE);
                }
-               if (p2 > (int)points.size() || p2 < 0)
+               if (p2 >= (int)points.size() || p2 < 0)
                {
                   cerr << "Error: vertex index out of range (" << p2 << ")." << endl;
                   exit(EXIT_FAILURE);
                }
-               if (p3 > (int)points.size() || p3 < 0)
+               if (p3 >= (int)points.size() || p3 < 0)
                {
                   cerr << "Error: vertex index out of range (" << p3 << ")." << endl;
                   exit(EXIT_FAILURE);
@@ -177,8 +177,10 @@ Mesh::Mesh(istream& input) : Geometry()
    }
    readOptions(input);
    // Set all mesh face materials to the mesh's material.
-   setMats(mat);
+   //setMats(mat);
+   //randMats();
    boundingBox = bBox();
+   subdivide();
 }
 
 Mesh::~Mesh()
@@ -188,7 +190,10 @@ Mesh::~Mesh()
 Box* Mesh::bBox()
 {
    float extrema[3][2];
-   // TODO : Change to prevent segfaults when empty.
+   if (faces.size() == 0)
+   {
+      return new Box();
+   }
    for (int dim = 0; dim < 3; dim++)
    {
       extrema[dim][0] = faces[0]->bBox()->getMin().v[dim];
@@ -217,7 +222,6 @@ bool Mesh::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
    bool hitFound = false;
    float geomT = -1.0;
    float curDepth = -1.0;
-   //HitData *closestData = new HitData();
 
    for (unsigned i = 0; i < faces.size(); i++)
    {
@@ -230,7 +234,6 @@ bool Mesh::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
          if (geomT >= 0 && (!hitFound || (hitFound && geomT < curDepth)))
          {
             curDepth = geomT;
-            //*closestData = tmpData;
             *data = tmpData;
          }
       }
@@ -238,7 +241,6 @@ bool Mesh::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
    }
    if (hitFound && (curDepth > 0.0))
    {
-      //*data = *closestData;
       *t = curDepth;
    }
    return hitFound;
@@ -250,4 +252,64 @@ void Mesh::setMats(Material matIn)
    {
       faces[i]->mat = matIn;
    }
+}
+
+void Mesh::randMats()
+{
+   for (unsigned i = 0; i < faces.size(); i++)
+   {
+      faces[i]->mat.random();
+   }
+}
+
+void Mesh::subdivide()
+{
+   vector<vec3_t*> facePts;
+   vector<vec3_t*> fullPts;
+   vector<Triangle*> fullFaces;
+   for (unsigned i = 0; i < faces.size(); i++)
+   {
+      vec3_t facePoint = faces[i]->facePt;
+      facePts.push_back(&facePoint);
+      vec3_t edgePts[3];
+      edgePts[0] = faces[i]->location + faces[i]->corner2 + faces[i]->facePt;
+      edgePts[1] = faces[i]->corner2 + faces[i]->corner3 + faces[i]->facePt;
+      edgePts[2] = faces[i]->location + faces[i]->corner3 + faces[i]->facePt;
+      // Find first edge point (location -> corner2).
+      for (unsigned j = 0; j < faces.size(); j++)
+      {
+         if (i != j && faces[j]->isNeighbor(faces[i]->location, faces[i]->corner2))
+         {
+            edgePts[0] += faces[j]->facePt;
+            cout << i << "[0]" << endl;
+         }
+         if (i != j && faces[j]->isNeighbor(faces[i]->corner2, faces[i]->corner3))
+         {
+            edgePts[1] += faces[j]->facePt;
+            cout << i << "[1]" << endl;
+         }
+         if (i != j && faces[j]->isNeighbor(faces[i]->location, faces[i]->corner3))
+         {
+            edgePts[2] += faces[j]->facePt;
+            cout << i << "[2]" << endl;
+         }
+      }
+      edgePts[0] /= 4;
+      edgePts[1] /= 4;
+      edgePts[2] /= 4;
+      // TODO: comment this better
+      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[0], faces[i]->location));
+      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[0], faces[i]->corner2));
+      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[1], faces[i]->corner2));
+      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[1], faces[i]->corner3));
+      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[2], faces[i]->location));
+      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[2], faces[i]->corner3));
+   }
+   // TODO: move original points
+   faces.clear();
+   faces.insert(faces.end(), fullFaces.begin(), fullFaces.end());
+   cout << faces.size() << " total faces." << endl;
+   randMats();
+   //setMats(mat);
+   // TODO: Free vectors and pointers.
 }

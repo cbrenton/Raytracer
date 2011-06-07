@@ -46,9 +46,9 @@ void Pixel::clamp()
 
 void Pixel::setClear()
 {
-   r = 0;
-   g = 0;
-   b = 0;
+   r = 0.74f;
+   g = 0.74f;
+   b = 0.96f;
    a = 1;
 }
 

@@ -15,6 +15,7 @@
 class Triangle : public Geometry
 {
    public:
+      Triangle() {};
       Triangle(std::istream& input);
       Triangle(vec3_t c1, vec3_t c2, vec3_t c3);
       Box *bBox();
@@ -23,12 +24,15 @@ class Triangle : public Geometry
       vec3_t getNormal(vec3_t point = vec3_t(0, 0, 0));
       bool contains(vec3_t pt);
       bool isNeighbor(Triangle *other);
+      bool isNeighbor(vec3_t c1, vec3_t c2);
+      vec3_t getFacePoint();
       triangle_dev_t getStruct();
       void debug();
-   protected:
+   //protected:
       // Corner1 is Geometry::location
       vec3_t corner2;
       vec3_t corner3;
+      vec3_t facePt;
 };
 
 #endif
