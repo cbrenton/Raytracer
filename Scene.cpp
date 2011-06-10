@@ -99,6 +99,12 @@ Scene* Scene::read(istream& input)
             {
                curScene->geometry_vec.push_back(new Mesh(input));
             }
+            /*
+            else if (curItemName.compare("quad_mesh") == 0)
+            {
+               curScene->geometry_vec.push_back(new QuadMesh(input));
+            }
+            */
 
             curItemName = "";
          }
@@ -157,11 +163,6 @@ Pixel Scene::seekLight(HitData *data, vec3_t view)
       HitData tmp;
       isShadow = hit(feeler, &tmp);
 
-      if ((dynamic_cast<Mesh*> (data->object)) != NULL)
-      {
-         cout << "mesh" << endl;
-      }
-
       // Ambient.
       result.r += (data->object->getAmbient()*data->object->getR())
          * light.r;
@@ -178,15 +179,16 @@ Pixel Scene::seekLight(HitData *data, vec3_t view)
          l.normalize();
          float nDotL = n.dot(l);
          nDotL = min(nDotL, 1.0f);
-         if (nDotL > 0)
+         if (nDotL < 0)
          {
-            result.r += data->object->getDiffuse()*data->object->getR()
-               * nDotL * light.r;
-            result.g += data->object->getDiffuse()*data->object->getG()
-               * nDotL * light.g;
-            result.b += data->object->getDiffuse()*data->object->getB()
-               * nDotL * light.b;
+            nDotL *= -1;
          }
+         result.r += data->object->getDiffuse()*data->object->getR()
+            * nDotL * light.r;
+         result.g += data->object->getDiffuse()*data->object->getG()
+            * nDotL * light.g;
+         result.b += data->object->getDiffuse()*data->object->getB()
+            * nDotL * light.b;
 
          // Specular.
          //if (data->object->getReflect() == 0 && !data->object->getRefract())

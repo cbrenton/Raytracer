@@ -1,5 +1,5 @@
 camera {
-   location  <0, 0, 14>
+   location  <0, 0, 4>
    up        <0, 1, 0>
    right     <1.33333, 0,  0>
    look_at   <0, 0, 0>
@@ -8,7 +8,7 @@ camera {
 light_source {<-100, 100, 100> color rgb <1.5, 1.5, 1.5>}
 light_source {<0, 100, 100> color rgb <0.5, 0.5, 0.5>}
 
-mesh {
+mesh { 1
    vertex_vectors {
       8,
       <-1,-1,-1>, // 0: Left bottom back

@@ -18,6 +18,7 @@ CFLAGS=$(PLATFORMSPECIFICCFLAGS) -Wall -c $(DEBUG) $(PROFILE) $(OPTIMIZE) $(STRI
 
 CC=g++
 
+#FILES=main.cpp Pixel.cpp Image.cpp Scene.cpp Geometry.cpp Camera.cpp Light.cpp Plane.cpp Triangle.cpp Box.cpp Cone.cpp Sphere.cpp Matrix4.cpp Semi.cpp Material.cpp Ray.cpp bvh_node.cpp Mesh.cpp QuadMesh.cpp Quad.cpp
 FILES=main.cpp Pixel.cpp Image.cpp Scene.cpp Geometry.cpp Camera.cpp Light.cpp Plane.cpp Triangle.cpp Box.cpp Cone.cpp Sphere.cpp Matrix4.cpp Semi.cpp Material.cpp Ray.cpp bvh_node.cpp Mesh.cpp
 
 PROGNAME=raytrace
@@ -26,10 +27,11 @@ INPUT_EXT=pov
 INPUT_DIR=input
 OUTPUT_DIR=output
 #INPUTNAME=simple_mesh
+#INPUTNAME=q_mesh
 #INPUTNAME=test_mesh
+#INPUTNAME=cube_mesh
 INPUTNAME=diamond_mesh
 #INPUTNAME=pawn
-#INPUTNAME=cube_mesh
 
 HANDINDIR=csc473final
 

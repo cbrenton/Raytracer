@@ -1,5 +1,5 @@
 camera {
-   location  <0, 0, 4>
+   location  <0, 0, 10>
    up        <0, 1, 0>
    right     <1.33333, 0,  0>
    look_at   <0, 0, 0>
@@ -8,12 +8,13 @@ camera {
 light_source {<-100, 100, 100> color rgb <1.5, 1.5, 1.5>}
 light_source {<0, 100, 100> color rgb <0.5, 0.5, 0.5>}
 
-mesh {
+mesh { 1
    vertex_vectors {
       8,
       <-1,-1,0>,  // 0: Left bottom back
       <-1,1,0>,   // 1: Left top back
       <1,-1,0>,   // 2: Right bottom back
+      <1,1,0>,    // 3: Right bottom back
       //<1,1,0>,    // 2: Right bottom back
       <-1,-1,-1>, // 3: Left bottom back
       <-1,-1,0>,  // 4: Left bottom front
@@ -21,8 +22,8 @@ mesh {
    }
    face_indices {
       3,
-      <0,1,2>//, <0,3,2>,
-      //<0,3,1>,
+      <0,2,1>//, <0,3,2>,
+      <1,2,3>,
       //<3,4,5>
    }
    pigment {color rgb <0.2, 0.2, 0.8>}

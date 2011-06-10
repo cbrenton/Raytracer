@@ -14,6 +14,7 @@
 
 Triangle::Triangle()
 {
+   facePt = getFacePoint();
    points[0] = &location;
    points[1] = &corner2;
    points[2] = &corner3;
