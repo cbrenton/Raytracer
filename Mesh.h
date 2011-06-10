@@ -14,13 +14,16 @@
 
 class Mesh : public Geometry {
    public:
-      Mesh() : nVertices(0), subD(1) {};
+      Mesh() : nVertices(0), subDepth(1) {};
       Mesh(std::istream& input);
       ~Mesh();
       Box *bBox();
       bool hit(Ray ray, float *t, HitData *data = NULL, float minT = 0.0, float maxT = DIST_MAX);
       void setMats(Material matIn);
       void randMats();
+      vector<Triangle*> getAdj(vec3_t pt);
+      vector<Triangle*> getAdj(vec3_t pt, vec3_t p2);
+      vector<vec3_t*> getAdjEdges(vec3_t pt);
       void subdivide();
       inline void debug()
       {
@@ -37,7 +40,7 @@ class Mesh : public Geometry {
       vector<vec3_t*> points;
       vector<Triangle*> faces;
       int nVertices, nFaces;
-      int subD;
+      int subDepth;
 };
 
 #endif

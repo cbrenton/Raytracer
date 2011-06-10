@@ -562,5 +562,7 @@ int main(int argc, char **argv)
 
    delete image;
 
+   //delete scene;
+
    return 0;
 }

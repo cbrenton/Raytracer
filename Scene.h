@@ -25,7 +25,7 @@
 class Scene {
    public:
       Scene() {hasBVH = false;};
-      virtual ~Scene() {};
+      virtual ~Scene();
       static Scene* read(std::istream& input);
       void constructBVH();
       bool hit(Ray ray, HitData *data);

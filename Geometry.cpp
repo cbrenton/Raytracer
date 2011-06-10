@@ -10,6 +10,8 @@
 #include <cstring>
 #include <stdlib.h>
 
+#define EPSILON 0.001f
+
 Geometry::Geometry()
 {
    transform = Matrix4();
@@ -19,7 +21,12 @@ Geometry::Geometry()
 
 Geometry::~Geometry()
 {
-   delete boundingBox;
+   /*
+   if (boundingBox != NULL)
+   {
+      delete boundingBox;
+   }
+   */
 }
 
 bool Geometry::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
@@ -57,6 +64,19 @@ Box* Geometry::bBox()
 {
    Box *result = new Box(vec3_t(0, 0, 0), vec3_t(0, 0, 0));
    return result;
+}
+
+bool Geometry::closeEnough(vec_t a, vec_t b)
+{
+   return (max(a - b, b - a) < EPSILON);
+}
+
+bool Geometry::closeEnough(vec3_t a, vec3_t b)
+{
+   //return (max(a - b, b - a) < EPSILON);
+   vec3_t d = a - b;
+   float len = d.length();
+   return (len < EPSILON);
 }
 
 void Geometry::readOptions(std::istream& input)

@@ -15,14 +15,17 @@
 class Triangle : public Geometry
 {
    public:
-      Triangle() {};
+      Triangle();
       Triangle(std::istream& input);
       Triangle(vec3_t c1, vec3_t c2, vec3_t c3);
+      ~Triangle();
       Box *bBox();
       bool hit(Ray ray, float *t, HitData *data = NULL, float minT = 0.0, float maxT = DIST_MAX);
       bool hit(vec3_t pt);
       vec3_t getNormal(vec3_t point = vec3_t(0, 0, 0));
+      vec3_t getPoint(int pt);
       bool contains(vec3_t pt);
+      //int contains(vec3_t pt);
       bool isNeighbor(Triangle *other);
       bool isNeighbor(vec3_t c1, vec3_t c2);
       //vector<Triangle*> subdivide(Triangle *tri1, Triangle* tri2, Triangle* tri3);
@@ -32,7 +35,8 @@ class Triangle : public Geometry
       vec3_t getMidAvg(vec3_t pt);
       triangle_dev_t getStruct();
       void debug();
-   //protected:
+      vec3_t *points[3];
+   protected:
       // Corner1 is Geometry::location
       vec3_t corner2;
       vec3_t corner3;

@@ -100,11 +100,6 @@ void Box::combine(Box *b1, Box *b2)
    corner2 = c2;
 }
 
-bool Box::closeEnough(vec_t a, vec_t b)
-{
-   return (max(a - b, b - a) < EPSILON);
-}
-
 vec3_t Box::getNormal(vec3_t point)
 {
    if (closeEnough(point.x(), location.x()))

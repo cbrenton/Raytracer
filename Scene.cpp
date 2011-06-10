@@ -15,6 +15,18 @@
 
 using namespace std;
 
+Scene::~Scene()
+{
+   for (unsigned i = 0; i < geometry_vec.size(); i++)
+   {
+      delete geometry_vec[i];
+   }
+   for (unsigned j = 0; j < planes_vec.size(); j++)
+   {
+      delete planes_vec[j];
+   }
+}
+
 Scene* Scene::read(istream& input)
 {
    vector<Light*> lights_vec;

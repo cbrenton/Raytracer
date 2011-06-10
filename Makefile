@@ -18,22 +18,20 @@ CFLAGS=$(PLATFORMSPECIFICCFLAGS) -Wall -c $(DEBUG) $(PROFILE) $(OPTIMIZE) $(STRI
 
 CC=g++
 
-FILES=main.cpp Pixel.cpp Image.cpp Scene.cpp Geometry.cpp Camera.cpp Light.cpp Plane.cpp Triangle.cpp Box.cpp Cone.cpp Sphere.cpp Matrix4.cpp Semi.cpp Material.cpp Ray.cpp bvh_node.cpp Mesh.cpp Quad.cpp
+FILES=main.cpp Pixel.cpp Image.cpp Scene.cpp Geometry.cpp Camera.cpp Light.cpp Plane.cpp Triangle.cpp Box.cpp Cone.cpp Sphere.cpp Matrix4.cpp Semi.cpp Material.cpp Ray.cpp bvh_node.cpp Mesh.cpp
 
 PROGNAME=raytrace
 
 INPUT_EXT=pov
-#INPUT_DIR=~shirsh/cpe473/Final/
 INPUT_DIR=input
 OUTPUT_DIR=output
-#INPUTNAME=bunny_jumbo_reflect
-#INPUTNAME=bunny_nasty_8k
-#INPUTNAME=bunny_tasty
-INPUTNAME=simple_mesh
+#INPUTNAME=simple_mesh
+#INPUTNAME=test_mesh
+INPUTNAME=diamond_mesh
+#INPUTNAME=pawn
 #INPUTNAME=cube_mesh
-#INPUTNAME=simple_tri
 
-HANDINDIR=csc473p1p3
+HANDINDIR=csc473final
 
 AA_FLAGS=-a -b -p
 NO_AA_FLAGS=-b
@@ -61,10 +59,10 @@ test: noaa eog
 8k:
 	time ./${PROGNAME} -a 4 -w 8192 -h 4320 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
-mehard:
+HUGE:
 	time ./${PROGNAME} -w 5120 -h 3840 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
-mesohard:
+NICEHUGE:
 	time ./${PROGNAME} -a 16 -w 5120 -h 3840 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 nicebig:
@@ -129,15 +127,20 @@ gdb:
 
 vg: valgrind
 
+vgb: valgrindbig
+
 vgf: valgrindfull
 
 vge: valgrinderror
 
 valgrind:
-	valgrind --tool=memcheck --leak-check=yes ./${PROGNAME} -h 20 -w 20 -i ${INPUT_DIR}/simple.${INPUT_EXT}
+	valgrind --tool=memcheck --leak-check=yes ./${PROGNAME} -h 20 -w 20 -b -i ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
+
+valgrindbig:
+	valgrind --tool=memcheck --leak-check=yes ./${PROGNAME} -h 100 -w 100 -b -i ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 valgrindfull:
-	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes ./${PROGNAME} -h 200 -w 200 -i ${INPUT_DIR}/simple.${INPUT_EXT}
+	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes ./${PROGNAME} -h 200 -w 200 -b -i ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 valgrinderror:
 	./${PROGNAME} -h 20 -w 20 -i ${INPUT_DIR}/simple.${INPUT_EXT}

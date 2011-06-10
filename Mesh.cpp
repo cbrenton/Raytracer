@@ -22,9 +22,11 @@ Mesh::Mesh(istream& input) : Geometry()
    //char end[256];
    char tmp;
    getline(input, line);
-   if (line == "{")
+   if (line[0] == '{')
    {
       braceCount++;
+      sscanf(line.c_str(), "{ %d", &subDepth);
+      cout << "sub_depth: " << subDepth << endl;
       getline(input, line);
    }
    istringstream lineSS;
@@ -32,7 +34,7 @@ Mesh::Mesh(istream& input) : Geometry()
    {
       getline(input, line);
       // Find the index of the first comment.
-      unsigned comment = line.find("//");
+      size_t comment = line.find("//");
       // Remove data after comments, if any.
       if (comment != string::npos)
       {
@@ -58,7 +60,7 @@ Mesh::Mesh(istream& input) : Geometry()
          // Get the next line.
          getline(input, line);
          // Find the index of the first comment.
-         unsigned comment = line.find("//");
+         size_t comment = line.find("//");
          // Remove data after comments, if any.
          if (comment != string::npos)
          {
@@ -86,6 +88,10 @@ Mesh::Mesh(istream& input) : Geometry()
                   lineSS >> tmp;
                }
             }
+            else
+            {
+               delete pt;
+            }
          }
       }
    }
@@ -97,7 +103,7 @@ Mesh::Mesh(istream& input) : Geometry()
    {
       getline(input, line);
       // Find the index of the first comment.
-      unsigned comment = line.find("//");
+      size_t comment = line.find("//");
       // Remove data after comments, if any.
       if (comment != string::npos)
       {
@@ -123,7 +129,7 @@ Mesh::Mesh(istream& input) : Geometry()
          // Get the next line.
          getline(input, line);
          // Find the index of the first comment.
-         unsigned comment = line.find("//");
+         size_t comment = line.find("//");
          // Remove data after comments, if any.
          if (comment != string::npos)
          {
@@ -165,7 +171,10 @@ Mesh::Mesh(istream& input) : Geometry()
                }
                else
                {
-                  faces.push_back(new Triangle(*points[p1], *points[p2], *points[p3]));
+                  vec3_t pt1 = *points[p1];
+                  vec3_t pt2 = *points[p2];
+                  vec3_t pt3 = *points[p3];
+                  faces.push_back(new Triangle(pt1, pt2, pt3));
                }
                if (!fCount == nFaces)
                {
@@ -177,14 +186,27 @@ Mesh::Mesh(istream& input) : Geometry()
    }
    readOptions(input);
    // Set all mesh face materials to the mesh's material.
-   //setMats(mat);
-   randMats();
+   setMats(mat);
+   //randMats();
    boundingBox = bBox();
-   subdivide();
+   for (int subLevel = 0; subLevel < subDepth; subLevel++)
+   {
+      subdivide();
+   }
+   //subdivide();
 }
 
 Mesh::~Mesh()
 {
+   //cout << "deleting mesh" << endl;
+   for (int i = 0; i < (int)faces.size(); i++)
+   {
+      delete faces[i];
+   }
+   for (int j = 0; j < (int)points.size(); j++)
+   {
+      delete points[j];
+   }
 }
 
 Box* Mesh::bBox()
@@ -196,13 +218,14 @@ Box* Mesh::bBox()
    }
    for (int dim = 0; dim < 3; dim++)
    {
-      extrema[dim][0] = faces[0]->bBox()->getMin().v[dim];
-      extrema[dim][1] = faces[0]->bBox()->getMax().v[dim];
+      Box *fBox = faces[0]->boundingBox;
+      extrema[dim][0] = fBox->getMin().v[dim];
+      extrema[dim][1] = fBox->getMax().v[dim];
    }
-   for (unsigned i = 0; i < faces.size(); i++)
+   for (int i = 0; i < (int)faces.size(); i++)
    {
       vec3_t c1, c2;
-      Box *faceBox = faces[i]->bBox();
+      Box *faceBox = faces[i]->boundingBox;
       c1 = faceBox->getMin();
       c2 = faceBox->getMax();
       for (int j = 0; j < 3; j++)
@@ -223,7 +246,7 @@ bool Mesh::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
    float geomT = -1.0;
    float curDepth = -1.0;
 
-   for (unsigned i = 0; i < faces.size(); i++)
+   for (int i = 0; i < (int)faces.size(); i++)
    {
       Triangle *curObject = faces[i];
       geomT = -1.0;
@@ -248,7 +271,7 @@ bool Mesh::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
 
 void Mesh::setMats(Material matIn)
 {
-   for (unsigned i = 0; i < faces.size(); i++)
+   for (int i = 0; i < (int)faces.size(); i++)
    {
       faces[i]->mat = matIn;
    }
@@ -256,72 +279,188 @@ void Mesh::setMats(Material matIn)
 
 void Mesh::randMats()
 {
-   for (unsigned i = 0; i < faces.size(); i++)
+   for (int i = 0; i < (int)faces.size(); i++)
    {
       faces[i]->mat.random();
    }
 }
 
+vector<Triangle*> Mesh::getAdj(vec3_t pt)
+{
+   vector<Triangle*> adj;
+   for (int i = 0; i < (int)faces.size(); i++)
+   {
+      if (faces[i]->contains(pt))
+      {
+         adj.push_back(faces[i]);
+      }
+   }
+   cout << "adjacent faces: " << adj.size() << endl;
+   return adj;
+}
+
+vector<vec3_t*> Mesh::getAdjEdges(vec3_t pt)
+{
+   vector<vec3_t*> adj;
+   // FOR each face in mesh
+   for (int i = 0; i < (int)faces.size(); i++)
+   {
+      bool isFound = false;
+      // IF current face contains pt
+      if (faces[i]->contains(pt))
+      {
+         // FOR other two points on current face
+         for (int offset = 0; offset < 3; offset++)
+         {
+            // Try first point.
+            vec3_t *p1 = faces[i]->points[(offset + 1) % 3];
+            isFound = false;
+            // FOR each point in adj
+            for (int j = 0; j < (int)adj.size(); j++)
+            {
+               // IF adjacent edges vector already contains p1
+               //if (closeEnough(*p1, *adj[j]))
+               if (*p1 == *adj[j])
+               {
+                  isFound = true;
+               }
+            }
+            // IF p1 is not already in adj
+            if (!isFound)
+            {
+               // Push p1 to adj
+               adj.push_back(p1);
+            }
+         }
+      }
+   }
+   //cout << "Returning vector of adjacent edges of size " << adj.size() << endl;
+   return adj;
+}
+
+vector<Triangle*> Mesh::getAdj(vec3_t p1, vec3_t p2)
+{
+   vector<Triangle*> adj;
+   for (int i = 0; i < (int)faces.size(); i++)
+   {
+      if (faces[i]->isNeighbor(p1, p2))
+      {
+         adj.push_back(faces[i]);
+      }
+   }
+   return adj;
+}
+
 void Mesh::subdivide()
 {
    vector<Triangle*> fullFaces;
-   for (unsigned i = 0; i < faces.size(); i++)
+   // FOR each face in the mesh.
+   for (int i = 0; i < (int)faces.size(); i++)
    {
-      faces[i]->findAdj(faces);
-      //cout << faces.size() << endl;
-      vector<Triangle*> newFaces = faces[i]->subdivide();
-      fullFaces.insert(fullFaces.end(), newFaces.begin(), newFaces.end());
-   }
-   /*
-   vector<vec3_t*> facePts;
-   vector<vec3_t*> fullPts;
-   vector<Triangle*> fullFaces;
-   for (unsigned i = 0; i < faces.size(); i++)
-   {
-      vec3_t facePoint = faces[i]->facePt;
-      facePts.push_back(&facePoint);
-      vec3_t edgePts[3];
-      // TODO: comment this better
-      edgePts[0] = faces[i]->location + faces[i]->corner2 + faces[i]->facePt;
-      edgePts[1] = faces[i]->corner2 + faces[i]->corner3 + faces[i]->facePt;
-      edgePts[2] = faces[i]->location + faces[i]->corner3 + faces[i]->facePt;
-      // Find first edge point (location -> corner2).
-      for (unsigned j = 0; j < faces.size(); j++)
+      Triangle* cur = faces[i];
+      // Construct list of edgePoints.
+      vector<vec3_t*> edgePts;
+      for (int edge = 0; edge < 3; edge++)
       {
-         if (i != j && faces[j]->isNeighbor(faces[i]->location, faces[i]->corner2))
+         vec3_t curEdge[2] = {cur->getPoint(edge), cur->getPoint((edge + 1) % 3)};
+         vector<Triangle*> adjFaces = getAdj(curEdge[0], curEdge[1]);
+         vec3_t *curEdgePt = new vec3_t();
+         // Add edge's original midpoints to the current edge point.
+         *curEdgePt += curEdge[0];
+         *curEdgePt += curEdge[1];
+         int adjCount = 0;
+         // Add face points of each neighboring face.
+         for (int adjNdx = 0; adjNdx < (int)adjFaces.size(); adjNdx++)
          {
-            edgePts[0] += faces[j]->facePt;
-            cout << i << "[0]" << endl;
+            vec3_t adjPt = adjFaces[adjNdx]->getFacePoint();
+            *curEdgePt += adjPt;
+            adjCount++;
          }
-         if (i != j && faces[j]->isNeighbor(faces[i]->corner2, faces[i]->corner3))
+         if (adjFaces.size() == 1)
          {
-            edgePts[1] += faces[j]->facePt;
-            cout << i << "[1]" << endl;
+            vec3_t adjPt = adjFaces[0]->getFacePoint();
+            *curEdgePt += adjPt;
+            adjCount++;
+            cout << "only 1" << endl;
          }
-         if (i != j && faces[j]->isNeighbor(faces[i]->location, faces[i]->corner3))
+         else
          {
-            edgePts[2] += faces[j]->facePt;
-            cout << i << "[2]" << endl;
+            cout << "size: " << adjFaces.size() << endl;
          }
+         *curEdgePt /= (float)(2 + adjCount);
+         cout << "current edge point (" << edge << ", " << ((edge + 1) % 3) << "): " << *curEdgePt << endl;
+         edgePts.push_back(curEdgePt);
       }
-      // TODO: move original points
-      vec3_t newLoc = faces[i]->location;
-      vec3_t newC2 = faces[i]->corner2;
-      vec3_t newC3 = faces[i]->corner3;
-      // TODO: comment this better
-      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[0], newLoc));
-      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[0], newC2));
-      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[1], newC2));
-      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[1], newC3));
-      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[2], newLoc));
-      fullFaces.push_back(new Triangle(faces[i]->facePt, edgePts[2], newC3));
-   }
-   */
 
+      // FOR each point in current face.
+      for (int pt = 0; pt < 3; pt++)
+      {
+         vec3_t point = cur->getPoint(pt);
+         // Find list of faces touching current point.
+         vector<Triangle*> adjFaces = getAdj(point);
+         // Find list of edges touching current point.
+         vector<vec3_t*> adjEdges = getAdjEdges(point);
+         // Set n to the number of faces touching current point.
+         int n = (int)adjFaces.size();
+         cout << "n = " << n << endl;
+         // Calculate F.
+         vec3_t F = vec3_t();
+         // FOR each face in adjFaces
+         for (int j = 0; j < (int)adjFaces.size(); j++)
+         {
+            vec3_t fP = adjFaces[j]->getFacePoint();
+            F += fP;
+         }
+         // Set F as the average of the facePoints of all adjacent faces.
+         F /= (float)adjFaces.size();
+         cout << "F: " << F << endl;
+         // Calculate R.
+         vec3_t R = vec3_t();
+         // FOR each edge in adjEdges
+         for (int k = 0; k < (int)adjEdges.size(); k++)
+         {
+            // Calculate the midpoint of the edge between point and the current
+            // edge point.
+            vec3_t midPt = point;
+            midPt -= *adjEdges[k];
+            midPt /= 2;
+            // Add the midpoint to R.
+            R += midPt;
+         }
+         // Calculate new vertex point P.
+         vec3_t P = (R * 2) + F;
+         vec3_t r2 = R * 2;
+         cout << "2R: " << r2 << endl;
+         vec3_t nMinus3P = point;
+         //n = 4;
+         nMinus3P *= ((float)n - 3);
+         //nMinus3P *= 0.0;
+         P += nMinus3P;
+         P /= (float)n;
+         //P /= (float)3;
+         cout << "original point: " << point << endl;
+         vec3_t fP = cur->getFacePoint();
+         cout << "face point: " << fP << endl;
+         cout << "n: " << n << endl;
+         cout << "new point: " << P << endl << endl;
+         //fullFaces.push_back(new Triangle(cur->getFacePoint(), *edgePts[pt], P));
+         /*
+         fullFaces.push_back(new Triangle(cur->getFacePoint(), *edgePts[pt], point));
+         fullFaces.push_back(new Triangle(cur->getFacePoint(), point, *edgePts[(pt + 2) % 3]));
+         */
+         fullFaces.push_back(new Triangle(cur->getFacePoint(), *edgePts[pt], P));
+         //fullFaces.push_back(new Triangle(cur->getFacePoint(), P, *edgePts[(pt + 2) % 3]));
+         //fullFaces.push_back(new Triangle(P, *edgePts[pt], *edgePts[(pt + 2) % 3]));
+      }
+      // ENDFOR
+   }
+   // ENDFOR
    faces.clear();
    faces.insert(faces.end(), fullFaces.begin(), fullFaces.end());
    cout << faces.size() << " total faces." << endl;
    randMats();
+   delete boundingBox;
+   boundingBox = bBox();
    //setMats(mat);
    // TODO: Free vectors and pointers.
 }

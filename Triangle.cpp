@@ -12,6 +12,13 @@
 
 #define EXP_ARGS 9
 
+Triangle::Triangle()
+{
+   points[0] = &location;
+   points[1] = &corner2;
+   points[2] = &corner3;
+}
+
 Triangle::Triangle(std::istream& input) : Geometry()
 {
    std::string line;
@@ -19,8 +26,8 @@ Triangle::Triangle(std::istream& input) : Geometry()
    int scan = 0;
    bool isDone = false;
    int braceCount = 0;
-   //for (unsigned i = 0; i < line.size(); i++)
-   unsigned start = line.find("triangle {");
+   //for (size_t i = 0; i < line.size(); i++)
+   size_t start = line.find("triangle {");
    if (start == string::npos)
    {
       if (line[0] == '{')
@@ -32,7 +39,7 @@ Triangle::Triangle(std::istream& input) : Geometry()
          start = 0;
       }
    }
-   for (unsigned i = start; i < line.size(); i++)
+   for (size_t i = start; i < line.size(); i++)
    {
       if (line[i] == '{')
       {
@@ -91,6 +98,9 @@ Triangle::Triangle(std::istream& input) : Geometry()
    readOptions(input);
    boundingBox = bBox();
    facePt = getFacePoint();
+   points[0] = &location;
+   points[1] = &corner2;
+   points[2] = &corner3;
 }
 
 Triangle::Triangle(vec3_t c1, vec3_t c2, vec3_t c3) : Geometry()
@@ -98,7 +108,16 @@ Triangle::Triangle(vec3_t c1, vec3_t c2, vec3_t c3) : Geometry()
    location = c1;
    corner2 = c2;
    corner3 = c3;
+   boundingBox = bBox();
    facePt = getFacePoint();
+   points[0] = &location;
+   points[1] = &corner2;
+   points[2] = &corner3;
+}
+
+Triangle::~Triangle()
+{
+   delete boundingBox;
 }
 
 Box* Triangle::bBox()
@@ -214,9 +233,38 @@ vec3_t Triangle::getNormal(vec3_t point)
    return normal;
 }
 
+vec3_t Triangle::getPoint(int pt)
+{
+   switch(pt)
+   {
+   case 0:
+      return location;
+      break;
+   case 1:
+      return corner2;
+      break;
+   case 2:
+      return corner3;
+      break;
+   }
+   return vec3_t(0, 0, 0);
+}
+
+//int Triangle::contains(vec3_t pt)
 bool Triangle::contains(vec3_t pt)
 {
    return (location == pt || corner2 == pt || corner3 == pt);
+   /*
+   for (int i = 0; i < 3; i++)
+   {
+      vec3_t got = getPoint(i);
+      if (got == pt)
+      {
+         return true;
+      }
+   }
+   */
+   //return false;
 }
 
 bool Triangle::isNeighbor(Triangle *other)
@@ -244,7 +292,7 @@ bool Triangle::isNeighbor(vec3_t c1, vec3_t c2)
 
 void Triangle::findAdj(vector<Triangle*> tris)
 {
-   for (unsigned i = 0; i < tris.size(); i++)
+   for (size_t i = 0; i < tris.size(); i++)
    {
       if (isNeighbor(tris[i]))
       {
@@ -264,7 +312,7 @@ vector<Triangle*> Triangle::subdivide()
    vector<Triangle*> lC2Adj;
    vector<Triangle*> lC3Adj;
    vector<Triangle*> c2C3Adj;
-   for (unsigned i = 0; i < adj.size(); i++)
+   for (size_t i = 0; i < adj.size(); i++)
    {
       if (adj[i]->isNeighbor(location, corner2))
       {
@@ -293,21 +341,21 @@ vector<Triangle*> Triangle::subdivide()
    lC2Edge += facePt;
    lC3Edge += facePt;
    c2C3Edge += facePt;
-   for (unsigned j = 0; j < lC2Adj.size(); j++)
+   for (size_t j = 0; j < lC2Adj.size(); j++)
    {
       vec3_t facePt = lC2Adj[j]->getFacePoint();
       lC2Edge += facePt;
       q += facePt;
       //cout << "Q: + " << facePt << " = " << q << endl;
    }
-   for (unsigned k = 0; k < lC3Adj.size(); k++)
+   for (size_t k = 0; k < lC3Adj.size(); k++)
    {
       vec3_t facePt = lC3Adj[k]->getFacePoint();
       lC3Edge += facePt;
       q += facePt;
       //cout << "Q: + " << facePt << " = " << q << endl;
    }
-   for (unsigned l = 0; l < c2C3Adj.size(); l++)
+   for (size_t l = 0; l < c2C3Adj.size(); l++)
    {
       vec3_t facePt = c2C3Adj[l]->getFacePoint();
       c2C3Edge += facePt;

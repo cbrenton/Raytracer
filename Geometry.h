@@ -32,6 +32,8 @@ class Geometry {
       virtual vec3_t getNormal(vec3_t point);
       virtual Box *bBox();
       virtual void debug() {};
+      bool closeEnough(vec_t a, vec_t b);
+      bool closeEnough(vec3_t a, vec3_t b);
       Box *boundingBox;
       Material mat;
       inline float getR()
