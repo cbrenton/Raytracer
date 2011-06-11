@@ -12,8 +12,10 @@
 
 #define EXP_ARGS 9
 
-Triangle::Triangle()
+Triangle::Triangle() : Geometry()
 {
+   corner2 = vec3_t(0,0,0);
+   corner3 = vec3_t(0,0,0);
    facePt = getFacePoint();
    points[0] = &location;
    points[1] = &corner2;
@@ -255,6 +257,7 @@ vec3_t Triangle::getPoint(int pt)
 bool Triangle::contains(vec3_t pt)
 {
    return (location == pt || corner2 == pt || corner3 == pt);
+   //return (closeEnough(pt, location) || closeEnough(pt, corner2) || closeEnough(pt, corner3));
    /*
       for (int i = 0; i < 3; i++)
       {

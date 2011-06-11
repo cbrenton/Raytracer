@@ -30,12 +30,12 @@ OUTPUT_DIR=output
 #INPUTNAME=q_mesh
 #INPUTNAME=test_mesh
 #INPUTNAME=cube_mesh
-INPUTNAME=diamond_mesh
-#INPUTNAME=pawn
+#INPUTNAME=diamond_mesh
+INPUTNAME=pawn
 
 HANDINDIR=csc473final
 
-AA_FLAGS=-a -b -p
+AA_FLAGS=-a -b
 NO_AA_FLAGS=-b
 
 OBJECTS=$(FILES:.cpp=.o)
