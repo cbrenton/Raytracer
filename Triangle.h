@@ -25,6 +25,7 @@ class Triangle : public Geometry
       vec3_t getNormal(vec3_t point = vec3_t(0, 0, 0));
       vec3_t getPoint(int pt);
       bool contains(vec3_t pt);
+      bool contains(vec3_t pt1, vec3_t pt2);
       //int contains(vec3_t pt);
       bool isNeighbor(Triangle *other);
       bool isNeighbor(vec3_t c1, vec3_t c2);
@@ -33,9 +34,11 @@ class Triangle : public Geometry
       vector<Triangle*> subdivide();
       vec3_t getFacePoint();
       vec3_t getMidAvg(vec3_t pt);
+      vec3_t getMidAvg();
       triangle_dev_t getStruct();
       void debug();
       vec3_t *points[3];
+      vector<vec3_t*> edgePts;
    protected:
       // Corner1 is Geometry::location
       vec3_t corner2;

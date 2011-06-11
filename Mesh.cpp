@@ -297,6 +297,19 @@ vector<Triangle*> Mesh::getAdj(vec3_t pt)
    return adj;
 }
 
+vector<Triangle*> Mesh::getAdj(Triangle *tri)
+{
+   vector<Triangle*> adj;
+   for (int i = 0; i < (int)faces.size(); i++)
+   {
+      if (faces[i]->isNeighbor(tri))
+      {
+         adj.push_back(faces[i]);
+      }
+   }
+   return adj;
+}
+
 vector<vec3_t*> Mesh::getAdjEdges(vec3_t pt)
 {
    vector<vec3_t*> adj;
@@ -320,6 +333,7 @@ vector<vec3_t*> Mesh::getAdjEdges(vec3_t pt)
             {
                isFound = false;
                // FOR each point in adj
+               /*
                for (int j = 0; j < (int)adj.size(); j++)
                {
                   // IF adjacent edges vector already contains p1
@@ -329,6 +343,7 @@ vector<vec3_t*> Mesh::getAdjEdges(vec3_t pt)
                      isFound = true;
                   }
                }
+                  */
                // IF p1 is not already in adj
                if (!isFound)
                {
@@ -359,175 +374,196 @@ vector<Triangle*> Mesh::getAdj(vec3_t p1, vec3_t p2)
 void Mesh::subdivide()
 {
    vector<Triangle*> fullFaces;
-   // FOR each face in the mesh.
-   for (int i = 0; i < (int)faces.size(); i++)
+
+   // Generate new points.
+
+   // Generate new face points.              /* ALREADY DONE */
+   // FOR each face in mesh                  /* ALREADY DONE */
+   // Add facePoint at center of face        /* ALREADY DONE */
+   // ENDFOR                                 /* ALREADY DONE */
+
+   // Generate new edge points.
+   // Make list of edges in mesh.
+   vector<vec3_t*> edgeList;
+   // FOR each face in mesh
+   for (int faceNdx = 0; faceNdx < (int)faces.size(); faceNdx++)
    {
-      Triangle* cur = faces[i];
-
-      int neighbors = 0;
-      neighbors += getAdj(cur->getPoint(0), cur->getPoint(1)).size();
-      neighbors += getAdj(cur->getPoint(1), cur->getPoint(2)).size();
-      neighbors += getAdj(cur->getPoint(2), cur->getPoint(0)).size();
-      //cout << "neighbors: " << neighbors << endl;
-      neighbors -= 3;
-      //cout << "neighbors (after): " << neighbors << endl;
-      // Find facePoint.
-      vec3_t facePt = cur->getFacePoint();
-      // Construct list of edgePoints.
-      vector<vec3_t*> edgePts;
-      //for (int edge = 0; edge < 3; edge++)
-      for (int edge = 0; edge < 3; edge++)
+      Triangle *curFace = faces[faceNdx];
+      // FOR each edge in current face
+      for (int edgeNdx = 0; edgeNdx < 3; edgeNdx++)
       {
-         vec3_t curEdge[2] = {cur->getPoint(edge), cur->getPoint((edge + 2) % 3)};
-         vector<Triangle*> adjFaces = getAdj(curEdge[0], curEdge[1]);
-         if (adjFaces.size() > 1)
+         // Edge start point.
+         vec3_t point1 = curFace->getPoint(edgeNdx);
+         // Edge end point.
+         vec3_t point2 = curFace->getPoint((edgeNdx + 1) % 3);
+         // Create temporary edge point variable (newEdgePt).
+         vec3_t *newEdgePt = new vec3_t();
+         // Add midpoint of current edge to newEdgePt.
+         vec3_t mid = point2 + point1;
+         mid /= 2;
+         *newEdgePt += mid;
+
+         // Create temporary facePoint average variable (facePtTot).
+         vec3_t facePtTot = vec3_t();
+         // Create variable neighborCount to track number of neighboring faces.
+         int neighborCount = 0;
+         // FOR each face in mesh
+         for (int neighborNdx = 0; neighborNdx < (int)faces.size(); neighborNdx++)
          {
-            vec3_t *curEdgePt = new vec3_t();
-
-            int adjCount = 0;
-
-            // Add face points of each neighboring face.
-            for (int adjNdx = 0; adjNdx < (int)adjFaces.size(); adjNdx++)
+            // IF current face contains current edge
+            if (faces[neighborNdx]->contains(point1, point2))
             {
-               vec3_t adjPt = adjFaces[adjNdx]->getFacePoint();
-               *curEdgePt += adjPt;
-               adjCount++;
+               // Add current face's facePoint to facePtTot.
+               vec3_t curFacePt = faces[neighborNdx]->getFacePoint();
+               facePtTot += curFacePt;
+               // Increment neighborCount.
+               neighborCount++;
             }
-            *curEdgePt /= (float)adjCount;
-            cout << "facePt average: " << (*curEdgePt) << endl;
-
-            // Add edge's original midpoints to the current edge point.
-            vec3_t mid = curEdge[1] + curEdge[0];
-            mid /= 2;
-            //*curEdgePt += curEdge[0];
-            //adjCount++;
-            //*curEdgePt += curEdge[1];
-            //adjCount++;
-            cout << "mid: " << mid << endl;
-            *curEdgePt += mid;
-            cout << "curEdgePt: " << (*curEdgePt) << endl;
-            *curEdgePt /= 2.0;
-            cout << "curEdgePt / 2.0: " << (*curEdgePt) << endl;
-
-            //*curEdgePt /= (float)adjCount;
-            cout << "current edge point (" << edge << ", " << ((edge + 1) % 3) << "): " << *curEdgePt << endl;
-            edgePts.push_back(curEdgePt);
+            // ENDIF
          }
-      }
+         // ENDFOR
 
 
-
-      //fullFaces.push_back(new Triangle(*edgePts[1], *edgePts[2], facePt));
-      //fullFaces.push_back(new Triangle(*edgePts[0], *edgePts[1], facePt));
-
-
-      //fullFaces.push_back(new Triangle(*edgePts[0], *edgePts[1], *edgePts[2]));
-      //fullFaces.push_back(new Triangle(*edgePts[0], *edgePts[1], vec3_t(0, 0, 0)));
-
-
-
-      /*
-      //for (int edge = 0; edge < 3; edge++)
-      for (int edge = 0; edge < (int)edgePts.size(); edge++)
-      {
-      //if (edge != 1)
-      {
-      fullFaces.push_back(new Triangle(*edgePts[edge], *edgePts[(edge + 1) % edgePts.size()], facePt));
-      }
-      }
-      */
-
-
-
-
-      // Construct list of vertex points.
-      vector<vec3_t*> vPts;
-
-
-
-
-
-      // FOR each point in current face.
-      //for (int pt = 0; pt < 3; pt++)
-      for (int pt = 0; pt < (int)edgePts.size(); pt++)
-      {
-         vec3_t point = cur->getPoint(pt);
-         // Find list of faces touching current point.
-         vector<Triangle*> adjFaces = getAdj(point);
-         // Find list of edges touching current point.
-         vector<vec3_t*> adjEdges = getAdjEdges(point);
-         // Set n to the number of faces touching current point.
-         int n = (int)adjEdges.size();
-         cout << "n = " << n << endl;
-         // Calculate F.
-         vec3_t F = vec3_t();
-         // FOR each face in adjFaces
-         for (int j = 0; j < (int)adjFaces.size(); j++)
-         {
-            vec3_t fP = adjFaces[j]->getFacePoint();
-            F += fP;
-         }
-         // Set F as the average of the facePoints of all adjacent faces.
-         F /= (float)adjFaces.size();
-         cout << "F: " << F << endl;
-         // Calculate R.
-         vec3_t R = vec3_t();
-         // FOR each edge in adjEdges
-         for (int k = 0; k < (int)adjEdges.size(); k++)
-         {
-            // Calculate the midpoint of the edge between point and the current
-            // edge point.
-            vec3_t midPt = point;
-            midPt -= *adjEdges[k];
-            midPt /= 2;
-            // Add the midpoint to R.
-            R += midPt;
-         }
-         R /= (float)adjEdges.size();
-         cout << "n = " << n << endl;
-         if (n > 3)
-         {
-            vec3_t r2 = R * 2;
-            cout << "2R: " << r2 << endl;
-            // Calculate new vertex point P.
-            vec3_t P = r2 + F;
-            vec3_t nMinus3P = point;
-            nMinus3P *= ((float)n - 3);
-            //nMinus3P *= 0.0;
-            P += nMinus3P;
-            P /= (float)n;
-            //P /= (float)3;
-            //cout << "original point: " << point << endl;
-            vec3_t fP = cur->getFacePoint();
-            //cout << "face point: " << fP << endl;
-            //cout << "n: " << n << endl;
-            cout << "new vertex point: " << P << endl << endl;
-            //cout << "\t\tpt: " << pt << endl;
-            //cout << "--------edgePts.size() = " << edgePts.size() << ", pt = " << pt << endl;
-            //fullFaces.push_back(new Triangle(P, *edgePts[pt], *edgePts[(pt + 1) % edgePts.size()]));
-            
-            
-            fullFaces.push_back(new Triangle(P, *edgePts[pt], *edgePts[(pt + 1) % edgePts.size()]));
-            
-            
-
-            //fullFaces.push_back(new Triangle(point, *edgePts[pt], *edgePts[(pt + 1) % edgePts.size()]));
-            //fullFaces.push_back(new Triangle(P, *edgePts[pt], facePt));
-            //fullFaces.push_back(new Triangle(point, *edgePts[(pt + 1) % edgePts.size()], facePt));
-            
-            //fullFaces.push_back(new Triangle(*edgePts[0], *edgePts[1], P));
-         }
-         fullFaces.push_back(new Triangle(facePt, *edgePts[pt], *edgePts[(pt + 1) % edgePts.size()]));
+         // Add facePtTot to newEdgePt.
+         *newEdgePt += facePtTot;
+         // Divide newEdgePt by (neighborCount + 1).
+         *newEdgePt /= (float)(neighborCount + 1);
+         // Add newEdgePt to current face's edgePts vector.
+         curFace->edgePts.push_back(newEdgePt);
       }
       // ENDFOR
    }
    // ENDFOR
+
+   // Generate new vertex points.
+   // FOR each face in mesh
+   for (int faceNdx2 = 0; faceNdx2 < (int)faces.size(); faceNdx2++)
+   {
+      Triangle *curFace = faces[faceNdx2];
+      
+      // Find the average of new face points adjacent to current face (Q).
+      vec3_t Q = vec3_t();
+      vector<Triangle*> adjFaces = getAdj(curFace);
+      for (int adjNdx = 0; adjNdx < (int)adjFaces.size(); adjNdx++)
+      {
+         vec3_t curFacePt = adjFaces[adjNdx]->getFacePoint();
+         Q += curFacePt;
+      }
+      Q /= (float)adjFaces.size();
+      
+      
+      /*
+      // Find the average of old edge midpoints adjacent to current face (R).
+      vec3_t R = vec3_t();
+      vector<vec3_t*> adjEdges = getAdjEdges();
+      */
+
+
+
+      // FOR each point in current face
+      for (int pointNdx = 0; pointNdx < 3; pointNdx++)
+      {
+         vec3_t curPoint = curFace->getPoint(pointNdx);
+         // Find the average of old edge midpoints adjacent to current face (R).
+         vec3_t R = vec3_t();
+         vector<vec3_t*> adjEdges = getAdjEdges(curFace->getPoint(pointNdx));
+         for (int adjEdgeNdx = 0; adjEdgeNdx < (int)adjEdges.size();
+               adjEdgeNdx++)
+         {
+            vec3_t edgeMid = curFace->getPoint(pointNdx);
+            edgeMid += *adjEdges[adjEdgeNdx];
+            edgeMid /= 2;
+            R += edgeMid;
+            cout << "edge #" << adjEdgeNdx << endl;
+         }
+         R /= (float)adjEdges.size();
+         /*
+         for (int i = 0; i < (int)adjFaces.size(); i++)
+         {
+            vec3_t faceMidAvg = adjFaces[i]->getMidAvg(curPoint);
+            R += faceMidAvg;
+         }
+         R /= (float)adjFaces.size();
+         */
+
+         // Create new temporary vertex point variable (newVert).
+         vec3_t newVert = vec3_t();
+         // Find old vertex point (S).
+         vec3_t S = curFace->getPoint(pointNdx);
+         // Find number of edges incident to current face (n).
+         //int n = adjFaces.size();
+         int n = adjEdges.size();
+         // Calculate Q / n.
+         vec3_t Q2 = Q / (float)n;
+         cout << "\tF / n: " << Q2 << endl;
+         // Calculate 2R / n.
+         vec3_t R2 = R * 2.0;
+         R2 /= (float)n;
+         cout << "\t2R / n: " << R2 << endl;
+         // Calculate S(n - 3) / n.
+         vec3_t S2 = S * (float)(n - 3);
+         S2 /= (float)n;
+         cout << "\tS(n - 3) / n: " << S2 << endl;
+         // Calculate new vertex point (newVert).
+         newVert = Q2 + R2 + S2;
+
+         // Connect new points.
+         // Make a new triangle from the current face point, an adjacent edge
+               // point, and the current vertex point.
+         vec3_t curFacePt = curFace->getFacePoint();
+         cout << "--------\nfaceNdx2: " << faceNdx2 << endl;
+         cout << "original point: " << curPoint << endl;
+         cout << "F: " << Q << endl;
+         cout << "R: " << R << endl;
+         cout << "S: " << S << endl;
+         cout << "n: " << n << ", n - 3: " << (n - 3) << endl;
+         cout << "P: " << newVert << endl;
+         vec3_t nextFacePt = faces[faceNdx2]->getFacePoint();
+         vec3_t curEdgePt = *curFace->edgePts[pointNdx];
+         vec3_t nextEdgePt = *curFace->edgePts[(pointNdx + 1) % curFace->edgePts.size()];
+         //vec3_t curEdgePt = *curFace->edgePts[(pointNdx + 2) % curFace->edgePts.size()];
+         //Triangle *newTri1 = new Triangle(curFacePt, curEdgePt, newVert);
+         //Triangle *newTri1 = new Triangle(curPt, curEdgePt, newVert);
+         //Triangle *newTri1 = new Triangle(curFacePt, curEdgePt, nextEdgePt);
+         //Triangle *newTri2 = new Triangle(newVert, curEdgePt, nextEdgePt);
+         
+         
+         Triangle *newTri1 = new Triangle(curFacePt, curEdgePt, nextEdgePt);
+         // Add the new triangle to fullFaces.
+         fullFaces.push_back(newTri1);
+
+
+         //fullFaces.push_back(newTri2);
+      }
+      // ENDFOR
+
+      /*
+      for (int i = 0; i < (int)faces.size(); i++)
+      {
+         vec3_t curFacePt = faces[i]->getFacePoint();
+         vec3_t curEdgePt = *faces[i]->edgePts[0];
+         vec3_t nextEdgePt = *faces[i]->edgePts[1];
+         //vec3_t curEdgePt = *curFace->edgePts[i];
+         //vec3_t nextEdgePt = *faces[i]->edgePts[(i + 1) % faces[i]->edgePts.size()];
+         Triangle *newTri1 = new Triangle(curFacePt, curEdgePt, nextEdgePt);
+         // Add the new triangle to fullFaces.
+         fullFaces.push_back(newTri1);
+      }
+      */
+   }
+   // ENDFOR
+
+   // Connect new points.
+   // Make a new triangle from each face point
+
+   cout << "number of faces: " << faces.size() << " -> " << fullFaces.size() << endl;
+   // Clear faces.
    faces.clear();
-   faces.insert(faces.end(), fullFaces.begin(), fullFaces.end());
-   cout << faces.size() << " total faces." << endl;
+   // Insert fullFaces into faces.
+   faces.insert(faces.begin(), fullFaces.begin(), fullFaces.end());
    randMats();
    delete boundingBox;
    boundingBox = bBox();
-   setMats(mat);
+   //setMats(mat);
    // TODO: Free vectors and pointers.
 }

@@ -256,16 +256,21 @@ bool Triangle::contains(vec3_t pt)
 {
    return (location == pt || corner2 == pt || corner3 == pt);
    /*
-   for (int i = 0; i < 3; i++)
-   {
+      for (int i = 0; i < 3; i++)
+      {
       vec3_t got = getPoint(i);
       if (got == pt)
       {
-         return true;
+      return true;
       }
-   }
-   */
+      }
+      */
    //return false;
+}
+
+bool Triangle::contains(vec3_t pt1, vec3_t pt2)
+{
+   return (contains(pt1) && contains(pt2));
 }
 
 bool Triangle::isNeighbor(Triangle *other)
@@ -283,7 +288,7 @@ bool Triangle::isNeighbor(Triangle *other)
    {
       samePts++;
    }
-   return (samePts == 2);
+   return (samePts >= 1);
 }
 
 bool Triangle::isNeighbor(vec3_t c1, vec3_t c2)
@@ -392,6 +397,26 @@ vec3_t Triangle::getFacePoint()
    ret = location + corner2 + corner3;
    ret /= 3;
    return ret;
+}
+
+vec3_t Triangle::getMidAvg()
+{
+   vec3_t avg = vec3_t();
+   vec3_t mid1 = vec3_t();
+   vec3_t mid2 = vec3_t();
+   vec3_t mid3 = vec3_t();
+
+   mid1 = (location + corner2);
+   mid1 /= 3.0;
+   avg += mid1;
+   mid2 = (corner2 + corner3);
+   mid2 /= 3.0;
+   avg += mid2;
+   mid3 = (corner2 + location);
+   mid3 /= 3.0;
+   avg += mid3;
+
+   return avg;
 }
 
 vec3_t Triangle::getMidAvg(vec3_t pt)

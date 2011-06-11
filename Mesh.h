@@ -23,6 +23,7 @@ class Mesh : public Geometry {
       void randMats();
       vector<Triangle*> getAdj(vec3_t pt);
       vector<Triangle*> getAdj(vec3_t pt, vec3_t p2);
+      vector<Triangle*> getAdj(Triangle *tri);
       vector<vec3_t*> getAdjEdges(vec3_t pt);
       void subdivide();
       inline void debug()
