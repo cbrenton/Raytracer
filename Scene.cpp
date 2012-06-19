@@ -240,7 +240,7 @@ Pixel Scene::seekLight(HitData *data, vec3_t view)
 
 bool Scene::hit(Ray ray, HitData *data)
 {
-   int hitObject = -1;
+   //int hitObject = -1;
    float t = -1;
    bool hitFound = false;
    float curDepth = -1.0;
@@ -260,7 +260,7 @@ bool Scene::hit(Ray ray, HitData *data)
             if (planeT >= 0 && (!hitFound || (hitFound && planeT < curDepth)))
             {
                curDepth = planeT;
-               hitObject = i;
+               //hitObject = i;
                *closestData = tmpData;
             }
          }
@@ -293,7 +293,7 @@ bool Scene::hit(Ray ray, HitData *data)
             if (geomT >= 0 && (!hitFound || (hitFound && geomT < curDepth)))
             {
                curDepth = geomT;
-               hitObject = i;
+               //hitObject = i;
                *closestData = tmpData;
             }
          }
@@ -316,7 +316,7 @@ bool Scene::hit(Ray ray, HitData *data)
             if (planeT >= 0 && (!hitFound || (hitFound && planeT < curDepth)))
             {
                curDepth = planeT;
-               hitObject = i;
+               //hitObject = i;
                *closestData = tmpData;
             }
          }

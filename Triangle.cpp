@@ -25,7 +25,7 @@ Triangle::Triangle(std::istream& input) : Geometry()
    std::string line;
    getline(input, line);
    int scan = 0;
-   bool isDone = false;
+   //bool isDone = false;
    int braceCount = 0;
    //for (size_t i = 0; i < line.size(); i++)
    size_t start = line.find("triangle {");
@@ -51,7 +51,7 @@ Triangle::Triangle(std::istream& input) : Geometry()
          braceCount--;
       }
    }
-   isDone = (braceCount < 0);
+   //isDone = (braceCount < 0);
    //while (line == "")
    while (line.empty())
    {

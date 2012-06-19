@@ -146,7 +146,7 @@ bool Geometry::getOption(std::string option, std::string line)
    }
    else if (option.compare("finish") == 0)
    {
-      int scan = -1;
+      //int scan = -1;
       //char *tok;
       char *tok;
       char *lineptr = strdup(line.c_str());
@@ -156,39 +156,46 @@ bool Geometry::getOption(std::string option, std::string line)
          if (strcmp(tok, "ambient") == 0)
          {
             tok = strtok(NULL, " {");
-            scan = sscanf(tok, "%f", &mat.ambient);
+            //scan = sscanf(tok, "%f", &mat.ambient);
+            sscanf(tok, "%f", &mat.ambient);
          }
          else if (strcmp(tok, "specular") == 0)
          {
             tok = strtok(NULL, " {");
-            scan = sscanf(tok, "%f", &mat.specular);
+            //scan = sscanf(tok, "%f", &mat.specular);
+            sscanf(tok, "%f", &mat.specular);
          }
          else if (strcmp(tok, "diffuse") == 0)
          {
             tok = strtok(NULL, " {");
-            scan = sscanf(tok, "%f", &mat.diffuse);
+            //scan = sscanf(tok, "%f", &mat.diffuse);
+            sscanf(tok, "%f", &mat.diffuse);
          }
          else if (strcmp(tok, "roughness") == 0)
          {
             tok = strtok(NULL, " {");
-            scan = sscanf(tok, "%f", &mat.roughness);
+            //scan = sscanf(tok, "%f", &mat.roughness);
+            sscanf(tok, "%f", &mat.roughness);
          }
          else if (strcmp(tok, "reflection") == 0)
          {
             tok = strtok(NULL, " {");
-            scan = sscanf(tok, "%f", &mat.reflect);
+            //scan = sscanf(tok, "%f", &mat.reflect);
+            sscanf(tok, "%f", &mat.reflect);
          }
          else if (strcmp(tok, "refraction") == 0)
          {
             int tmp = -1;
             tok = strtok(NULL, " {");
-            scan = sscanf(tok, "%d", &tmp);
+            //scan = sscanf(tok, "%d", &tmp);
+            sscanf(tok, "%d", &tmp);
             mat.refract = (tmp != 0);
          }
          else if (strcmp(tok, "ior") == 0)
          {
             tok = strtok(NULL, " {");
-            scan = sscanf(tok, "%f", &mat.ior);
+            //scan = sscanf(tok, "%f", &mat.ior);
+            sscanf(tok, "%f", &mat.ior);
          }
          tok = strtok(NULL, " {");
       }
