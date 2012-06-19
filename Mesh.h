@@ -22,6 +22,7 @@ class Mesh : public Geometry {
       void setMats(Material matIn);
       void randMats();
       vector<Triangle*> getAdj(vec3_t pt);
+      vector<Triangle*> getMidAdj(vec3_t pt);
       vector<Triangle*> getAdj(vec3_t pt, vec3_t p2);
       vector<vec3_t*> getAdjEdges(vec3_t pt);
       void subdivide();

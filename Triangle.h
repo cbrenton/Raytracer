@@ -25,6 +25,7 @@ class Triangle : public Geometry
       vec3_t getNormal(vec3_t point = vec3_t(0, 0, 0));
       vec3_t getPoint(int pt);
       bool contains(vec3_t pt);
+      bool edgeContains(vec3_t pt);
       //int contains(vec3_t pt);
       bool isNeighbor(Triangle *other);
       bool isNeighbor(vec3_t c1, vec3_t c2);

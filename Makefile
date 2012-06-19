@@ -125,7 +125,7 @@ clean:
 	rm -f *.o */*.o ${PROGNAME}
 
 gdb:
-	gdb ${PROGNAME}
+	gdb --args ./${PROGNAME} +W640 -H 480 ${AA_FLAGS} -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 vg: valgrind
 

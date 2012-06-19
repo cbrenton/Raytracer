@@ -297,6 +297,19 @@ vector<Triangle*> Mesh::getAdj(vec3_t pt)
    return adj;
 }
 
+vector<Triangle*> Mesh::getMidAdj(vec3_t pt)
+{
+   vector<Triangle*> adj;
+   for (int i = 0; i < (int)faces.size(); i++)
+   {
+      if (faces[i]->edgeContains(pt))
+      {
+         adj.push_back(faces[i]);
+      }
+   }
+   return adj;
+}
+
 vector<vec3_t*> Mesh::getAdjEdges(vec3_t pt)
 {
    vector<vec3_t*> adj;
@@ -374,11 +387,20 @@ void Mesh::subdivide()
          *mid /= 2;
          midPts.push_back(mid);
       }
+      // FOR each edge point.
       for (int midNdx = 0; midNdx < (int)midPts.size(); midNdx++)
       {
-         fullFaces.push_back(new Triangle(*midPts[midNdx], *midPts[(midNdx + 1) % 3], cur->getPoint(midNdx)));
+         // Find the two adjacent faces.
+         vector<Triangle*> adjFaces = getMidAdj(*midPts[midNdx]);
+         cout << "neighbors: " << adjFaces.size() << endl;
+         // Find the opposite points
+         //fullFaces.push_back(new Triangle(*midPts[midNdx], *midPts[(midNdx + 1) % 3], cur->getPoint(midNdx)));
       }
-      fullFaces.push_back(new Triangle(*midPts[0], *midPts[1], *midPts[2]));
+      //fullFaces.push_back(new Triangle(*midPts[0], *midPts[1], *midPts[2]));
+      for (int i = 0; i < (int)midPts.size(); i++)
+      {
+         delete midPts[i];
+      }
    }
    // ENDFOR
    faces.clear();

@@ -205,7 +205,7 @@ bool Triangle::hit(Ray ray, float *t, HitData *data, float minT, float maxT)
       result = bT;
    }
    *t = result;
-   if (result > 0.01)
+   if (result > 0.01 && data)
    {
       data->hit = true;
       data->point = ray.dir * (*t);
@@ -251,21 +251,25 @@ vec3_t Triangle::getPoint(int pt)
    return vec3_t(0, 0, 0);
 }
 
-//int Triangle::contains(vec3_t pt)
 bool Triangle::contains(vec3_t pt)
 {
    return (location == pt || corner2 == pt || corner3 == pt);
-   /*
+}
+
+bool Triangle::edgeContains(vec3_t pt)
+{
    for (int i = 0; i < 3; i++)
    {
-      vec3_t got = getPoint(i);
-      if (got == pt)
+      vec3_t curPt = *points[i];
+      vec3_t nextPt = *points[(i + 1) % 3];
+      vec3_t edgeVec = nextPt - curPt;
+      vec3_t testVec = pt - curPt;
+      if (edgeVec.dot(testVec) == 1.f)
       {
          return true;
       }
    }
-   */
-   //return false;
+   return false;
 }
 
 bool Triangle::isNeighbor(Triangle *other)
