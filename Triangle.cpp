@@ -256,16 +256,21 @@ bool Triangle::contains(vec3_t pt)
    return (location == pt || corner2 == pt || corner3 == pt);
 }
 
-bool Triangle::edgeContains(vec3_t pt)
+bool Triangle::edgeContains(vec3_t pt, int *opposite)
 {
    for (int i = 0; i < 3; i++)
    {
       vec3_t curPt = *points[i];
       vec3_t nextPt = *points[(i + 1) % 3];
       vec3_t edgeVec = nextPt - curPt;
-      vec3_t testVec = pt - curPt;
-      if (edgeVec.dot(testVec) == 1.f)
+      vec3_t a_to_b = pt - curPt;
+      vec3_t a_to_c = nextPt - pt;
+      if (edgeVec.length() == a_to_b.length() + a_to_c.length())
       {
+         if (opposite)
+         {
+            *opposite = (i + 2) % 3;
+         }
          return true;
       }
    }
