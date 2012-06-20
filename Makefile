@@ -26,16 +26,14 @@ PROGNAME=raytrace
 INPUT_EXT=pov
 INPUT_DIR=input
 OUTPUT_DIR=output
-#INPUTNAME=simple_mesh
-#INPUTNAME=q_mesh
 #INPUTNAME=test_mesh
 #INPUTNAME=cube_mesh
-INPUTNAME=diamond_mesh
-#INPUTNAME=pawn
+#INPUTNAME=diamond_mesh
+INPUTNAME=pawn
 
 HANDINDIR=csc473final
 
-AA_FLAGS=-a -b -p
+AA_FLAGS=-a -b
 NO_AA_FLAGS=-b
 
 OBJECTS=$(FILES:.cpp=.o)
@@ -59,13 +57,13 @@ rnu: run
 test: noaa eog
 
 8k:
-	time ./${PROGNAME} -a 4 -w 8192 -h 4320 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} -a 4 -w 8192 -h 4320 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 HUGE:
-	time ./${PROGNAME} -w 5120 -h 3840 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} -w 5120 -h 3840 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 NICEHUGE:
-	time ./${PROGNAME} -a 16 -w 5120 -h 3840 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
+	./${PROGNAME} -a 16 -w 5120 -h 3840 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}
 
 nicebig:
 	./${PROGNAME} +W1280 -H 960 -a=16 -b -I ${INPUT_DIR}/${INPUTNAME}.${INPUT_EXT}

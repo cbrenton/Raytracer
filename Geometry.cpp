@@ -10,7 +10,7 @@
 #include <cstring>
 #include <stdlib.h>
 
-#define EPSILON 0.001f
+#define EPSILON 0.0001f
 
 Geometry::Geometry()
 {

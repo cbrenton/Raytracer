@@ -8,7 +8,7 @@ camera {
 light_source {<-100, 100, 100> color rgb <1.5, 1.5, 1.5>}
 
 // Pawn mesh
-mesh { 1
+mesh { 3
    vertex_vectors {
       154,
       <-0.292241,0.000000,0.858173>,

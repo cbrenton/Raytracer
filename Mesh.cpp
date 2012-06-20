@@ -389,32 +389,21 @@ void Mesh::subdivide()
       }
       vector<vec3_t *>newPts;
       // FOR each edge point.
-      // Hardcode this as 3? Because you'll be adding to the vector.
-      //for (int midNdx = 0; midNdx < 3; midNdx++)
       for (int midNdx = 0; midNdx < (int)midPts.size(); midNdx++)
       {
          vec3_t *curPt = midPts[midNdx];
-         cout << "point: " << *curPt << endl;
          // Find the opposite points.
          vector<Triangle*> adjFaces = getMidAdj(*curPt);
-         for (int i = 0; i < (int)adjFaces.size(); i++)
-         {
-            adjFaces[i]->debug();
-         }
-         cout << "neighbors: " << adjFaces.size() << endl;
          if ((int)adjFaces.size() != 2)
          {
-            cerr << "Invalid mesh. " << adjFaces.size() << " neighbors encountered.\n";
+            cerr << "Invalid mesh. " << adjFaces.size() << " neighbors encountered on an edge point.\n";
             exit(EXIT_FAILURE);
          }
-         cout << endl << endl;
-         cout << "point: " << *curPt << endl;
          vec3_t *newPt = new vec3_t();
          // FOR each adjacent triangle.
          for (int adjNdx = 0; adjNdx < (int)adjFaces.size(); adjNdx++)
          {
             Triangle *curFace = adjFaces[adjNdx];
-            curFace->debug();
             // Get the index of the opposite point.
             int oppositeNdx = -1;
             curFace->edgeContains(*curPt, &oppositeNdx);
@@ -426,35 +415,80 @@ void Mesh::subdivide()
                if (ptNdx == oppositeNdx)
                {
                   vec3_t contrib = *curFacePt * 1.f/8.f;
-                  cout << "\t" << *newPt << " + " << contrib;
                   *newPt += contrib;
-                  cout << " = " << *newPt << endl;
                }
                // Only count the shared points once.
                else if (adjNdx == 0)
                {
                   vec3_t contrib = *curFacePt * 3.f/8.f;
-                  cout << "\t" << *newPt << " + " << contrib;
                   *newPt += contrib;
-                  cout << " = " << *newPt << endl;
                }
             }
          }
-         cout << "final: " << endl;
-         cout << "\tcurPt: " << *curPt << endl;
-         cout << "\tnewPt: " << *newPt << endl;
          // Add the new midpoints to a new vector.
          newPts.push_back(newPt);
-
-         //fullFaces.push_back(new Triangle(*midPts[midNdx], *midPts[(midNdx + 1) % 3], cur->getPoint(midNdx)));
       }
+      // Replace the old vector with the new one.
       midPts = newPts;
+
+      vec3_t newVerts[3];
+      // Update the vertices.
+      for (int vertNdx = 0; vertNdx < 3; vertNdx++)
+      {
+         vec3_t *curVert = cur->points[vertNdx];
+         // TODO: Find faces adjacent to the current vertex.
+         vector<Triangle*> adjFaces = getAdj(*curVert);
+         vector<vec3_t*> neighbors;
+         for (int triNdx = 0; triNdx < (int)adjFaces.size(); triNdx++)
+         {
+            for (int ptNdx = 0; ptNdx < 3; ptNdx++)
+            {
+               vec3_t *pt = adjFaces[triNdx]->points[ptNdx];
+               if (*pt != *curVert)
+               {
+                  bool found = false;
+                  for (int nNdx = 0; nNdx < (int)neighbors.size(); nNdx++)
+                  {
+                     if (*neighbors[nNdx] == *pt)
+                     {
+                        found = true;
+                        break;
+                     }
+                  }
+                  if (!found)
+                  {
+                     neighbors.push_back(pt);
+                  }
+               }
+            }
+         }
+         //cout << "neighbors: " << neighbors.size() << endl;
+         int n = neighbors.size();
+         float beta = 3.f / 16.f;
+         if (n > 3)
+         {
+            beta = 3.f / (8.f * (float)n);
+         }
+         float invBeta = 1.0f - (float)n * beta;
+         vec3_t total = *curVert * invBeta;
+         for (int nNdx = 0; nNdx < (int)neighbors.size(); nNdx++)
+         {
+            vec3_t contrib = *neighbors[nNdx] * beta;
+            total += contrib;
+         }
+         newVerts[vertNdx] = total;
+      }
+      Triangle *newTri = new Triangle(newVerts[0], newVerts[1], newVerts[2]);
+
+      // Create the new triangles from the vertices to the edge points.
       for (int midNdx = 0; midNdx < (int)midPts.size(); midNdx++)
       {
-         vec3_t last = cur->getPoint(midNdx);
+         //vec3_t last = cur->getPoint(midNdx);
+         vec3_t last = newTri->getPoint(midNdx);
          fullFaces.push_back(new Triangle(*midPts[midNdx], *midPts[(midNdx + 1) % 3], last));
       }
-      //fullFaces.push_back(new Triangle(*midPts[0], *midPts[1], *midPts[2]));
+      // Create the triangle connecting the three edge points.
+      fullFaces.push_back(new Triangle(*midPts[0], *midPts[1], *midPts[2]));
       for (int i = 0; i < (int)midPts.size(); i++)
       {
          delete midPts[i];
@@ -464,12 +498,12 @@ void Mesh::subdivide()
    faces.clear();
    faces.insert(faces.end(), fullFaces.begin(), fullFaces.end());
    cout << faces.size() << " total faces." << endl;
-   randMats();
+   //randMats();
    delete boundingBox;
    boundingBox = bBox();
-   //setMats(mat);
-   // TODO: Free vectors and pointers.
+   setMats(mat);
 }
+
 /*
    void Mesh::subdivide()
    {

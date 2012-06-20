@@ -265,7 +265,7 @@ bool Triangle::edgeContains(vec3_t pt, int *opposite)
       vec3_t edgeVec = nextPt - curPt;
       vec3_t a_to_b = pt - curPt;
       vec3_t a_to_c = nextPt - pt;
-      if (edgeVec.length() == a_to_b.length() + a_to_c.length())
+      if (closeEnough(edgeVec.length(), a_to_b.length() + a_to_c.length()))
       {
          if (opposite)
          {
